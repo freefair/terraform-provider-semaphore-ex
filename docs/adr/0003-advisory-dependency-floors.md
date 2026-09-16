@@ -23,6 +23,11 @@ the original Dependabot alert set. Keep the local toolchain pin and contributor
 instructions aligned with both module directives so release binaries include
 the standard-library fixes.
 
+The acceptance job selects the server's declared toolchain for its build and
+then explicitly selects the provider's toolchain before running provider tests.
+This keeps the independently pinned server revision compatible without leaving
+provider tests on an older compiler when automatic toolchain selection is disabled.
+
 ## Consequences
 
 Both module manifests and checksum files carry the correction. Provider builds,

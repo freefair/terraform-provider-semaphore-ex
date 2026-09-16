@@ -97,6 +97,11 @@ jobs:
           npm ci --prefix web
           task build:fe
           task build:be
+      - name: Set up provider Go toolchain
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
       - name: Run isolated acceptance tests
         run: task testacc
         env:
