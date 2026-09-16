@@ -18,8 +18,8 @@ Release Please prepares version/changelog pull requests only; the owner chooses 
 The artifact workflow creates a draft, attaches verified assets, and publishes it after completion.
 Pull request checks do not receive release signing secrets.
 
-Use the existing `FREEFAIR_SIGNING_KEY` and `FREEFAIR_SIGNING_PASSWORD` organization secrets.
-Export the corresponding public key with each bundle and verify the detached binary signature in a fresh keyring against the expected fingerprint.
+Use the existing `FREEFAIR_TERRAFORM_PRIVATE_KEY` and `FREEFAIR_TERRAFORM_PASSPHRASE` organization secrets.
+Distribute the registered public key from `FREEFAIR_TERRAFORM_PUBLIC_KEY` with each bundle and verify the detached binary signature in a fresh keyring against the expected fingerprint.
 Keep passwords in environment variables and a file descriptor to GPG, not command arguments or configuration.
 Accept Registry-compatible RSA/DSA keys and reject incompatible key algorithms before publishing.
 

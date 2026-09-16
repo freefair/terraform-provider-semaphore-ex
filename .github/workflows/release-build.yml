@@ -24,9 +24,11 @@ on:
         default: false
         type: boolean
     secrets:
-      FREEFAIR_SIGNING_KEY:
+      FREEFAIR_TERRAFORM_PRIVATE_KEY:
         required: true
-      FREEFAIR_SIGNING_PASSWORD:
+      FREEFAIR_TERRAFORM_PASSPHRASE:
+        required: true
+      FREEFAIR_TERRAFORM_PUBLIC_KEY:
         required: true
 
 permissions:
@@ -90,20 +92,21 @@ jobs:
       - name: Check signing configuration
         shell: bash
         env:
-          SIGNING_KEY: ${{ secrets.FREEFAIR_SIGNING_KEY }}
-          SIGNING_PASSWORD: ${{ secrets.FREEFAIR_SIGNING_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.FREEFAIR_TERRAFORM_PRIVATE_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.FREEFAIR_TERRAFORM_PASSPHRASE }}
+          SIGNING_PUBLIC_KEY: ${{ secrets.FREEFAIR_TERRAFORM_PUBLIC_KEY }}
         run: |
           set -euo pipefail
-          [[ -n "$SIGNING_KEY" && -n "$SIGNING_PASSWORD" ]] || {
-            echo 'Freefair signing secrets must be available to this repository.' >&2
+          [[ -n "$SIGNING_KEY" && -n "$SIGNING_PASSWORD" && -n "$SIGNING_PUBLIC_KEY" ]] || {
+            echo 'Freefair Terraform signing secrets must be available to this repository.' >&2
             exit 1
           }
       - name: Import Freefair release signing key
         uses: crazy-max/ghaction-import-gpg@v7
         id: signing
         with:
-          gpg_private_key: ${{ secrets.FREEFAIR_SIGNING_KEY }}
-          passphrase: ${{ secrets.FREEFAIR_SIGNING_PASSWORD }}
+          gpg_private_key: ${{ secrets.FREEFAIR_TERRAFORM_PRIVATE_KEY }}
+          passphrase: ${{ secrets.FREEFAIR_TERRAFORM_PASSPHRASE }}
       - name: Require the Terraform Registry signing identity
         shell: bash
         env:
@@ -119,7 +122,7 @@ jobs:
         shell: bash
         env:
           GPG_FINGERPRINT: ${{ steps.signing.outputs.fingerprint }}
-          SIGNING_PASSPHRASE: ${{ secrets.FREEFAIR_SIGNING_PASSWORD }}
+          SIGNING_PASSPHRASE: ${{ secrets.FREEFAIR_TERRAFORM_PASSPHRASE }}
           SNAPSHOT: ${{ steps.target.outputs.snapshot }}
           RELEASE_TAG: ${{ steps.target.outputs.tag }}
         run: |
@@ -137,6 +140,7 @@ jobs:
         shell: bash
         env:
           GPG_FINGERPRINT: ${{ steps.signing.outputs.fingerprint }}
+          SIGNING_PUBLIC_KEY: ${{ secrets.FREEFAIR_TERRAFORM_PUBLIC_KEY }}
         run: |
           set -euo pipefail
           shopt -s nullglob
@@ -144,7 +148,7 @@ jobs:
           [[ ${#sums[@]} -eq 1 ]]
           prefix="${sums[0]%_SHA256SUMS}"
           cp terraform-registry-manifest.json "${prefix}_manifest.json"
-          gpg --batch --armor --export "$GPG_FINGERPRINT" > dist/signing-key.asc
+          printf '%s\n' "$SIGNING_PUBLIC_KEY" > dist/signing-key.asc
           scripts/verify-registry-artifacts.sh dist
           echo "name=$(basename "$prefix")" >> "$GITHUB_OUTPUT"
       - name: Retain verified signed bundle

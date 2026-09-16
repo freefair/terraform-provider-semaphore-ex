@@ -113,7 +113,7 @@ The Semaphore API does not honor type changes on secret update operations — on
 
 ## Tooling notes
 
-- Go version: 1.26.3 (see `.tool-versions` and `go.mod`).
+- Go version: 1.26.6 (see `.tool-versions` and `go.mod`).
 - Linter: `golangci-lint` v2, config at `.golangci.yml` — `forcetypeassert`, `errcheck`, `staticcheck`, etc. enabled; tests excluded from lint.
 - Pre-commit hooks (`.pre-commit-config.yaml`) run golangci-lint, end-of-file-fixer, and `terraform fmt`. **Pre-commit lint runs on every commit** — if the code doesn't compile or lint, the commit is blocked. This means broken-intermediate-state commits aren't possible; bundle dependent changes (e.g. client regen + provider reconciliation) into one commit.
 - Documentation generation is in a separate module (`tools/go.mod`) so tfplugindocs dependencies don't bloat the main module.
@@ -124,7 +124,8 @@ The Semaphore API does not honor type changes on secret update operations — on
 `main` CI checks produce signed prerelease bundles; `v*` tags on main-history commits build and publish exact-version assets after verification.
 Release Please prepares version/changelog PRs only, avoiding token-suppressed release workflows and incomplete public releases.
 The artifact workflow is reusable and manually dispatchable for existing tags.
-Use `FREEFAIR_SIGNING_KEY` and `FREEFAIR_SIGNING_PASSWORD` organization secrets without reading their values.
+Use the `FREEFAIR_TERRAFORM_PRIVATE_KEY`, `FREEFAIR_TERRAFORM_PASSPHRASE`, and `FREEFAIR_TERRAFORM_PUBLIC_KEY` organization secrets without reading private values.
+Require the Registry signing key ID `719010B911115D8E`; verify against the separately configured public key.
 Signing passes the passphrase via stdin; verification uses a fresh public-key-only keyring and exact fingerprint.
 GoReleaser is pinned to the version in `.tool-versions` and the workflow; keep those pins aligned.
 Verify ZIP names, checksum coverage, manifest protocol, signature and packaged Terraform startup before uploading assets.

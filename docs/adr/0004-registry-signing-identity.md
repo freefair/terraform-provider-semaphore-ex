@@ -18,6 +18,10 @@ Validate the imported full fingerprint's format and long key ID, then carry that
 fingerprint through signing and artifact verification. Fail before publication
 when the configured secret imports a different identity.
 
+Use the dedicated `FREEFAIR_TERRAFORM_PRIVATE_KEY` and
+`FREEFAIR_TERRAFORM_PASSPHRASE` secrets to sign, and the independently configured
+`FREEFAIR_TERRAFORM_PUBLIC_KEY` to verify and distribute the registered public key.
+
 ## Consequences
 
 The CI secret and Registry configuration must agree. A general-purpose Freefair

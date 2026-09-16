@@ -34,12 +34,15 @@ Only distributable files are uploaded; private keys, metadata/config dumps and i
 
 The repository uses these existing Freefair organization secrets:
 
-- `FREEFAIR_SIGNING_KEY`: ASCII-armored private signing key or its base64 encoding, accepted by the import action.
-- `FREEFAIR_SIGNING_PASSWORD`: passphrase for that key.
+- `FREEFAIR_TERRAFORM_PRIVATE_KEY`: ASCII-armored private signing key or its base64 encoding, accepted by the import action.
+- `FREEFAIR_TERRAFORM_PASSPHRASE`: passphrase for that key.
+- `FREEFAIR_TERRAFORM_PUBLIC_KEY`: ASCII-armored public key registered with the Registry.
 
 The Registry signing identity is key ID `719010B911115D8E`.
 The workflow checks that the imported primary-key fingerprint matches this ID
 before building, then uses that fingerprint for signing and verification.
+Verification uses the separately configured public key and requires its primary
+fingerprint to match the imported private key.
 The configured secrets must contain this key; a valid signature from another
 Freefair key is insufficient for Registry publication.
 The passphrase reaches GPG through standard input and is absent from command arguments and configuration files.
@@ -55,7 +58,7 @@ The reusable test workflow checks build, lint, generated documentation, and Terr
 Packaging then verifies:
 
 1. Version tag matches the checked-out commit and the source belongs to `main` history.
-2. The detached signature validates against the exported public key and expected fingerprint in a fresh keyring.
+2. The detached signature validates against the configured Registry public key and expected fingerprint in a fresh keyring.
 3. Every ZIP and the versioned manifest occurs exactly once in the checksum file and matches its hash.
 4. ZIP contents contain the correctly named platform executable and expected documentation files.
 5. Terraform installs the host-platform executable from the ZIP through a local filesystem mirror and successfully requests its provider schema.
