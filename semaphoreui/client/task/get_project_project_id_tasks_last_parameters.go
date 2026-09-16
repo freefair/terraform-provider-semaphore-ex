@@ -63,10 +63,9 @@ GetProjectProjectIDTasksLastParams contains all the parameters to send to the AP
 */
 type GetProjectProjectIDTasksLastParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

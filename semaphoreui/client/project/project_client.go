@@ -44,9 +44,7 @@ func NewClientWithBearerToken(host, basePath, scheme, bearerToken string) Client
 	return &Client{transport: transport, formats: strfmt.Default}
 }
 
-/*
-Client for project API.
-*/
+// Client for project API.
 type Client struct {
 	transport runtime.ContextualTransport
 	formats   strfmt.Registry
@@ -199,17 +197,15 @@ type ClientService interface {
 	SetTransport(transport runtime.ContextualTransport)
 }
 
-/*
-DeleteProjectProjectIDdeletes project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDContext] instead.
-*/
+// DeleteProjectProjectID deletes project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDContext] instead.
 func (a *Client) DeleteProjectProjectID(params *DeleteProjectProjectIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -218,11 +214,9 @@ func (a *Client) DeleteProjectProjectID(params *DeleteProjectProjectIDParams, au
 	return a.DeleteProjectProjectIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDContextdeletes project.
-
-Do not use the deprecated [DeleteProjectProjectIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDContext deletes project.
+//
+// Do not use the deprecated [DeleteProjectProjectIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDContext(ctx context.Context, params *DeleteProjectProjectIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -266,17 +260,15 @@ func (a *Client) DeleteProjectProjectIDContext(ctx context.Context, params *Dele
 	panic(msg)
 }
 
-/*
-DeleteProjectProjectIDUsersUserIDremoves user from project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDUsersUserIDContext] instead.
-*/
+// DeleteProjectProjectIDUsersUserID removes user from project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDUsersUserIDContext] instead.
 func (a *Client) DeleteProjectProjectIDUsersUserID(params *DeleteProjectProjectIDUsersUserIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDUsersUserIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -285,11 +277,9 @@ func (a *Client) DeleteProjectProjectIDUsersUserID(params *DeleteProjectProjectI
 	return a.DeleteProjectProjectIDUsersUserIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDUsersUserIDContextremoves user from project.
-
-Do not use the deprecated [DeleteProjectProjectIDUsersUserIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDUsersUserIDContext removes user from project.
+//
+// Do not use the deprecated [DeleteProjectProjectIDUsersUserIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDUsersUserIDContext(ctx context.Context, params *DeleteProjectProjectIDUsersUserIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDUsersUserIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -333,17 +323,15 @@ func (a *Client) DeleteProjectProjectIDUsersUserIDContext(ctx context.Context, p
 	panic(msg)
 }
 
-/*
-DeleteProjectProjectIDViewsViewIDremoves view.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDViewsViewIDContext] instead.
-*/
+// DeleteProjectProjectIDViewsViewID removes view.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDViewsViewIDContext] instead.
 func (a *Client) DeleteProjectProjectIDViewsViewID(params *DeleteProjectProjectIDViewsViewIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDViewsViewIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -352,11 +340,9 @@ func (a *Client) DeleteProjectProjectIDViewsViewID(params *DeleteProjectProjectI
 	return a.DeleteProjectProjectIDViewsViewIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDViewsViewIDContextremoves view.
-
-Do not use the deprecated [DeleteProjectProjectIDViewsViewIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDViewsViewIDContext removes view.
+//
+// Do not use the deprecated [DeleteProjectProjectIDViewsViewIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDViewsViewIDContext(ctx context.Context, params *DeleteProjectProjectIDViewsViewIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDViewsViewIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -400,17 +386,15 @@ func (a *Client) DeleteProjectProjectIDViewsViewIDContext(ctx context.Context, p
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDfetches project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDContext] instead.
-*/
+// GetProjectProjectID fetches project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDContext] instead.
 func (a *Client) GetProjectProjectID(params *GetProjectProjectIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -419,11 +403,9 @@ func (a *Client) GetProjectProjectID(params *GetProjectProjectIDParams, authInfo
 	return a.GetProjectProjectIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDContextfetches project.
-
-Do not use the deprecated [GetProjectProjectIDParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDContext fetches project.
+//
+// Do not use the deprecated [GetProjectProjectIDParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDContext(ctx context.Context, params *GetProjectProjectIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -467,17 +449,15 @@ func (a *Client) GetProjectProjectIDContext(ctx context.Context, params *GetProj
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDBackupbackups a project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDBackupContext] instead.
-*/
+// GetProjectProjectIDBackup backups a project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDBackupContext] instead.
 func (a *Client) GetProjectProjectIDBackup(params *GetProjectProjectIDBackupParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDBackupOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -486,11 +466,9 @@ func (a *Client) GetProjectProjectIDBackup(params *GetProjectProjectIDBackupPara
 	return a.GetProjectProjectIDBackupContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDBackupContextbackups a project.
-
-Do not use the deprecated [GetProjectProjectIDBackupParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDBackupContext backups a project.
+//
+// Do not use the deprecated [GetProjectProjectIDBackupParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDBackupContext(ctx context.Context, params *GetProjectProjectIDBackupParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDBackupOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -534,17 +512,15 @@ func (a *Client) GetProjectProjectIDBackupContext(ctx context.Context, params *G
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDEventsgets events related to this project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDEventsContext] instead.
-*/
+// GetProjectProjectIDEvents gets events related to this project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDEventsContext] instead.
 func (a *Client) GetProjectProjectIDEvents(params *GetProjectProjectIDEventsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDEventsOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -553,11 +529,9 @@ func (a *Client) GetProjectProjectIDEvents(params *GetProjectProjectIDEventsPara
 	return a.GetProjectProjectIDEventsContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDEventsContextgets events related to this project.
-
-Do not use the deprecated [GetProjectProjectIDEventsParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDEventsContext gets events related to this project.
+//
+// Do not use the deprecated [GetProjectProjectIDEventsParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDEventsContext(ctx context.Context, params *GetProjectProjectIDEventsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDEventsOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -601,17 +575,15 @@ func (a *Client) GetProjectProjectIDEventsContext(ctx context.Context, params *G
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDRolefetches permissions of the current user for project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDRoleContext] instead.
-*/
+// GetProjectProjectIDRole fetches permissions of the current user for project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDRoleContext] instead.
 func (a *Client) GetProjectProjectIDRole(params *GetProjectProjectIDRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDRoleOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -620,11 +592,9 @@ func (a *Client) GetProjectProjectIDRole(params *GetProjectProjectIDRoleParams, 
 	return a.GetProjectProjectIDRoleContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDRoleContextfetches permissions of the current user for project.
-
-Do not use the deprecated [GetProjectProjectIDRoleParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDRoleContext fetches permissions of the current user for project.
+//
+// Do not use the deprecated [GetProjectProjectIDRoleParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDRoleContext(ctx context.Context, params *GetProjectProjectIDRoleParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDRoleOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -668,17 +638,15 @@ func (a *Client) GetProjectProjectIDRoleContext(ctx context.Context, params *Get
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDUsersgets users linked to project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDUsersContext] instead.
-*/
+// GetProjectProjectIDUsers gets users linked to project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDUsersContext] instead.
 func (a *Client) GetProjectProjectIDUsers(params *GetProjectProjectIDUsersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDUsersOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -687,11 +655,9 @@ func (a *Client) GetProjectProjectIDUsers(params *GetProjectProjectIDUsersParams
 	return a.GetProjectProjectIDUsersContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDUsersContextgets users linked to project.
-
-Do not use the deprecated [GetProjectProjectIDUsersParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDUsersContext gets users linked to project.
+//
+// Do not use the deprecated [GetProjectProjectIDUsersParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDUsersContext(ctx context.Context, params *GetProjectProjectIDUsersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDUsersOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -735,17 +701,15 @@ func (a *Client) GetProjectProjectIDUsersContext(ctx context.Context, params *Ge
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDViewsgets view.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDViewsContext] instead.
-*/
+// GetProjectProjectIDViews gets view.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDViewsContext] instead.
 func (a *Client) GetProjectProjectIDViews(params *GetProjectProjectIDViewsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDViewsOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -754,11 +718,9 @@ func (a *Client) GetProjectProjectIDViews(params *GetProjectProjectIDViewsParams
 	return a.GetProjectProjectIDViewsContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDViewsContextgets view.
-
-Do not use the deprecated [GetProjectProjectIDViewsParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDViewsContext gets view.
+//
+// Do not use the deprecated [GetProjectProjectIDViewsParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDViewsContext(ctx context.Context, params *GetProjectProjectIDViewsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDViewsOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -802,17 +764,15 @@ func (a *Client) GetProjectProjectIDViewsContext(ctx context.Context, params *Ge
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDViewsViewIDgets view.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDViewsViewIDContext] instead.
-*/
+// GetProjectProjectIDViewsViewID gets view.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDViewsViewIDContext] instead.
 func (a *Client) GetProjectProjectIDViewsViewID(params *GetProjectProjectIDViewsViewIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDViewsViewIDOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -821,11 +781,9 @@ func (a *Client) GetProjectProjectIDViewsViewID(params *GetProjectProjectIDViews
 	return a.GetProjectProjectIDViewsViewIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDViewsViewIDContextgets view.
-
-Do not use the deprecated [GetProjectProjectIDViewsViewIDParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDViewsViewIDContext gets view.
+//
+// Do not use the deprecated [GetProjectProjectIDViewsViewIDParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDViewsViewIDContext(ctx context.Context, params *GetProjectProjectIDViewsViewIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDViewsViewIDOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -869,17 +827,15 @@ func (a *Client) GetProjectProjectIDViewsViewIDContext(ctx context.Context, para
 	panic(msg)
 }
 
-/*
-GetProjectsgets projects.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectsContext] instead.
-*/
+// GetProjects gets projects.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectsContext] instead.
 func (a *Client) GetProjects(params *GetProjectsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectsOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -888,11 +844,9 @@ func (a *Client) GetProjects(params *GetProjectsParams, authInfo runtime.ClientA
 	return a.GetProjectsContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectsContextgets projects.
-
-Do not use the deprecated [GetProjectsParams.Context] with this method: it would be ignored.
-*/
+// GetProjectsContext gets projects.
+//
+// Do not use the deprecated [GetProjectsParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectsContext(ctx context.Context, params *GetProjectsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectsOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -936,19 +890,17 @@ func (a *Client) GetProjectsContext(ctx context.Context, params *GetProjectsPara
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDNotificationsTestsends test notification.
-
-Sends a test notification to all enabled messengers for the project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDNotificationsTestContext] instead.
-*/
+// PostProjectProjectIDNotificationsTest sends test notification.
+//
+// Sends a test notification to all enabled messengers for the project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDNotificationsTestContext] instead.
 func (a *Client) PostProjectProjectIDNotificationsTest(params *PostProjectProjectIDNotificationsTestParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) error {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -957,13 +909,11 @@ func (a *Client) PostProjectProjectIDNotificationsTest(params *PostProjectProjec
 	return a.PostProjectProjectIDNotificationsTestContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDNotificationsTestContextsends test notification.
-
-Sends a test notification to all enabled messengers for the project.
-
-Do not use the deprecated [PostProjectProjectIDNotificationsTestParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDNotificationsTestContext sends test notification.
+//
+// Sends a test notification to all enabled messengers for the project.
+//
+// Do not use the deprecated [PostProjectProjectIDNotificationsTestParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDNotificationsTestContext(ctx context.Context, params *PostProjectProjectIDNotificationsTestParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) error {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -996,17 +946,15 @@ func (a *Client) PostProjectProjectIDNotificationsTestContext(ctx context.Contex
 	return nil
 }
 
-/*
-PostProjectProjectIDUserslinks user to project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDUsersContext] instead.
-*/
+// PostProjectProjectIDUsers links user to project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDUsersContext] instead.
 func (a *Client) PostProjectProjectIDUsers(params *PostProjectProjectIDUsersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDUsersNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1015,11 +963,9 @@ func (a *Client) PostProjectProjectIDUsers(params *PostProjectProjectIDUsersPara
 	return a.PostProjectProjectIDUsersContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDUsersContextlinks user to project.
-
-Do not use the deprecated [PostProjectProjectIDUsersParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDUsersContext links user to project.
+//
+// Do not use the deprecated [PostProjectProjectIDUsersParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDUsersContext(ctx context.Context, params *PostProjectProjectIDUsersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDUsersNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1063,17 +1009,15 @@ func (a *Client) PostProjectProjectIDUsersContext(ctx context.Context, params *P
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDViewscreates view.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDViewsContext] instead.
-*/
+// PostProjectProjectIDViews creates view.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDViewsContext] instead.
 func (a *Client) PostProjectProjectIDViews(params *PostProjectProjectIDViewsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDViewsCreated, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1082,11 +1026,9 @@ func (a *Client) PostProjectProjectIDViews(params *PostProjectProjectIDViewsPara
 	return a.PostProjectProjectIDViewsContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDViewsContextcreates view.
-
-Do not use the deprecated [PostProjectProjectIDViewsParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDViewsContext creates view.
+//
+// Do not use the deprecated [PostProjectProjectIDViewsParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDViewsContext(ctx context.Context, params *PostProjectProjectIDViewsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDViewsCreated, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1130,17 +1072,15 @@ func (a *Client) PostProjectProjectIDViewsContext(ctx context.Context, params *P
 	panic(msg)
 }
 
-/*
-PostProjectscreates a new project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectsContext] instead.
-*/
+// PostProjects creates a new project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectsContext] instead.
 func (a *Client) PostProjects(params *PostProjectsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectsCreated, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1149,11 +1089,9 @@ func (a *Client) PostProjects(params *PostProjectsParams, authInfo runtime.Clien
 	return a.PostProjectsContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectsContextcreates a new project.
-
-Do not use the deprecated [PostProjectsParams.Context] with this method: it would be ignored.
-*/
+// PostProjectsContext creates a new project.
+//
+// Do not use the deprecated [PostProjectsParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectsContext(ctx context.Context, params *PostProjectsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectsCreated, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1197,17 +1135,15 @@ func (a *Client) PostProjectsContext(ctx context.Context, params *PostProjectsPa
 	panic(msg)
 }
 
-/*
-PostProjectsRestorerestores project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectsRestoreContext] instead.
-*/
+// PostProjectsRestore restores project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectsRestoreContext] instead.
 func (a *Client) PostProjectsRestore(params *PostProjectsRestoreParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectsRestoreOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1216,11 +1152,9 @@ func (a *Client) PostProjectsRestore(params *PostProjectsRestoreParams, authInfo
 	return a.PostProjectsRestoreContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectsRestoreContextrestores project.
-
-Do not use the deprecated [PostProjectsRestoreParams.Context] with this method: it would be ignored.
-*/
+// PostProjectsRestoreContext restores project.
+//
+// Do not use the deprecated [PostProjectsRestoreParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectsRestoreContext(ctx context.Context, params *PostProjectsRestoreParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectsRestoreOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1264,17 +1198,15 @@ func (a *Client) PostProjectsRestoreContext(ctx context.Context, params *PostPro
 	panic(msg)
 }
 
-/*
-PutProjectProjectIDupdates project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PutProjectProjectIDContext] instead.
-*/
+// PutProjectProjectID updates project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PutProjectProjectIDContext] instead.
 func (a *Client) PutProjectProjectID(params *PutProjectProjectIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1283,11 +1215,9 @@ func (a *Client) PutProjectProjectID(params *PutProjectProjectIDParams, authInfo
 	return a.PutProjectProjectIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PutProjectProjectIDContextupdates project.
-
-Do not use the deprecated [PutProjectProjectIDParams.Context] with this method: it would be ignored.
-*/
+// PutProjectProjectIDContext updates project.
+//
+// Do not use the deprecated [PutProjectProjectIDParams.Context] with this method: it would be ignored.
 func (a *Client) PutProjectProjectIDContext(ctx context.Context, params *PutProjectProjectIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1331,17 +1261,15 @@ func (a *Client) PutProjectProjectIDContext(ctx context.Context, params *PutProj
 	panic(msg)
 }
 
-/*
-PutProjectProjectIDUsersUserIDupdates user role.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PutProjectProjectIDUsersUserIDContext] instead.
-*/
+// PutProjectProjectIDUsersUserID updates user role.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PutProjectProjectIDUsersUserIDContext] instead.
 func (a *Client) PutProjectProjectIDUsersUserID(params *PutProjectProjectIDUsersUserIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDUsersUserIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1350,11 +1278,9 @@ func (a *Client) PutProjectProjectIDUsersUserID(params *PutProjectProjectIDUsers
 	return a.PutProjectProjectIDUsersUserIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PutProjectProjectIDUsersUserIDContextupdates user role.
-
-Do not use the deprecated [PutProjectProjectIDUsersUserIDParams.Context] with this method: it would be ignored.
-*/
+// PutProjectProjectIDUsersUserIDContext updates user role.
+//
+// Do not use the deprecated [PutProjectProjectIDUsersUserIDParams.Context] with this method: it would be ignored.
 func (a *Client) PutProjectProjectIDUsersUserIDContext(ctx context.Context, params *PutProjectProjectIDUsersUserIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDUsersUserIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1398,17 +1324,15 @@ func (a *Client) PutProjectProjectIDUsersUserIDContext(ctx context.Context, para
 	panic(msg)
 }
 
-/*
-PutProjectProjectIDViewsViewIDupdates view.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PutProjectProjectIDViewsViewIDContext] instead.
-*/
+// PutProjectProjectIDViewsViewID updates view.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PutProjectProjectIDViewsViewIDContext] instead.
 func (a *Client) PutProjectProjectIDViewsViewID(params *PutProjectProjectIDViewsViewIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDViewsViewIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1417,11 +1341,9 @@ func (a *Client) PutProjectProjectIDViewsViewID(params *PutProjectProjectIDViews
 	return a.PutProjectProjectIDViewsViewIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PutProjectProjectIDViewsViewIDContextupdates view.
-
-Do not use the deprecated [PutProjectProjectIDViewsViewIDParams.Context] with this method: it would be ignored.
-*/
+// PutProjectProjectIDViewsViewIDContext updates view.
+//
+// Do not use the deprecated [PutProjectProjectIDViewsViewIDParams.Context] with this method: it would be ignored.
 func (a *Client) PutProjectProjectIDViewsViewIDContext(ctx context.Context, params *PutProjectProjectIDViewsViewIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDViewsViewIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {

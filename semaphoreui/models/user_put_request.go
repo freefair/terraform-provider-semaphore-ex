@@ -34,12 +34,12 @@ type UserPutRequest struct {
 }
 
 // Validate validates this user put request
-func (m *UserPutRequest) Validate(formats strfmt.Registry) error {
+func (m *UserPutRequest) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this user put request based on context it is used
-func (m *UserPutRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *UserPutRequest) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

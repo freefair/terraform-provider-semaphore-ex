@@ -22,12 +22,12 @@ type RunnerTag struct {
 }
 
 // Validate validates this runner tag
-func (m *RunnerTag) Validate(formats strfmt.Registry) error {
+func (m *RunnerTag) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this runner tag based on context it is used
-func (m *RunnerTag) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *RunnerTag) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

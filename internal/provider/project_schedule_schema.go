@@ -1,14 +1,15 @@
 package provider
 
 import (
+	"github.com/freefair/terraform-provider-semaphore-ex/internal/stringvalidator"
 	schemaD "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	schemaR "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	superschema "github.com/orange-cloudavenue/terraform-plugin-framework-superschema"
-	"terraform-provider-semaphoreui/internal/stringvalidator"
 )
 
 type (
@@ -18,6 +19,7 @@ type (
 		TemplateID types.Int64  `tfsdk:"template_id"`
 		Name       types.String `tfsdk:"name"`
 		CronFormat types.String `tfsdk:"cron_format"`
+		Timezone   types.String `tfsdk:"timezone"`
 		Enabled    types.Bool   `tfsdk:"enabled"`
 	}
 )
@@ -91,6 +93,11 @@ func ProjectScheduleSchema() superschema.Schema {
 				DataSource: &schemaD.StringAttribute{
 					Computed: true,
 				},
+			},
+			"timezone": superschema.StringAttribute{
+				Common:     &schemaR.StringAttribute{MarkdownDescription: "IANA timezone. Empty uses the server default. Existing imported values are preserved when omitted."},
+				Resource:   &schemaR.StringAttribute{Optional: true, Computed: true, PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
+				DataSource: &schemaD.StringAttribute{Computed: true},
 			},
 			"enabled": superschema.BoolAttribute{
 				Common: &schemaR.BoolAttribute{

@@ -63,22 +63,19 @@ GetProjectProjectIDTemplatesParams contains all the parameters to send to the AP
 */
 type GetProjectProjectIDTemplatesParams struct {
 
-	/* Order.
-
-	   ordering manner
-	*/
+	// Order.
+	//
+	// ordering manner
 	Order string
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* Sort.
-
-	   sorting name
-	*/
+	// Sort.
+	//
+	// sorting name
 	Sort string
 
 	HTTPClient *http.Client

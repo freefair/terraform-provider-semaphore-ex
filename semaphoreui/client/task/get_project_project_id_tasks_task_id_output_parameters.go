@@ -63,16 +63,14 @@ GetProjectProjectIDTasksTaskIDOutputParams contains all the parameters to send t
 */
 type GetProjectProjectIDTasksTaskIDOutputParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* TaskID.
-
-	   task ID
-	*/
+	// TaskID.
+	//
+	// task ID
 	TaskID int64
 
 	HTTPClient *http.Client

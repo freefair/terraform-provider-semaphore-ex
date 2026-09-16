@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/variable_group"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"sort"
-	apiclient "terraform-provider-semaphoreui/semaphoreui/client"
-	"terraform-provider-semaphoreui/semaphoreui/client/variable_group"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/resource"

@@ -33,11 +33,9 @@ func NewPutProjectProjectIDViewsViewIDNoContent() *PutProjectProjectIDViewsViewI
 	return &PutProjectProjectIDViewsViewIDNoContent{}
 }
 
-/*
-PutProjectProjectIDViewsViewIDNoContent describes a response with status code 204, with default header values.
-
-view updated
-*/
+// PutProjectProjectIDViewsViewIDNoContent describes a response with status code 204, with default header values.
+//
+// view updated
 type PutProjectProjectIDViewsViewIDNoContent struct {
 }
 

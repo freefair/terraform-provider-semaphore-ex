@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDIntegrationsAliasesAliasIDNoContent() *DeleteProje
 	return &DeleteProjectProjectIDIntegrationsAliasesAliasIDNoContent{}
 }
 
-/*
-DeleteProjectProjectIDIntegrationsAliasesAliasIDNoContent describes a response with status code 204, with default header values.
-
-integration alias removed
-*/
+// DeleteProjectProjectIDIntegrationsAliasesAliasIDNoContent describes a response with status code 204, with default header values.
+//
+// integration alias removed
 type DeleteProjectProjectIDIntegrationsAliasesAliasIDNoContent struct {
 }
 

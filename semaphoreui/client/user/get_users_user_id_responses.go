@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetUsersUserIDReader is a Reader for the GetUsersUserID structure.
@@ -37,11 +37,9 @@ func NewGetUsersUserIDOK() *GetUsersUserIDOK {
 	return &GetUsersUserIDOK{}
 }
 
-/*
-GetUsersUserIDOK describes a response with status code 200, with default header values.
-
-User profile
-*/
+// GetUsersUserIDOK describes a response with status code 200, with default header values.
+//
+// User profile
 type GetUsersUserIDOK struct {
 	Payload *models.User
 }

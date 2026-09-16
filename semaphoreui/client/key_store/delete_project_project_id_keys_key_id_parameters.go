@@ -63,16 +63,14 @@ DeleteProjectProjectIDKeysKeyIDParams contains all the parameters to send to the
 */
 type DeleteProjectProjectIDKeysKeyIDParams struct {
 
-	/* KeyID.
-
-	   key ID
-	*/
+	// KeyID.
+	//
+	// key ID
 	KeyID int64
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

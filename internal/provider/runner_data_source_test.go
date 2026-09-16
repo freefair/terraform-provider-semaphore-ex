@@ -8,29 +8,29 @@ import (
 
 func testAccRunnerDataSourceConfigByID() string {
 	return `
-resource "semaphoreui_runner" "test" {
+resource "semaphore_ex_runner" "test" {
   name               = "Test Global Runner"
   max_parallel_tasks = 2
   tags               = ["linux"]
 }
 
-data "semaphoreui_runner" "test" {
-  id         = semaphoreui_runner.test.id
-  depends_on = [semaphoreui_runner.test]
+data "semaphore_ex_runner" "test" {
+  id         = semaphore_ex_runner.test.id
+  depends_on = [semaphore_ex_runner.test]
 }`
 }
 
 func testAccRunnerDataSourceConfigByName() string {
 	return `
-resource "semaphoreui_runner" "test" {
+resource "semaphore_ex_runner" "test" {
   name               = "Test Global Runner"
   max_parallel_tasks = 2
   tags               = ["linux"]
 }
 
-data "semaphoreui_runner" "test" {
+data "semaphore_ex_runner" "test" {
   name       = "Test Global Runner"
-  depends_on = [semaphoreui_runner.test]
+  depends_on = [semaphore_ex_runner.test]
 }`
 }
 
@@ -42,11 +42,11 @@ func TestAcc_RunnerDataSource_basicID(t *testing.T) {
 			{
 				Config: testAccRunnerDataSourceConfigByID(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_runner.test", "name", "Test Global Runner"),
-					resource.TestCheckResourceAttr("data.semaphoreui_runner.test", "max_parallel_tasks", "2"),
-					resource.TestCheckResourceAttr("data.semaphoreui_runner.test", "tags.#", "1"),
-					resource.TestCheckTypeSetElemAttr("data.semaphoreui_runner.test", "tags.*", "linux"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_runner.test", "id"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_runner.test", "name", "Test Global Runner"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_runner.test", "max_parallel_tasks", "2"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_runner.test", "tags.#", "1"),
+					resource.TestCheckTypeSetElemAttr("data.semaphore_ex_runner.test", "tags.*", "linux"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_runner.test", "id"),
 				),
 			},
 		},
@@ -61,11 +61,11 @@ func TestAcc_RunnerDataSource_basicName(t *testing.T) {
 			{
 				Config: testAccRunnerDataSourceConfigByName(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_runner.test", "name", "Test Global Runner"),
-					resource.TestCheckResourceAttr("data.semaphoreui_runner.test", "max_parallel_tasks", "2"),
-					resource.TestCheckResourceAttr("data.semaphoreui_runner.test", "tags.#", "1"),
-					resource.TestCheckTypeSetElemAttr("data.semaphoreui_runner.test", "tags.*", "linux"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_runner.test", "id"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_runner.test", "name", "Test Global Runner"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_runner.test", "max_parallel_tasks", "2"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_runner.test", "tags.#", "1"),
+					resource.TestCheckTypeSetElemAttr("data.semaphore_ex_runner.test", "tags.*", "linux"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_runner.test", "id"),
 				),
 			},
 		},

@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // PostProjectsReader is a Reader for the PostProjects structure.
@@ -37,11 +37,9 @@ func NewPostProjectsCreated() *PostProjectsCreated {
 	return &PostProjectsCreated{}
 }
 
-/*
-PostProjectsCreated describes a response with status code 201, with default header values.
-
-Created project
-*/
+// PostProjectsCreated describes a response with status code 201, with default header values.
+//
+// Created project
 type PostProjectsCreated struct {
 	Payload *models.Project
 }

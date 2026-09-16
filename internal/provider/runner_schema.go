@@ -18,16 +18,15 @@ import (
 
 type (
 	RunnerModel struct {
-		ID               types.Int64  `tfsdk:"id"`
-		Name             types.String `tfsdk:"name"`
-		Webhook          types.String `tfsdk:"webhook"`
-		MaxParallelTasks types.Int64  `tfsdk:"max_parallel_tasks"`
-		Active           types.Bool   `tfsdk:"active"`
-		Tags             types.Set    `tfsdk:"tags"`
-		IsDefault        types.Bool   `tfsdk:"is_default"`
-		Registered       types.Bool   `tfsdk:"registered"`
-		Token            types.String `tfsdk:"token"`
-		PrivateKey       types.String `tfsdk:"private_key"`
+		ID                 types.Int64  `tfsdk:"id"`
+		Name               types.String `tfsdk:"name"`
+		Webhook            types.String `tfsdk:"webhook"`
+		MaxParallelTasks   types.Int64  `tfsdk:"max_parallel_tasks"`
+		Active             types.Bool   `tfsdk:"active"`
+		Tags               types.Set    `tfsdk:"tags"`
+		IsDefault          types.Bool   `tfsdk:"is_default"`
+		Registered         types.Bool   `tfsdk:"registered"`
+		RegistrationPolicy types.String `tfsdk:"registration_policy"`
 	}
 )
 
@@ -37,7 +36,7 @@ func RunnerSchema() superschema.Schema {
 			MarkdownDescription: "The global runner",
 		},
 		Resource: superschema.SchemaDetails{
-			MarkdownDescription: "resource allows you to define a global (admin) runner. Global runners are shared across projects and are matched to tasks by their tags. Use the `semaphoreui_runner_registration_token` resource to generate the one-time token the runner uses to register.",
+			MarkdownDescription: "resource allows you to define a global (admin) runner. Global runners are shared across projects and are matched to tasks by their tags. Use the `semaphore_ex_runner_registration_token` resource to generate the one-time token the runner uses to register.",
 		},
 		DataSource: superschema.SchemaDetails{
 			MarkdownDescription: "data source allows you to read a global (admin) runner.",
@@ -146,7 +145,7 @@ func RunnerSchema() superschema.Schema {
 			},
 			"registered": superschema.BoolAttribute{
 				Common: &schemaR.BoolAttribute{
-					MarkdownDescription: "Whether the runner is registered (has an auth token). A runner created up front with no credentials stays unregistered until a registration token is generated (see `semaphoreui_runner_registration_token`) and used to register it.",
+					MarkdownDescription: "Whether the runner is registered (has an auth token). A runner created up front with no credentials stays unregistered until a registration token is generated (see `semaphore_ex_runner_registration_token`) and used to register it.",
 				},
 				Resource: &schemaR.BoolAttribute{
 					Computed:      true,
@@ -156,27 +155,15 @@ func RunnerSchema() superschema.Schema {
 					Computed: true,
 				},
 			},
-			"token": superschema.StringAttribute{
+			"registration_policy": superschema.StringAttribute{
 				Common: &schemaR.StringAttribute{
-					MarkdownDescription: "The token the runner uses to authenticate. Set only for registered runners; empty when `registered` is false.",
-					Sensitive:           true,
+					MarkdownDescription: "Registration security policy. Omit on import to retain the server policy.",
 				},
 				Resource: &schemaR.StringAttribute{
+					Optional:      true,
 					Computed:      true,
 					PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
-				},
-				DataSource: &schemaD.StringAttribute{
-					Computed: true,
-				},
-			},
-			"private_key": superschema.StringAttribute{
-				Common: &schemaR.StringAttribute{
-					MarkdownDescription: "The generated private key, returned only when the server creates the key pair; empty when `registered` is false.",
-					Sensitive:           true,
-				},
-				Resource: &schemaR.StringAttribute{
-					Computed:      true,
-					PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()},
+					Validators:    []validator.String{stringvalidator.OneOf("standard", "secure")},
 				},
 				DataSource: &schemaD.StringAttribute{
 					Computed: true,

@@ -6,13 +6,13 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag/jsonutils"
 	"github.com/go-openapi/swag/typeutils"
 	"github.com/go-openapi/validate"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // PutProjectProjectIDReader is a Reader for the PutProjectProjectID structure.
@@ -39,11 +39,9 @@ func NewPutProjectProjectIDNoContent() *PutProjectProjectIDNoContent {
 	return &PutProjectProjectIDNoContent{}
 }
 
-/*
-PutProjectProjectIDNoContent describes a response with status code 204, with default header values.
-
-Project saved
-*/
+// PutProjectProjectIDNoContent describes a response with status code 204, with default header values.
+//
+// Project saved
 type PutProjectProjectIDNoContent struct {
 }
 
@@ -90,10 +88,9 @@ func (o *PutProjectProjectIDNoContent) readResponse(response runtime.ClientRespo
 	return nil
 }
 
-/*
-PutProjectProjectIDBody put project project ID body
-swagger:model PutProjectProjectIDBody
-*/
+// PutProjectProjectIDBody put project project ID body
+//
+// swagger:model PutProjectProjectIDBody
 type PutProjectProjectIDBody struct {
 	models.ProjectRequest
 

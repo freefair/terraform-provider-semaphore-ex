@@ -3,11 +3,11 @@ package provider
 import (
 	"context"
 	"crypto/tls"
+	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
 	"net/http"
 	"net/url"
 	"os"
 	"strconv"
-	apiclient "terraform-provider-semaphoreui/semaphoreui/client"
 
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
@@ -39,14 +39,14 @@ type SemaphoreUIProviderModel struct {
 }
 
 func (p *SemaphoreUIProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "semaphoreui"
+	resp.TypeName = "semaphore_ex"
 	resp.Version = p.version
 }
 
 func (p *SemaphoreUIProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: `
-Use the SemaphoreUI provider to interact with Semaphore UI via the API. You must configure the provider with the proper credentials before you can use it.
+Use the Semaphore EX provider to interact with Semaphore EX via the API. You must configure the provider with the proper credentials before you can use it.
 
 ## API Token
 You can generate a Semaphore API token by logging into Semaphore, opening the browser Developer Tools console, and running the following command:

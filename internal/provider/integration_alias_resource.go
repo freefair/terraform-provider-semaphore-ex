@@ -7,9 +7,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
-	apiclient "terraform-provider-semaphoreui/semaphoreui/client"
-	"terraform-provider-semaphoreui/semaphoreui/client/integration"
-	"terraform-provider-semaphoreui/semaphoreui/models"
+	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/integration"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 )
 
 var (

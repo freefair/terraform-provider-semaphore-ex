@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag/conv"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // NewPutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams creates a new PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams object,
@@ -67,22 +67,19 @@ type PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams stru
 	// IntegrationExtractValue.
 	IntegrationExtractValue *models.IntegrationExtractValueRequest
 
-	/* ExtractvalueID.
-
-	   extractValue ID
-	*/
+	// ExtractvalueID.
+	//
+	// extractValue ID
 	ExtractvalueID int64
 
-	/* IntegrationID.
-
-	   integration ID
-	*/
+	// IntegrationID.
+	//
+	// integration ID
 	IntegrationID int64
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

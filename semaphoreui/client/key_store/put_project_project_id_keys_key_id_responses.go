@@ -39,11 +39,9 @@ func NewPutProjectProjectIDKeysKeyIDNoContent() *PutProjectProjectIDKeysKeyIDNoC
 	return &PutProjectProjectIDKeysKeyIDNoContent{}
 }
 
-/*
-PutProjectProjectIDKeysKeyIDNoContent describes a response with status code 204, with default header values.
-
-Key updated
-*/
+// PutProjectProjectIDKeysKeyIDNoContent describes a response with status code 204, with default header values.
+//
+// Key updated
 type PutProjectProjectIDKeysKeyIDNoContent struct {
 }
 
@@ -95,11 +93,9 @@ func NewPutProjectProjectIDKeysKeyIDBadRequest() *PutProjectProjectIDKeysKeyIDBa
 	return &PutProjectProjectIDKeysKeyIDBadRequest{}
 }
 
-/*
-PutProjectProjectIDKeysKeyIDBadRequest describes a response with status code 400, with default header values.
-
-Bad type
-*/
+// PutProjectProjectIDKeysKeyIDBadRequest describes a response with status code 400, with default header values.
+//
+// Bad type
 type PutProjectProjectIDKeysKeyIDBadRequest struct {
 }
 

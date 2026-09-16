@@ -44,9 +44,7 @@ func NewClientWithBearerToken(host, basePath, scheme, bearerToken string) Client
 	return &Client{transport: transport, formats: strfmt.Default}
 }
 
-/*
-Client for runner API.
-*/
+// Client for runner API.
 type Client struct {
 	transport runtime.ContextualTransport
 	formats   strfmt.Registry
@@ -193,17 +191,15 @@ type ClientService interface {
 	SetTransport(transport runtime.ContextualTransport)
 }
 
-/*
-DeleteProjectProjectIDRunnersRunnerIDdeletes project runner.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDRunnersRunnerIDContext] instead.
-*/
+// DeleteProjectProjectIDRunnersRunnerID deletes project runner.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDRunnersRunnerIDContext] instead.
 func (a *Client) DeleteProjectProjectIDRunnersRunnerID(params *DeleteProjectProjectIDRunnersRunnerIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDRunnersRunnerIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -212,11 +208,9 @@ func (a *Client) DeleteProjectProjectIDRunnersRunnerID(params *DeleteProjectProj
 	return a.DeleteProjectProjectIDRunnersRunnerIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDRunnersRunnerIDContextdeletes project runner.
-
-Do not use the deprecated [DeleteProjectProjectIDRunnersRunnerIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDRunnersRunnerIDContext deletes project runner.
+//
+// Do not use the deprecated [DeleteProjectProjectIDRunnersRunnerIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDRunnersRunnerIDContext(ctx context.Context, params *DeleteProjectProjectIDRunnersRunnerIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDRunnersRunnerIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -260,17 +254,15 @@ func (a *Client) DeleteProjectProjectIDRunnersRunnerIDContext(ctx context.Contex
 	panic(msg)
 }
 
-/*
-DeleteProjectProjectIDRunnersRunnerIDCacheclears project runner cache.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDRunnersRunnerIDCacheContext] instead.
-*/
+// DeleteProjectProjectIDRunnersRunnerIDCache clears project runner cache.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDRunnersRunnerIDCacheContext] instead.
 func (a *Client) DeleteProjectProjectIDRunnersRunnerIDCache(params *DeleteProjectProjectIDRunnersRunnerIDCacheParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDRunnersRunnerIDCacheNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -279,11 +271,9 @@ func (a *Client) DeleteProjectProjectIDRunnersRunnerIDCache(params *DeleteProjec
 	return a.DeleteProjectProjectIDRunnersRunnerIDCacheContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDRunnersRunnerIDCacheContextclears project runner cache.
-
-Do not use the deprecated [DeleteProjectProjectIDRunnersRunnerIDCacheParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDRunnersRunnerIDCacheContext clears project runner cache.
+//
+// Do not use the deprecated [DeleteProjectProjectIDRunnersRunnerIDCacheParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDRunnersRunnerIDCacheContext(ctx context.Context, params *DeleteProjectProjectIDRunnersRunnerIDCacheParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDRunnersRunnerIDCacheNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -327,17 +317,15 @@ func (a *Client) DeleteProjectProjectIDRunnersRunnerIDCacheContext(ctx context.C
 	panic(msg)
 }
 
-/*
-DeleteRunnersRunnerIDdeletes global runner.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteRunnersRunnerIDContext] instead.
-*/
+// DeleteRunnersRunnerID deletes global runner.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteRunnersRunnerIDContext] instead.
 func (a *Client) DeleteRunnersRunnerID(params *DeleteRunnersRunnerIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteRunnersRunnerIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -346,11 +334,9 @@ func (a *Client) DeleteRunnersRunnerID(params *DeleteRunnersRunnerIDParams, auth
 	return a.DeleteRunnersRunnerIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteRunnersRunnerIDContextdeletes global runner.
-
-Do not use the deprecated [DeleteRunnersRunnerIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteRunnersRunnerIDContext deletes global runner.
+//
+// Do not use the deprecated [DeleteRunnersRunnerIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteRunnersRunnerIDContext(ctx context.Context, params *DeleteRunnersRunnerIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteRunnersRunnerIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -394,17 +380,15 @@ func (a *Client) DeleteRunnersRunnerIDContext(ctx context.Context, params *Delet
 	panic(msg)
 }
 
-/*
-DeleteRunnersRunnerIDCacheclears global runner cache.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteRunnersRunnerIDCacheContext] instead.
-*/
+// DeleteRunnersRunnerIDCache clears global runner cache.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteRunnersRunnerIDCacheContext] instead.
 func (a *Client) DeleteRunnersRunnerIDCache(params *DeleteRunnersRunnerIDCacheParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteRunnersRunnerIDCacheNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -413,11 +397,9 @@ func (a *Client) DeleteRunnersRunnerIDCache(params *DeleteRunnersRunnerIDCachePa
 	return a.DeleteRunnersRunnerIDCacheContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteRunnersRunnerIDCacheContextclears global runner cache.
-
-Do not use the deprecated [DeleteRunnersRunnerIDCacheParams.Context] with this method: it would be ignored.
-*/
+// DeleteRunnersRunnerIDCacheContext clears global runner cache.
+//
+// Do not use the deprecated [DeleteRunnersRunnerIDCacheParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteRunnersRunnerIDCacheContext(ctx context.Context, params *DeleteRunnersRunnerIDCacheParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteRunnersRunnerIDCacheNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -461,17 +443,15 @@ func (a *Client) DeleteRunnersRunnerIDCacheContext(ctx context.Context, params *
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDRunnerTagsgets project runner tags.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDRunnerTagsContext] instead.
-*/
+// GetProjectProjectIDRunnerTags gets project runner tags.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDRunnerTagsContext] instead.
 func (a *Client) GetProjectProjectIDRunnerTags(params *GetProjectProjectIDRunnerTagsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDRunnerTagsOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -480,11 +460,9 @@ func (a *Client) GetProjectProjectIDRunnerTags(params *GetProjectProjectIDRunner
 	return a.GetProjectProjectIDRunnerTagsContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDRunnerTagsContextgets project runner tags.
-
-Do not use the deprecated [GetProjectProjectIDRunnerTagsParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDRunnerTagsContext gets project runner tags.
+//
+// Do not use the deprecated [GetProjectProjectIDRunnerTagsParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDRunnerTagsContext(ctx context.Context, params *GetProjectProjectIDRunnerTagsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDRunnerTagsOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -528,19 +506,17 @@ func (a *Client) GetProjectProjectIDRunnerTagsContext(ctx context.Context, param
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDRunnersgets project runners.
-
-Returns runners owned by the project together with global runners that have tags..
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDRunnersContext] instead.
-*/
+// GetProjectProjectIDRunners gets project runners.
+//
+// Returns runners owned by the project together with global runners that have tags..
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDRunnersContext] instead.
 func (a *Client) GetProjectProjectIDRunners(params *GetProjectProjectIDRunnersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDRunnersOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -549,13 +525,11 @@ func (a *Client) GetProjectProjectIDRunners(params *GetProjectProjectIDRunnersPa
 	return a.GetProjectProjectIDRunnersContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDRunnersContextgets project runners.
-
-Returns runners owned by the project together with global runners that have tags..
-
-Do not use the deprecated [GetProjectProjectIDRunnersParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDRunnersContext gets project runners.
+//
+// Returns runners owned by the project together with global runners that have tags..
+//
+// Do not use the deprecated [GetProjectProjectIDRunnersParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDRunnersContext(ctx context.Context, params *GetProjectProjectIDRunnersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDRunnersOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -599,17 +573,15 @@ func (a *Client) GetProjectProjectIDRunnersContext(ctx context.Context, params *
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDRunnersRunnerIDgets project runner.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDRunnersRunnerIDContext] instead.
-*/
+// GetProjectProjectIDRunnersRunnerID gets project runner.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDRunnersRunnerIDContext] instead.
 func (a *Client) GetProjectProjectIDRunnersRunnerID(params *GetProjectProjectIDRunnersRunnerIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDRunnersRunnerIDOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -618,11 +590,9 @@ func (a *Client) GetProjectProjectIDRunnersRunnerID(params *GetProjectProjectIDR
 	return a.GetProjectProjectIDRunnersRunnerIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDRunnersRunnerIDContextgets project runner.
-
-Do not use the deprecated [GetProjectProjectIDRunnersRunnerIDParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDRunnersRunnerIDContext gets project runner.
+//
+// Do not use the deprecated [GetProjectProjectIDRunnersRunnerIDParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDRunnersRunnerIDContext(ctx context.Context, params *GetProjectProjectIDRunnersRunnerIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDRunnersRunnerIDOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -666,17 +636,15 @@ func (a *Client) GetProjectProjectIDRunnersRunnerIDContext(ctx context.Context, 
 	panic(msg)
 }
 
-/*
-GetRunnerTagsgets global runner tags.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetRunnerTagsContext] instead.
-*/
+// GetRunnerTags gets global runner tags.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetRunnerTagsContext] instead.
 func (a *Client) GetRunnerTags(params *GetRunnerTagsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetRunnerTagsOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -685,11 +653,9 @@ func (a *Client) GetRunnerTags(params *GetRunnerTagsParams, authInfo runtime.Cli
 	return a.GetRunnerTagsContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetRunnerTagsContextgets global runner tags.
-
-Do not use the deprecated [GetRunnerTagsParams.Context] with this method: it would be ignored.
-*/
+// GetRunnerTagsContext gets global runner tags.
+//
+// Do not use the deprecated [GetRunnerTagsParams.Context] with this method: it would be ignored.
 func (a *Client) GetRunnerTagsContext(ctx context.Context, params *GetRunnerTagsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetRunnerTagsOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -733,17 +699,15 @@ func (a *Client) GetRunnerTagsContext(ctx context.Context, params *GetRunnerTags
 	panic(msg)
 }
 
-/*
-GetRunnersgets all global runners.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetRunnersContext] instead.
-*/
+// GetRunners gets all global runners.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetRunnersContext] instead.
 func (a *Client) GetRunners(params *GetRunnersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetRunnersOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -752,11 +716,9 @@ func (a *Client) GetRunners(params *GetRunnersParams, authInfo runtime.ClientAut
 	return a.GetRunnersContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetRunnersContextgets all global runners.
-
-Do not use the deprecated [GetRunnersParams.Context] with this method: it would be ignored.
-*/
+// GetRunnersContext gets all global runners.
+//
+// Do not use the deprecated [GetRunnersParams.Context] with this method: it would be ignored.
 func (a *Client) GetRunnersContext(ctx context.Context, params *GetRunnersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetRunnersOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -800,17 +762,15 @@ func (a *Client) GetRunnersContext(ctx context.Context, params *GetRunnersParams
 	panic(msg)
 }
 
-/*
-GetRunnersRunnerIDgets global runner.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetRunnersRunnerIDContext] instead.
-*/
+// GetRunnersRunnerID gets global runner.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetRunnersRunnerIDContext] instead.
 func (a *Client) GetRunnersRunnerID(params *GetRunnersRunnerIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetRunnersRunnerIDOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -819,11 +779,9 @@ func (a *Client) GetRunnersRunnerID(params *GetRunnersRunnerIDParams, authInfo r
 	return a.GetRunnersRunnerIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetRunnersRunnerIDContextgets global runner.
-
-Do not use the deprecated [GetRunnersRunnerIDParams.Context] with this method: it would be ignored.
-*/
+// GetRunnersRunnerIDContext gets global runner.
+//
+// Do not use the deprecated [GetRunnersRunnerIDParams.Context] with this method: it would be ignored.
 func (a *Client) GetRunnersRunnerIDContext(ctx context.Context, params *GetRunnersRunnerIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetRunnersRunnerIDOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -867,17 +825,15 @@ func (a *Client) GetRunnersRunnerIDContext(ctx context.Context, params *GetRunne
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDRunnersadds project runner.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDRunnersContext] instead.
-*/
+// PostProjectProjectIDRunners adds project runner.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDRunnersContext] instead.
 func (a *Client) PostProjectProjectIDRunners(params *PostProjectProjectIDRunnersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDRunnersCreated, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -886,11 +842,9 @@ func (a *Client) PostProjectProjectIDRunners(params *PostProjectProjectIDRunners
 	return a.PostProjectProjectIDRunnersContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDRunnersContextadds project runner.
-
-Do not use the deprecated [PostProjectProjectIDRunnersParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDRunnersContext adds project runner.
+//
+// Do not use the deprecated [PostProjectProjectIDRunnersParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDRunnersContext(ctx context.Context, params *PostProjectProjectIDRunnersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDRunnersCreated, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -934,17 +888,15 @@ func (a *Client) PostProjectProjectIDRunnersContext(ctx context.Context, params 
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDRunnersRunnerIDActivesets project runner active state.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDRunnersRunnerIDActiveContext] instead.
-*/
+// PostProjectProjectIDRunnersRunnerIDActive sets project runner active state.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDRunnersRunnerIDActiveContext] instead.
 func (a *Client) PostProjectProjectIDRunnersRunnerIDActive(params *PostProjectProjectIDRunnersRunnerIDActiveParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDRunnersRunnerIDActiveNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -953,11 +905,9 @@ func (a *Client) PostProjectProjectIDRunnersRunnerIDActive(params *PostProjectPr
 	return a.PostProjectProjectIDRunnersRunnerIDActiveContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDRunnersRunnerIDActiveContextsets project runner active state.
-
-Do not use the deprecated [PostProjectProjectIDRunnersRunnerIDActiveParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDRunnersRunnerIDActiveContext sets project runner active state.
+//
+// Do not use the deprecated [PostProjectProjectIDRunnersRunnerIDActiveParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDRunnersRunnerIDActiveContext(ctx context.Context, params *PostProjectProjectIDRunnersRunnerIDActiveParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDRunnersRunnerIDActiveNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1001,17 +951,15 @@ func (a *Client) PostProjectProjectIDRunnersRunnerIDActiveContext(ctx context.Co
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDRunnersRunnerIDRegistrationTokenregenerates the one time registration token of an unregistered project runner.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDRunnersRunnerIDRegistrationTokenContext] instead.
-*/
+// PostProjectProjectIDRunnersRunnerIDRegistrationToken regenerates the one time registration token of an unregistered project runner.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDRunnersRunnerIDRegistrationTokenContext] instead.
 func (a *Client) PostProjectProjectIDRunnersRunnerIDRegistrationToken(params *PostProjectProjectIDRunnersRunnerIDRegistrationTokenParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDRunnersRunnerIDRegistrationTokenOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1020,11 +968,9 @@ func (a *Client) PostProjectProjectIDRunnersRunnerIDRegistrationToken(params *Po
 	return a.PostProjectProjectIDRunnersRunnerIDRegistrationTokenContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDRunnersRunnerIDRegistrationTokenContextregenerates the one time registration token of an unregistered project runner.
-
-Do not use the deprecated [PostProjectProjectIDRunnersRunnerIDRegistrationTokenParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDRunnersRunnerIDRegistrationTokenContext regenerates the one time registration token of an unregistered project runner.
+//
+// Do not use the deprecated [PostProjectProjectIDRunnersRunnerIDRegistrationTokenParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDRunnersRunnerIDRegistrationTokenContext(ctx context.Context, params *PostProjectProjectIDRunnersRunnerIDRegistrationTokenParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDRunnersRunnerIDRegistrationTokenOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1068,17 +1014,15 @@ func (a *Client) PostProjectProjectIDRunnersRunnerIDRegistrationTokenContext(ctx
 	panic(msg)
 }
 
-/*
-PostRunnersadds global runner.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostRunnersContext] instead.
-*/
+// PostRunners adds global runner.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostRunnersContext] instead.
 func (a *Client) PostRunners(params *PostRunnersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostRunnersCreated, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1087,11 +1031,9 @@ func (a *Client) PostRunners(params *PostRunnersParams, authInfo runtime.ClientA
 	return a.PostRunnersContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostRunnersContextadds global runner.
-
-Do not use the deprecated [PostRunnersParams.Context] with this method: it would be ignored.
-*/
+// PostRunnersContext adds global runner.
+//
+// Do not use the deprecated [PostRunnersParams.Context] with this method: it would be ignored.
 func (a *Client) PostRunnersContext(ctx context.Context, params *PostRunnersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostRunnersCreated, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1135,17 +1077,15 @@ func (a *Client) PostRunnersContext(ctx context.Context, params *PostRunnersPara
 	panic(msg)
 }
 
-/*
-PostRunnersRunnerIDActivesets global runner active state.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostRunnersRunnerIDActiveContext] instead.
-*/
+// PostRunnersRunnerIDActive sets global runner active state.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostRunnersRunnerIDActiveContext] instead.
 func (a *Client) PostRunnersRunnerIDActive(params *PostRunnersRunnerIDActiveParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostRunnersRunnerIDActiveNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1154,11 +1094,9 @@ func (a *Client) PostRunnersRunnerIDActive(params *PostRunnersRunnerIDActivePara
 	return a.PostRunnersRunnerIDActiveContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostRunnersRunnerIDActiveContextsets global runner active state.
-
-Do not use the deprecated [PostRunnersRunnerIDActiveParams.Context] with this method: it would be ignored.
-*/
+// PostRunnersRunnerIDActiveContext sets global runner active state.
+//
+// Do not use the deprecated [PostRunnersRunnerIDActiveParams.Context] with this method: it would be ignored.
 func (a *Client) PostRunnersRunnerIDActiveContext(ctx context.Context, params *PostRunnersRunnerIDActiveParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostRunnersRunnerIDActiveNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1202,17 +1140,15 @@ func (a *Client) PostRunnersRunnerIDActiveContext(ctx context.Context, params *P
 	panic(msg)
 }
 
-/*
-PostRunnersRunnerIDRegistrationTokenregenerates the one time registration token of an unregistered global runner.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostRunnersRunnerIDRegistrationTokenContext] instead.
-*/
+// PostRunnersRunnerIDRegistrationToken regenerates the one time registration token of an unregistered global runner.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostRunnersRunnerIDRegistrationTokenContext] instead.
 func (a *Client) PostRunnersRunnerIDRegistrationToken(params *PostRunnersRunnerIDRegistrationTokenParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostRunnersRunnerIDRegistrationTokenOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1221,11 +1157,9 @@ func (a *Client) PostRunnersRunnerIDRegistrationToken(params *PostRunnersRunnerI
 	return a.PostRunnersRunnerIDRegistrationTokenContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostRunnersRunnerIDRegistrationTokenContextregenerates the one time registration token of an unregistered global runner.
-
-Do not use the deprecated [PostRunnersRunnerIDRegistrationTokenParams.Context] with this method: it would be ignored.
-*/
+// PostRunnersRunnerIDRegistrationTokenContext regenerates the one time registration token of an unregistered global runner.
+//
+// Do not use the deprecated [PostRunnersRunnerIDRegistrationTokenParams.Context] with this method: it would be ignored.
 func (a *Client) PostRunnersRunnerIDRegistrationTokenContext(ctx context.Context, params *PostRunnersRunnerIDRegistrationTokenParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostRunnersRunnerIDRegistrationTokenOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1269,17 +1203,15 @@ func (a *Client) PostRunnersRunnerIDRegistrationTokenContext(ctx context.Context
 	panic(msg)
 }
 
-/*
-PutProjectProjectIDRunnersRunnerIDupdates project runner.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PutProjectProjectIDRunnersRunnerIDContext] instead.
-*/
+// PutProjectProjectIDRunnersRunnerID updates project runner.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PutProjectProjectIDRunnersRunnerIDContext] instead.
 func (a *Client) PutProjectProjectIDRunnersRunnerID(params *PutProjectProjectIDRunnersRunnerIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDRunnersRunnerIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1288,11 +1220,9 @@ func (a *Client) PutProjectProjectIDRunnersRunnerID(params *PutProjectProjectIDR
 	return a.PutProjectProjectIDRunnersRunnerIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PutProjectProjectIDRunnersRunnerIDContextupdates project runner.
-
-Do not use the deprecated [PutProjectProjectIDRunnersRunnerIDParams.Context] with this method: it would be ignored.
-*/
+// PutProjectProjectIDRunnersRunnerIDContext updates project runner.
+//
+// Do not use the deprecated [PutProjectProjectIDRunnersRunnerIDParams.Context] with this method: it would be ignored.
 func (a *Client) PutProjectProjectIDRunnersRunnerIDContext(ctx context.Context, params *PutProjectProjectIDRunnersRunnerIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDRunnersRunnerIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1336,17 +1266,15 @@ func (a *Client) PutProjectProjectIDRunnersRunnerIDContext(ctx context.Context, 
 	panic(msg)
 }
 
-/*
-PutRunnersRunnerIDupdates global runner.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PutRunnersRunnerIDContext] instead.
-*/
+// PutRunnersRunnerID updates global runner.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PutRunnersRunnerIDContext] instead.
 func (a *Client) PutRunnersRunnerID(params *PutRunnersRunnerIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutRunnersRunnerIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1355,11 +1283,9 @@ func (a *Client) PutRunnersRunnerID(params *PutRunnersRunnerIDParams, authInfo r
 	return a.PutRunnersRunnerIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PutRunnersRunnerIDContextupdates global runner.
-
-Do not use the deprecated [PutRunnersRunnerIDParams.Context] with this method: it would be ignored.
-*/
+// PutRunnersRunnerIDContext updates global runner.
+//
+// Do not use the deprecated [PutRunnersRunnerIDParams.Context] with this method: it would be ignored.
 func (a *Client) PutRunnersRunnerIDContext(ctx context.Context, params *PutRunnersRunnerIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutRunnersRunnerIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {

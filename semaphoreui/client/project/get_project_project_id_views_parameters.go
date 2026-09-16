@@ -63,10 +63,9 @@ GetProjectProjectIDViewsParams contains all the parameters to send to the API en
 */
 type GetProjectProjectIDViewsParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

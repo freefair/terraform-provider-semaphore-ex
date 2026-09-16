@@ -63,16 +63,14 @@ DeleteProjectProjectIDRunnersRunnerIDParams contains all the parameters to send 
 */
 type DeleteProjectProjectIDRunnersRunnerIDParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* RunnerID.
-
-	   Project runner ID
-	*/
+	// RunnerID.
+	//
+	// Project runner ID
 	RunnerID int64
 
 	HTTPClient *http.Client

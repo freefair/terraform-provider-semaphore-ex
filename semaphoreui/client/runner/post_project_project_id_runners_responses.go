@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // PostProjectProjectIDRunnersReader is a Reader for the PostProjectProjectIDRunners structure.
@@ -49,11 +49,9 @@ func NewPostProjectProjectIDRunnersCreated() *PostProjectProjectIDRunnersCreated
 	return &PostProjectProjectIDRunnersCreated{}
 }
 
-/*
-PostProjectProjectIDRunnersCreated describes a response with status code 201, with default header values.
-
-Runner created
-*/
+// PostProjectProjectIDRunnersCreated describes a response with status code 201, with default header values.
+//
+// Runner created
 type PostProjectProjectIDRunnersCreated struct {
 	Payload *models.RunnerWithToken
 }
@@ -119,11 +117,9 @@ func NewPostProjectProjectIDRunnersBadRequest() *PostProjectProjectIDRunnersBadR
 	return &PostProjectProjectIDRunnersBadRequest{}
 }
 
-/*
-PostProjectProjectIDRunnersBadRequest describes a response with status code 400, with default header values.
-
-Invalid request body or mismatched project ID
-*/
+// PostProjectProjectIDRunnersBadRequest describes a response with status code 400, with default header values.
+//
+// Invalid request body or mismatched project ID
 type PostProjectProjectIDRunnersBadRequest struct {
 }
 
@@ -175,11 +171,9 @@ func NewPostProjectProjectIDRunnersForbidden() *PostProjectProjectIDRunnersForbi
 	return &PostProjectProjectIDRunnersForbidden{}
 }
 
-/*
-PostProjectProjectIDRunnersForbidden describes a response with status code 403, with default header values.
-
-Plan does not allow adding more runners
-*/
+// PostProjectProjectIDRunnersForbidden describes a response with status code 403, with default header values.
+//
+// Plan does not allow adding more runners
 type PostProjectProjectIDRunnersForbidden struct {
 }
 

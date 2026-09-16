@@ -3,8 +3,12 @@
 package schedule
 
 import (
+	"encoding/json"
+	stderrors "errors"
 	"fmt"
+	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 )
@@ -17,6 +21,12 @@ type PutProjectProjectIDSchedulesScheduleIDReader struct {
 // ReadResponse reads a server response into the received o.
 func (o *PutProjectProjectIDSchedulesScheduleIDReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (any, error) {
 	switch response.Code() {
+	case 200:
+		result := NewPutProjectProjectIDSchedulesScheduleIDOK()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return result, nil
 	case 204:
 		result := NewPutProjectProjectIDSchedulesScheduleIDNoContent()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -28,16 +38,82 @@ func (o *PutProjectProjectIDSchedulesScheduleIDReader) ReadResponse(response run
 	}
 }
 
+// NewPutProjectProjectIDSchedulesScheduleIDOK creates a PutProjectProjectIDSchedulesScheduleIDOK with default headers values
+func NewPutProjectProjectIDSchedulesScheduleIDOK() *PutProjectProjectIDSchedulesScheduleIDOK {
+	return &PutProjectProjectIDSchedulesScheduleIDOK{}
+}
+
+// PutProjectProjectIDSchedulesScheduleIDOK describes a response with status code 200, with default header values.
+//
+// schedule updated
+type PutProjectProjectIDSchedulesScheduleIDOK struct {
+	Payload *models.Schedule
+}
+
+// IsSuccess returns true when this put project project Id schedules schedule Id o k response has a 2xx status code
+func (o *PutProjectProjectIDSchedulesScheduleIDOK) IsSuccess() bool {
+	return true
+}
+
+// IsRedirect returns true when this put project project Id schedules schedule Id o k response has a 3xx status code
+func (o *PutProjectProjectIDSchedulesScheduleIDOK) IsRedirect() bool {
+	return false
+}
+
+// IsClientError returns true when this put project project Id schedules schedule Id o k response has a 4xx status code
+func (o *PutProjectProjectIDSchedulesScheduleIDOK) IsClientError() bool {
+	return false
+}
+
+// IsServerError returns true when this put project project Id schedules schedule Id o k response has a 5xx status code
+func (o *PutProjectProjectIDSchedulesScheduleIDOK) IsServerError() bool {
+	return false
+}
+
+// IsCode returns true when this put project project Id schedules schedule Id o k response a status code equal to that given
+func (o *PutProjectProjectIDSchedulesScheduleIDOK) IsCode(code int) bool {
+	return code == 200
+}
+
+// Code gets the status code for the put project project Id schedules schedule Id o k response
+func (o *PutProjectProjectIDSchedulesScheduleIDOK) Code() int {
+	return 200
+}
+
+func (o *PutProjectProjectIDSchedulesScheduleIDOK) Error() string {
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[PUT /project/{project_id}/schedules/{schedule_id}][%d] putProjectProjectIdSchedulesScheduleIdOK %s", 200, payload)
+}
+
+func (o *PutProjectProjectIDSchedulesScheduleIDOK) String() string {
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[PUT /project/{project_id}/schedules/{schedule_id}][%d] putProjectProjectIdSchedulesScheduleIdOK %s", 200, payload)
+}
+
+func (o *PutProjectProjectIDSchedulesScheduleIDOK) GetPayload() *models.Schedule {
+	return o.Payload
+}
+
+func (o *PutProjectProjectIDSchedulesScheduleIDOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	o.Payload = new(models.Schedule)
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && !stderrors.Is(err, io.EOF) {
+		return err
+	}
+
+	return nil
+}
+
 // NewPutProjectProjectIDSchedulesScheduleIDNoContent creates a PutProjectProjectIDSchedulesScheduleIDNoContent with default headers values
 func NewPutProjectProjectIDSchedulesScheduleIDNoContent() *PutProjectProjectIDSchedulesScheduleIDNoContent {
 	return &PutProjectProjectIDSchedulesScheduleIDNoContent{}
 }
 
-/*
-PutProjectProjectIDSchedulesScheduleIDNoContent describes a response with status code 204, with default header values.
-
-schedule updated
-*/
+// PutProjectProjectIDSchedulesScheduleIDNoContent describes a response with status code 204, with default header values.
+//
+// schedule updated (legacy server)
 type PutProjectProjectIDSchedulesScheduleIDNoContent struct {
 }
 

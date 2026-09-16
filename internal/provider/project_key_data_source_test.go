@@ -8,41 +8,41 @@ import (
 
 func testAccProjectKeyDataSourceConfigByID() string {
 	return `
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "Project 1"
 }
 
-resource "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "None"
   none       = {}
 }
 
-data "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
-  id         = semaphoreui_project_key.test.id
-  depends_on = [semaphoreui_project_key.test]
+data "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
+  id         = semaphore_ex_project_key.test.id
+  depends_on = [semaphore_ex_project_key.test]
 }`
 }
 
 func testAccProjectKeyDataSourceConfigByName() string {
 	return `
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "Project 1"
 }
 
-resource "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Password"
   login_password = {
     password = "hello123"
   }
 }
 
-data "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+data "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Password"
-  depends_on = [semaphoreui_project_key.test]
+  depends_on = [semaphore_ex_project_key.test]
 }`
 }
 
@@ -54,12 +54,12 @@ func TestAcc_ProjectKeyDataSource_basicID(t *testing.T) {
 			{
 				Config: testAccProjectKeyDataSourceConfigByID(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_project_key.test", "name", "None"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_key.test", "none.%", "0"),
-					resource.TestCheckNoResourceAttr("data.semaphoreui_project_key.test", "login_password"),
-					resource.TestCheckNoResourceAttr("data.semaphoreui_project_key.test", "ssh"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_key.test", "id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_key.test", "project_id"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_key.test", "name", "None"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_key.test", "none.%", "0"),
+					resource.TestCheckNoResourceAttr("data.semaphore_ex_project_key.test", "login_password"),
+					resource.TestCheckNoResourceAttr("data.semaphore_ex_project_key.test", "ssh"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_key.test", "id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_key.test", "project_id"),
 				),
 			},
 		},
@@ -74,13 +74,13 @@ func TestAcc_ProjectKeyDataSource_basicName(t *testing.T) {
 			{
 				Config: testAccProjectKeyDataSourceConfigByName(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_project_key.test", "name", "Password"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_key.test", "login_password.%", "4"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_key.test", "login_password.password", ""),
-					resource.TestCheckNoResourceAttr("data.semaphoreui_project_key.test", "none"),
-					resource.TestCheckNoResourceAttr("data.semaphoreui_project_key.test", "ssh"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_key.test", "id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_key.test", "project_id"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_key.test", "name", "Password"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_key.test", "login_password.%", "4"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_key.test", "login_password.password", ""),
+					resource.TestCheckNoResourceAttr("data.semaphore_ex_project_key.test", "none"),
+					resource.TestCheckNoResourceAttr("data.semaphore_ex_project_key.test", "ssh"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_key.test", "id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_key.test", "project_id"),
 				),
 			},
 		},

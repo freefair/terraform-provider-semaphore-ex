@@ -8,26 +8,26 @@ import (
 
 func testAccProjectUserDataSourceConfig() string {
 	return `
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "Project 1"
 }
 
-resource "semaphoreui_user" "test" {
+resource "semaphore_ex_user" "test" {
   username = "test"
   name = "test name"
   email = "test@example.com"
 }
 
-resource "semaphoreui_project_user" "test" {
-  project_id = semaphoreui_project.test.id
-  user_id = semaphoreui_user.test.id
+resource "semaphore_ex_project_user" "test" {
+  project_id = semaphore_ex_project.test.id
+  user_id = semaphore_ex_user.test.id
   role = "task_runner"
 }
 
-data "semaphoreui_project_user" "test" {
-  project_id = semaphoreui_project.test.id
-  user_id = semaphoreui_user.test.id
-  depends_on = [semaphoreui_project_user.test]
+data "semaphore_ex_project_user" "test" {
+  project_id = semaphore_ex_project.test.id
+  user_id = semaphore_ex_user.test.id
+  depends_on = [semaphore_ex_project_user.test]
 }`
 }
 
@@ -40,9 +40,9 @@ func TestAcc_ProjectUserDataSource_basic(t *testing.T) {
 			{
 				Config: testAccProjectUserDataSourceConfig(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_project_user.test", "username", "test"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_user.test", "role", "task_runner"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_user.test", "name", "test name"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_user.test", "username", "test"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_user.test", "role", "task_runner"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_user.test", "name", "test name"),
 				),
 			},
 		},

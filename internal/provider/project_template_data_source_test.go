@@ -8,36 +8,36 @@ import (
 
 func testAccProjectTemplateDataSourceConfigByID() string {
 	return `
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "Project"
 }
 
-resource "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "None"
   none       = {}
 }
 
-resource "semaphoreui_project_repository" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_repository" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Repo"
   url        = "git@github.com:example/test.git"
   branch     = "main"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
 }
 
-resource "semaphoreui_project_inventory" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_inventory" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Inventory"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
   file = {
     path          = "path/to/inventory"
-    repository_id = semaphoreui_project_repository.test.id
+    repository_id = semaphore_ex_project_repository.test.id
   }
 }
 
-resource "semaphoreui_project_environment" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_environment" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Environment"
   secrets = [{
     name  = "SECRET_ONE"
@@ -46,18 +46,18 @@ resource "semaphoreui_project_environment" "test" {
   }]
 }
 
-resource "semaphoreui_project_view" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_view" "test" {
+  project_id = semaphore_ex_project.test.id
   title      = "Title"
   position   = 2
 }
 
 # Task Template
-resource "semaphoreui_project_template" "test" {
-  project_id     = semaphoreui_project.test.id
-  environment_id = semaphoreui_project_environment.test.id
-  inventory_id   = semaphoreui_project_inventory.test.id
-  repository_id  = semaphoreui_project_repository.test.id
+resource "semaphore_ex_project_template" "test" {
+  project_id     = semaphore_ex_project.test.id
+  environment_id = semaphore_ex_project_environment.test.id
+  inventory_id   = semaphore_ex_project_inventory.test.id
+  repository_id  = semaphore_ex_project_repository.test.id
   name           = "Test Template"
   playbook       = "playbook.yml"
   description    = "Description"
@@ -65,7 +65,7 @@ resource "semaphoreui_project_template" "test" {
     "--help",
     "--vvv",
   ]
-  view_id = semaphoreui_project_view.test.id
+  view_id = semaphore_ex_project_view.test.id
   allow_override_args_in_task = true
 
   survey_vars = [{
@@ -86,7 +86,7 @@ resource "semaphoreui_project_template" "test" {
   vaults = [{
     name = "" # default vault
     password = {
-      vault_key_id = semaphoreui_project_key.test.id
+      vault_key_id = semaphore_ex_project_key.test.id
     }
     }, {
     name = "database"
@@ -96,44 +96,44 @@ resource "semaphoreui_project_template" "test" {
   }]
 }
 
-data "semaphoreui_project_template" "test" {
-  project_id = semaphoreui_project.test.id
-  id         = semaphoreui_project_template.test.id
+data "semaphore_ex_project_template" "test" {
+  project_id = semaphore_ex_project.test.id
+  id         = semaphore_ex_project_template.test.id
 }`
 }
 
 func testAccProjectTemplateDataSourceConfigByName() string {
 	return `
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "Project"
 }
 
-resource "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "None"
   none       = {}
 }
 
-resource "semaphoreui_project_repository" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_repository" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Repo"
   url        = "git@github.com:example/test.git"
   branch     = "main"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
 }
 
-resource "semaphoreui_project_inventory" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_inventory" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Inventory"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
   file = {
     path          = "path/to/inventory"
-    repository_id = semaphoreui_project_repository.test.id
+    repository_id = semaphore_ex_project_repository.test.id
   }
 }
 
-resource "semaphoreui_project_environment" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_environment" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Environment"
   secrets = [{
     name  = "SECRET_ONE"
@@ -143,11 +143,11 @@ resource "semaphoreui_project_environment" "test" {
 }
 
 # Task Template
-resource "semaphoreui_project_template" "test" {
-  project_id     = semaphoreui_project.test.id
-  environment_id = semaphoreui_project_environment.test.id
-  inventory_id   = semaphoreui_project_inventory.test.id
-  repository_id  = semaphoreui_project_repository.test.id
+resource "semaphore_ex_project_template" "test" {
+  project_id     = semaphore_ex_project.test.id
+  environment_id = semaphore_ex_project_environment.test.id
+  inventory_id   = semaphore_ex_project_inventory.test.id
+  repository_id  = semaphore_ex_project_repository.test.id
   name           = "Build Template"
   playbook       = "playbook.yml"
   description    = "Description"
@@ -156,10 +156,10 @@ resource "semaphoreui_project_template" "test" {
   }
 }
 
-data "semaphoreui_project_template" "test" {
-  project_id = semaphoreui_project.test.id
+data "semaphore_ex_project_template" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Build Template"
-  depends_on = [semaphoreui_project_template.test]
+  depends_on = [semaphore_ex_project_template.test]
 }`
 }
 
@@ -171,21 +171,21 @@ func TestAcc_ProjectTemplateDataSource_basicID(t *testing.T) {
 			{
 				Config: testAccProjectTemplateDataSourceConfigByID(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "name", "Test Template"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "app", "ansible"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "playbook", "playbook.yml"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "description", "Description"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "arguments.#", "2"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "survey_vars.#", "2"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "vaults.#", "2"),
-					resource.TestCheckNoResourceAttr("data.semaphoreui_project_template.test", "build"),
-					resource.TestCheckNoResourceAttr("data.semaphoreui_project_template.test", "deploy"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_template.test", "id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_template.test", "project_id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_template.test", "environment_id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_template.test", "repository_id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_template.test", "inventory_id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_template.test", "view_id"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "name", "Test Template"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "app", "ansible"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "playbook", "playbook.yml"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "description", "Description"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "arguments.#", "2"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "survey_vars.#", "2"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "vaults.#", "2"),
+					resource.TestCheckNoResourceAttr("data.semaphore_ex_project_template.test", "build"),
+					resource.TestCheckNoResourceAttr("data.semaphore_ex_project_template.test", "deploy"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_template.test", "id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_template.test", "project_id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_template.test", "environment_id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_template.test", "repository_id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_template.test", "inventory_id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_template.test", "view_id"),
 				),
 			},
 		},
@@ -200,22 +200,22 @@ func TestAcc_ProjectTemplateDataSource_basicName(t *testing.T) {
 			{
 				Config: testAccProjectTemplateDataSourceConfigByName(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "name", "Build Template"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "app", "ansible"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "playbook", "playbook.yml"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "description", "Description"),
-					resource.TestCheckNoResourceAttr("data.semaphoreui_project_template.test", "arguments"),
-					resource.TestCheckNoResourceAttr("data.semaphoreui_project_template.test", "survey_vars"),
-					resource.TestCheckNoResourceAttr("data.semaphoreui_project_template.test", "vaults"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "build.%", "1"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_template.test", "build.start_version", "1.0.0"),
-					resource.TestCheckNoResourceAttr("data.semaphoreui_project_template.test", "deploy"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_template.test", "id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_template.test", "project_id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_template.test", "environment_id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_template.test", "repository_id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_template.test", "inventory_id"),
-					resource.TestCheckNoResourceAttr("data.semaphoreui_project_template.test", "view_id"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "name", "Build Template"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "app", "ansible"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "playbook", "playbook.yml"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "description", "Description"),
+					resource.TestCheckNoResourceAttr("data.semaphore_ex_project_template.test", "arguments"),
+					resource.TestCheckNoResourceAttr("data.semaphore_ex_project_template.test", "survey_vars"),
+					resource.TestCheckNoResourceAttr("data.semaphore_ex_project_template.test", "vaults"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "build.%", "1"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_template.test", "build.start_version", "1.0.0"),
+					resource.TestCheckNoResourceAttr("data.semaphore_ex_project_template.test", "deploy"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_template.test", "id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_template.test", "project_id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_template.test", "environment_id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_template.test", "repository_id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_template.test", "inventory_id"),
+					resource.TestCheckNoResourceAttr("data.semaphore_ex_project_template.test", "view_id"),
 				),
 			},
 		},

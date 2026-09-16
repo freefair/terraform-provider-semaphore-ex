@@ -15,7 +15,7 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	"terraform-provider-semaphoreui/semaphoreui/models"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 )
 
 // PostProjectProjectIDTasksReader is a Reader for the PostProjectProjectIDTasks structure.

@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetEventsReader is a Reader for the GetEvents structure.
@@ -37,11 +37,9 @@ func NewGetEventsOK() *GetEventsOK {
 	return &GetEventsOK{}
 }
 
-/*
-GetEventsOK describes a response with status code 200, with default header values.
-
-Array of events in chronological order
-*/
+// GetEventsOK describes a response with status code 200, with default header values.
+//
+// Array of events in chronological order
 type GetEventsOK struct {
 	Payload []*models.Event
 }

@@ -2,10 +2,10 @@ package provider
 
 import (
 	"fmt"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/project"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"strconv"
-	"terraform-provider-semaphoreui/semaphoreui/client/project"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -34,7 +34,7 @@ func testAccProjectExists(resourceName string) resource.TestCheckFunc {
 
 func testAccProjectConfig(projectNameSuffix string, projectExtras string) string {
 	return fmt.Sprintf(`
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "test-%[1]s"
   %[2]s
 }`, projectNameSuffix, projectExtras)
@@ -62,22 +62,22 @@ func TestAcc_ProjectResource_basic(t *testing.T) {
 				Config: testAccProjectConfig(projectNameSuffix, `alert = false
 max_parallel_tasks = 0`),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectExists("semaphoreui_project.test"),
-					resource.TestCheckResourceAttr("semaphoreui_project.test", "name", fmt.Sprintf("test-%s", projectNameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project.test", "alert", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_project.test", "max_parallel_tasks", "0"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project.test", "created"),
+					testAccProjectExists("semaphore_ex_project.test"),
+					resource.TestCheckResourceAttr("semaphore_ex_project.test", "name", fmt.Sprintf("test-%s", projectNameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project.test", "alert", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project.test", "max_parallel_tasks", "0"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project.test", "created"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project.test",
+				ResourceName:      "semaphore_ex_project.test",
 				ImportState:       true,
 				ImportStateVerify: true,
 				// API returns different timestamp format between create and read, so just ignore it
 				ImportStateVerifyIgnore: []string{"created"},
-				ImportStateIdFunc:       testAccProjectImportID("semaphoreui_project.test"),
+				ImportStateIdFunc:       testAccProjectImportID("semaphore_ex_project.test"),
 			},
 			// Update and Read testing
 			{
@@ -85,10 +85,10 @@ max_parallel_tasks = 0`),
 max_parallel_tasks = 2
 alert_chat = "testing"`),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("semaphoreui_project.test", "name", fmt.Sprintf("test-%s", projectNameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project.test", "alert", "true"),
-					resource.TestCheckResourceAttr("semaphoreui_project.test", "alert_chat", "testing"),
-					resource.TestCheckResourceAttr("semaphoreui_project.test", "max_parallel_tasks", "2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project.test", "name", fmt.Sprintf("test-%s", projectNameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project.test", "alert", "true"),
+					resource.TestCheckResourceAttr("semaphore_ex_project.test", "alert_chat", "testing"),
+					resource.TestCheckResourceAttr("semaphore_ex_project.test", "max_parallel_tasks", "2"),
 				),
 			},
 		},

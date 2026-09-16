@@ -63,24 +63,21 @@ GetProjectProjectIDRepositoriesParams contains all the parameters to send to the
 */
 type GetProjectProjectIDRepositoriesParams struct {
 
-	/* Order.
-
-	   ordering manner
-
-	   Format: asc/desc
-	*/
+	// Order.
+	//
+	// ordering manner
+	//
+	// Format: asc/desc
 	Order string
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* Sort.
-
-	   sorting name
-	*/
+	// Sort.
+	//
+	// sorting name
 	Sort string
 
 	HTTPClient *http.Client

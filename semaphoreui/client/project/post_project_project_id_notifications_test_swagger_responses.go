@@ -33,11 +33,9 @@ func NewPostProjectProjectIDNotificationsTestConflict() *PostProjectProjectIDNot
 	return &PostProjectProjectIDNotificationsTestConflict{}
 }
 
-/*
-PostProjectProjectIDNotificationsTestConflict describes a response with status code 409, with default header values.
-
-Alerts not enabled for the project
-*/
+// PostProjectProjectIDNotificationsTestConflict describes a response with status code 409, with default header values.
+//
+// Alerts not enabled for the project
 type PostProjectProjectIDNotificationsTestConflict struct {
 }
 

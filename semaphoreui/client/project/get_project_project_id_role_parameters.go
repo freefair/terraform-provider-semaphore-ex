@@ -63,10 +63,9 @@ GetProjectProjectIDRoleParams contains all the parameters to send to the API end
 */
 type GetProjectProjectIDRoleParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

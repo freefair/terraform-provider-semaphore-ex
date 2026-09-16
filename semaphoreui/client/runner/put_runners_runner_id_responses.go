@@ -39,11 +39,9 @@ func NewPutRunnersRunnerIDNoContent() *PutRunnersRunnerIDNoContent {
 	return &PutRunnersRunnerIDNoContent{}
 }
 
-/*
-PutRunnersRunnerIDNoContent describes a response with status code 204, with default header values.
-
-Runner updated
-*/
+// PutRunnersRunnerIDNoContent describes a response with status code 204, with default header values.
+//
+// Runner updated
 type PutRunnersRunnerIDNoContent struct {
 }
 
@@ -95,11 +93,9 @@ func NewPutRunnersRunnerIDBadRequest() *PutRunnersRunnerIDBadRequest {
 	return &PutRunnersRunnerIDBadRequest{}
 }
 
-/*
-PutRunnersRunnerIDBadRequest describes a response with status code 400, with default header values.
-
-Runner not updated
-*/
+// PutRunnersRunnerIDBadRequest describes a response with status code 400, with default header values.
+//
+// Runner not updated
 type PutRunnersRunnerIDBadRequest struct {
 }
 

@@ -28,12 +28,12 @@ type TerraformTaskParams struct {
 }
 
 // Validate validates this terraform task params
-func (m *TerraformTaskParams) Validate(formats strfmt.Registry) error {
+func (m *TerraformTaskParams) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this terraform task params based on context it is used
-func (m *TerraformTaskParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *TerraformTaskParams) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

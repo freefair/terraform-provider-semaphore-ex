@@ -63,10 +63,9 @@ DeleteProjectProjectIDParams contains all the parameters to send to the API endp
 */
 type DeleteProjectProjectIDParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

@@ -66,10 +66,9 @@ type PostProjectProjectIDUsersParams struct {
 	// User.
 	User PostProjectProjectIDUsersBody
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

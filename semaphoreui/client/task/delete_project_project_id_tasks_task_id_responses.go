@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDTasksTaskIDNoContent() *DeleteProjectProjectIDTask
 	return &DeleteProjectProjectIDTasksTaskIDNoContent{}
 }
 
-/*
-DeleteProjectProjectIDTasksTaskIDNoContent describes a response with status code 204, with default header values.
-
-task deleted
-*/
+// DeleteProjectProjectIDTasksTaskIDNoContent describes a response with status code 204, with default header values.
+//
+// task deleted
 type DeleteProjectProjectIDTasksTaskIDNoContent struct {
 }
 

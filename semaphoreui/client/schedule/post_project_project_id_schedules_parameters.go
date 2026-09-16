@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag/conv"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // NewPostProjectProjectIDSchedulesParams creates a new PostProjectProjectIDSchedulesParams object,
@@ -64,10 +64,9 @@ PostProjectProjectIDSchedulesParams contains all the parameters to send to the A
 */
 type PostProjectProjectIDSchedulesParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	// Schedule.

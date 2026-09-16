@@ -44,9 +44,7 @@ func NewClientWithBearerToken(host, basePath, scheme, bearerToken string) Client
 	return &Client{transport: transport, formats: strfmt.Default}
 }
 
-/*
-Client for operations API.
-*/
+// Client for operations API.
 type Client struct {
 	transport runtime.ContextualTransport
 	formats   strfmt.Registry
@@ -126,17 +124,15 @@ type ClientService interface {
 	SetTransport(transport runtime.ContextualTransport)
 }
 
-/*
-GetAppsgets apps.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetAppsContext] instead.
-*/
+// GetApps gets apps.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetAppsContext] instead.
 func (a *Client) GetApps(params *GetAppsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetAppsOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -145,11 +141,9 @@ func (a *Client) GetApps(params *GetAppsParams, authInfo runtime.ClientAuthInfoW
 	return a.GetAppsContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetAppsContextgets apps.
-
-Do not use the deprecated [GetAppsParams.Context] with this method: it would be ignored.
-*/
+// GetAppsContext gets apps.
+//
+// Do not use the deprecated [GetAppsParams.Context] with this method: it would be ignored.
 func (a *Client) GetAppsContext(ctx context.Context, params *GetAppsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetAppsOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -193,17 +187,15 @@ func (a *Client) GetAppsContext(ctx context.Context, params *GetAppsParams, auth
 	panic(msg)
 }
 
-/*
-GetEventsgets events related to semaphore and projects you are part of.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetEventsContext] instead.
-*/
+// GetEvents gets events related to semaphore and projects you are part of.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetEventsContext] instead.
 func (a *Client) GetEvents(params *GetEventsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetEventsOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -212,11 +204,9 @@ func (a *Client) GetEvents(params *GetEventsParams, authInfo runtime.ClientAuthI
 	return a.GetEventsContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetEventsContextgets events related to semaphore and projects you are part of.
-
-Do not use the deprecated [GetEventsParams.Context] with this method: it would be ignored.
-*/
+// GetEventsContext gets events related to semaphore and projects you are part of.
+//
+// Do not use the deprecated [GetEventsParams.Context] with this method: it would be ignored.
 func (a *Client) GetEventsContext(ctx context.Context, params *GetEventsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetEventsOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -260,17 +250,15 @@ func (a *Client) GetEventsContext(ctx context.Context, params *GetEventsParams, 
 	panic(msg)
 }
 
-/*
-GetEventsLastgets last 200 events related to semaphore and projects you are part of.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetEventsLastContext] instead.
-*/
+// GetEventsLast gets last 200 events related to semaphore and projects you are part of.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetEventsLastContext] instead.
 func (a *Client) GetEventsLast(params *GetEventsLastParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetEventsLastOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -279,11 +267,9 @@ func (a *Client) GetEventsLast(params *GetEventsLastParams, authInfo runtime.Cli
 	return a.GetEventsLastContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetEventsLastContextgets last 200 events related to semaphore and projects you are part of.
-
-Do not use the deprecated [GetEventsLastParams.Context] with this method: it would be ignored.
-*/
+// GetEventsLastContext gets last 200 events related to semaphore and projects you are part of.
+//
+// Do not use the deprecated [GetEventsLastParams.Context] with this method: it would be ignored.
 func (a *Client) GetEventsLastContext(ctx context.Context, params *GetEventsLastParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetEventsLastOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -327,19 +313,17 @@ func (a *Client) GetEventsLastContext(ctx context.Context, params *GetEventsLast
 	panic(msg)
 }
 
-/*
-GetInfofetches information about semaphore.
-
-you must be authenticated to use this.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetInfoContext] instead.
-*/
+// GetInfo fetches information about semaphore.
+//
+// you must be authenticated to use this.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetInfoContext] instead.
 func (a *Client) GetInfo(params *GetInfoParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetInfoOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -348,13 +332,11 @@ func (a *Client) GetInfo(params *GetInfoParams, authInfo runtime.ClientAuthInfoW
 	return a.GetInfoContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetInfoContextfetches information about semaphore.
-
-you must be authenticated to use this.
-
-Do not use the deprecated [GetInfoParams.Context] with this method: it would be ignored.
-*/
+// GetInfoContext fetches information about semaphore.
+//
+// you must be authenticated to use this.
+//
+// Do not use the deprecated [GetInfoParams.Context] with this method: it would be ignored.
 func (a *Client) GetInfoContext(ctx context.Context, params *GetInfoParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetInfoOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -398,17 +380,15 @@ func (a *Client) GetInfoContext(ctx context.Context, params *GetInfoParams, auth
 	panic(msg)
 }
 
-/*
-GetPingps i n g test.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetPingContext] instead.
-*/
+// GetPing ps i n g test.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetPingContext] instead.
 func (a *Client) GetPing(params *GetPingParams, opts ...ClientOption) (*GetPingOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -417,11 +397,9 @@ func (a *Client) GetPing(params *GetPingParams, opts ...ClientOption) (*GetPingO
 	return a.GetPingContext(ctx, params, opts...)
 }
 
-/*
-GetPingContextps i n g test.
-
-Do not use the deprecated [GetPingParams.Context] with this method: it would be ignored.
-*/
+// GetPingContext ps i n g test.
+//
+// Do not use the deprecated [GetPingParams.Context] with this method: it would be ignored.
 func (a *Client) GetPingContext(ctx context.Context, params *GetPingParams, opts ...ClientOption) (*GetPingOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -464,17 +442,15 @@ func (a *Client) GetPingContext(ctx context.Context, params *GetPingParams, opts
 	panic(msg)
 }
 
-/*
-GetWswebsockets handler.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetWsContext] instead.
-*/
+// GetWs websockets handler.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetWsContext] instead.
 func (a *Client) GetWs(params *GetWsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetWsOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -483,11 +459,9 @@ func (a *Client) GetWs(params *GetWsParams, authInfo runtime.ClientAuthInfoWrite
 	return a.GetWsContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetWsContextwebsockets handler.
-
-Do not use the deprecated [GetWsParams.Context] with this method: it would be ignored.
-*/
+// GetWsContext websockets handler.
+//
+// Do not use the deprecated [GetWsParams.Context] with this method: it would be ignored.
 func (a *Client) GetWsContext(ctx context.Context, params *GetWsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetWsOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {

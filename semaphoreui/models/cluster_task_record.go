@@ -40,12 +40,12 @@ type ClusterTaskRecord struct {
 }
 
 // Validate validates this cluster task record
-func (m *ClusterTaskRecord) Validate(formats strfmt.Registry) error {
+func (m *ClusterTaskRecord) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this cluster task record based on context it is used
-func (m *ClusterTaskRecord) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *ClusterTaskRecord) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

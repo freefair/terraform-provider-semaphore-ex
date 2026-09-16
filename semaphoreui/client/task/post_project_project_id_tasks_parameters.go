@@ -63,10 +63,9 @@ PostProjectProjectIDTasksParams contains all the parameters to send to the API e
 */
 type PostProjectProjectIDTasksParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	// Task.

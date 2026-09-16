@@ -56,7 +56,7 @@ func (m *TaskOutput) validateTime(formats strfmt.Registry) error {
 }
 
 // ContextValidate validates this task output based on context it is used
-func (m *TaskOutput) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *TaskOutput) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

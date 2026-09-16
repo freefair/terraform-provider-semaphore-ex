@@ -39,11 +39,9 @@ func NewPutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent()
 	return &PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent{}
 }
 
-/*
-PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent describes a response with status code 204, with default header values.
-
-Integration Matcher updated
-*/
+// PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent describes a response with status code 204, with default header values.
+//
+// Integration Matcher updated
 type PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent struct {
 }
 
@@ -95,11 +93,9 @@ func NewPutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDBadRequest(
 	return &PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDBadRequest{}
 }
 
-/*
-PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDBadRequest describes a response with status code 400, with default header values.
-
-Bad integration matcher parameter
-*/
+// PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDBadRequest describes a response with status code 400, with default header values.
+//
+// Bad integration matcher parameter
 type PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDBadRequest struct {
 }
 

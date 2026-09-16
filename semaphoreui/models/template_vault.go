@@ -95,7 +95,7 @@ func (m *TemplateVault) validateType(formats strfmt.Registry) error {
 }
 
 // ContextValidate validates this template vault based on context it is used
-func (m *TemplateVault) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *TemplateVault) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

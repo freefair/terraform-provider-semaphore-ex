@@ -63,16 +63,14 @@ DeleteProjectProjectIDViewsViewIDParams contains all the parameters to send to t
 */
 type DeleteProjectProjectIDViewsViewIDParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* ViewID.
-
-	   view ID
-	*/
+	// ViewID.
+	//
+	// view ID
 	ViewID int64
 
 	HTTPClient *http.Client

@@ -8,12 +8,12 @@ import (
 
 func testAccProjectEnvironmentDataSourceConfig() string {
 	return `
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "Project 1"
 }
 
-resource "semaphoreui_project_environment" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_environment" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Test Environment"
 
   # extraVars
@@ -42,10 +42,10 @@ resource "semaphoreui_project_environment" "test" {
   }]
 }
 
-data "semaphoreui_project_environment" "test" {
-  project_id = semaphoreui_project.test.id
-  id         = semaphoreui_project_environment.test.id
-  depends_on = [semaphoreui_project_environment.test]
+data "semaphore_ex_project_environment" "test" {
+  project_id = semaphore_ex_project.test.id
+  id         = semaphore_ex_project_environment.test.id
+  depends_on = [semaphore_ex_project_environment.test]
 }`
 }
 
@@ -58,20 +58,20 @@ func TestAcc_ProjectEnvironmentDataSource_basic(t *testing.T) {
 			{
 				Config: testAccProjectEnvironmentDataSourceConfig(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "name", "Test Environment"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "variables.%", "2"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "variables.key1", "value1"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "variables.key2", "value2"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "environment.%", "2"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "environment.KEY1", "value1"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "environment.KEY2", "value2"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "secrets.#", "2"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "secrets.0.name", "key3"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "secrets.0.value", ""),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "secrets.0.type", "var"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "secrets.1.name", "KEY4"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "secrets.1.value", ""),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_environment.test", "secrets.1.type", "env"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "name", "Test Environment"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "variables.%", "2"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "variables.key1", "value1"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "variables.key2", "value2"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "environment.%", "2"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "environment.KEY1", "value1"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "environment.KEY2", "value2"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "secrets.#", "2"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "secrets.0.name", "key3"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "secrets.0.value", ""),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "secrets.0.type", "var"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "secrets.1.name", "KEY4"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "secrets.1.value", ""),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_environment.test", "secrets.1.type", "env"),
 				),
 			},
 		},

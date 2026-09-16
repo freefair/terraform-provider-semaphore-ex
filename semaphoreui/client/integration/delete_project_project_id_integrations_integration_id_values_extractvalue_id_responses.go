@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoCon
 	return &DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoContent{}
 }
 
-/*
-DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoContent describes a response with status code 204, with default header values.
-
-integration extract value removed
-*/
+// DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoContent describes a response with status code 204, with default header values.
+//
+// integration extract value removed
 type DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoContent struct {
 }
 

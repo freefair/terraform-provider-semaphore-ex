@@ -63,16 +63,14 @@ GetProjectProjectIDIntegrationsIntegrationIDValuesParams contains all the parame
 */
 type GetProjectProjectIDIntegrationsIntegrationIDValuesParams struct {
 
-	/* IntegrationID.
-
-	   integration ID
-	*/
+	// IntegrationID.
+	//
+	// integration ID
 	IntegrationID int64
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

@@ -39,11 +39,9 @@ func NewPostProjectProjectIDIntegrationsIntegrationIDValuesCreated() *PostProjec
 	return &PostProjectProjectIDIntegrationsIntegrationIDValuesCreated{}
 }
 
-/*
-PostProjectProjectIDIntegrationsIntegrationIDValuesCreated describes a response with status code 201, with default header values.
-
-Integration Extract Value Created
-*/
+// PostProjectProjectIDIntegrationsIntegrationIDValuesCreated describes a response with status code 201, with default header values.
+//
+// Integration Extract Value Created
 type PostProjectProjectIDIntegrationsIntegrationIDValuesCreated struct {
 }
 
@@ -95,11 +93,9 @@ func NewPostProjectProjectIDIntegrationsIntegrationIDValuesBadRequest() *PostPro
 	return &PostProjectProjectIDIntegrationsIntegrationIDValuesBadRequest{}
 }
 
-/*
-PostProjectProjectIDIntegrationsIntegrationIDValuesBadRequest describes a response with status code 400, with default header values.
-
-Bad Integration Extract Value params
-*/
+// PostProjectProjectIDIntegrationsIntegrationIDValuesBadRequest describes a response with status code 400, with default header values.
+//
+// Bad Integration Extract Value params
 type PostProjectProjectIDIntegrationsIntegrationIDValuesBadRequest struct {
 }
 

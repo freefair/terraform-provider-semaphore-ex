@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetProjectProjectIDTemplatesReader is a Reader for the GetProjectProjectIDTemplates structure.
@@ -37,11 +37,9 @@ func NewGetProjectProjectIDTemplatesOK() *GetProjectProjectIDTemplatesOK {
 	return &GetProjectProjectIDTemplatesOK{}
 }
 
-/*
-GetProjectProjectIDTemplatesOK describes a response with status code 200, with default header values.
-
-template
-*/
+// GetProjectProjectIDTemplatesOK describes a response with status code 200, with default header values.
+//
+// template
 type GetProjectProjectIDTemplatesOK struct {
 	Payload []*models.Template
 }

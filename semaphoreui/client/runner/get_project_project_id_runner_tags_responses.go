@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetProjectProjectIDRunnerTagsReader is a Reader for the GetProjectProjectIDRunnerTags structure.
@@ -37,11 +37,9 @@ func NewGetProjectProjectIDRunnerTagsOK() *GetProjectProjectIDRunnerTagsOK {
 	return &GetProjectProjectIDRunnerTagsOK{}
 }
 
-/*
-GetProjectProjectIDRunnerTagsOK describes a response with status code 200, with default header values.
-
-Runner tags
-*/
+// GetProjectProjectIDRunnerTagsOK describes a response with status code 200, with default header values.
+//
+// Runner tags
 type GetProjectProjectIDRunnerTagsOK struct {
 	Payload []*models.RunnerTag
 }

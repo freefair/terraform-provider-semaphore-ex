@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDInventoryInventoryIDNoContent() *DeleteProjectProj
 	return &DeleteProjectProjectIDInventoryInventoryIDNoContent{}
 }
 
-/*
-DeleteProjectProjectIDInventoryInventoryIDNoContent describes a response with status code 204, with default header values.
-
-inventory removed
-*/
+// DeleteProjectProjectIDInventoryInventoryIDNoContent describes a response with status code 204, with default header values.
+//
+// inventory removed
 type DeleteProjectProjectIDInventoryInventoryIDNoContent struct {
 }
 

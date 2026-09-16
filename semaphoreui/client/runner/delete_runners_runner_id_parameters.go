@@ -63,10 +63,9 @@ DeleteRunnersRunnerIDParams contains all the parameters to send to the API endpo
 */
 type DeleteRunnersRunnerIDParams struct {
 
-	/* RunnerID.
-
-	   Global runner ID
-	*/
+	// RunnerID.
+	//
+	// Global runner ID
 	RunnerID int64
 
 	HTTPClient *http.Client

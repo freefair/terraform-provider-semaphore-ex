@@ -66,16 +66,14 @@ type PostProjectProjectIDTemplatesTemplateIDStopAllTasksParams struct {
 	// Body.
 	Body PostProjectProjectIDTemplatesTemplateIDStopAllTasksBody
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* TemplateID.
-
-	   template ID
-	*/
+	// TemplateID.
+	//
+	// template ID
 	TemplateID int64
 
 	HTTPClient *http.Client

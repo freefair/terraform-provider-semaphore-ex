@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // PostUserOptionsReader is a Reader for the PostUserOptions structure.
@@ -43,11 +43,9 @@ func NewPostUserOptionsOK() *PostUserOptionsOK {
 	return &PostUserOptionsOK{}
 }
 
-/*
-PostUserOptionsOK describes a response with status code 200, with default header values.
-
-Stored option
-*/
+// PostUserOptionsOK describes a response with status code 200, with default header values.
+//
+// Stored option
 type PostUserOptionsOK struct {
 	Payload *models.Option
 }
@@ -113,11 +111,9 @@ func NewPostUserOptionsBadRequest() *PostUserOptionsBadRequest {
 	return &PostUserOptionsBadRequest{}
 }
 
-/*
-PostUserOptionsBadRequest describes a response with status code 400, with default header values.
-
-Unknown user option key
-*/
+// PostUserOptionsBadRequest describes a response with status code 400, with default header values.
+//
+// Unknown user option key
 type PostUserOptionsBadRequest struct {
 }
 

@@ -33,11 +33,9 @@ func NewPostAuthLogoutNoContent() *PostAuthLogoutNoContent {
 	return &PostAuthLogoutNoContent{}
 }
 
-/*
-PostAuthLogoutNoContent describes a response with status code 204, with default header values.
-
-Your session was successfully nuked
-*/
+// PostAuthLogoutNoContent describes a response with status code 204, with default header values.
+//
+// Your session was successfully nuked
 type PostAuthLogoutNoContent struct {
 }
 

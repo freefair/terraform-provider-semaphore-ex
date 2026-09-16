@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetUserTokensReader is a Reader for the GetUserTokens structure.
@@ -37,11 +37,9 @@ func NewGetUserTokensOK() *GetUserTokensOK {
 	return &GetUserTokensOK{}
 }
 
-/*
-GetUserTokensOK describes a response with status code 200, with default header values.
-
-API Tokens
-*/
+// GetUserTokensOK describes a response with status code 200, with default header values.
+//
+// API Tokens
 type GetUserTokensOK struct {
 	Payload []*models.APIToken
 }

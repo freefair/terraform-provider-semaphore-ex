@@ -4,15 +4,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/mapvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	schemaD "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	schemaR "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	superschema "github.com/orange-cloudavenue/terraform-plugin-framework-superschema"
@@ -21,12 +25,18 @@ import (
 
 type (
 	ProjectTemplateModel struct {
-		ID            types.Int64 `tfsdk:"id"`
-		ProjectID     types.Int64 `tfsdk:"project_id"`
-		EnvironmentID types.Int64 `tfsdk:"environment_id"`
-		InventoryID   types.Int64 `tfsdk:"inventory_id"`
-		RepositoryID  types.Int64 `tfsdk:"repository_id"`
-		ViewID        types.Int64 `tfsdk:"view_id"`
+		ID                  types.Int64  `tfsdk:"id"`
+		ProjectID           types.Int64  `tfsdk:"project_id"`
+		EnvironmentID       types.Int64  `tfsdk:"environment_id"`
+		EnvironmentIDs      types.Set    `tfsdk:"environment_ids"`
+		WorkingDirectory    types.String `tfsdk:"working_directory"`
+		ExecutorImage       types.String `tfsdk:"executor_image"`
+		SuppressErrorAlerts types.Bool   `tfsdk:"suppress_error_alerts"`
+		RunnerTags          types.Set    `tfsdk:"runner_tags"`
+		RunnerTagMatchMode  types.String `tfsdk:"runner_tag_match_mode"`
+		InventoryID         types.Int64  `tfsdk:"inventory_id"`
+		RepositoryID        types.Int64  `tfsdk:"repository_id"`
+		ViewID              types.Int64  `tfsdk:"view_id"`
 
 		Name                    types.String `tfsdk:"name"`
 		Description             types.String `tfsdk:"description"`
@@ -152,15 +162,39 @@ func ProjectTemplateSchema() superschema.Schema {
 				},
 			},
 			"environment_id": superschema.Int64Attribute{
-				Common: &schemaR.Int64Attribute{
-					MarkdownDescription: "The environment (variable group) ID that the template uses.",
-				},
-				Resource: &schemaR.Int64Attribute{
-					Required: true,
-				},
-				DataSource: &schemaD.Int64Attribute{
-					Computed: true,
-				},
+				Common:     &schemaR.Int64Attribute{MarkdownDescription: "Deprecated single variable group. Configure either environment_id or environment_ids."},
+				Resource:   &schemaR.Int64Attribute{Optional: true, Computed: true, DeprecationMessage: "Use environment_ids to manage all variable groups.", Validators: []validator.Int64{int64validator.AtLeast(1)}},
+				DataSource: &schemaD.Int64Attribute{Computed: true},
+			},
+			"environment_ids": superschema.SetAttribute{
+				Common:     &schemaR.SetAttribute{MarkdownDescription: "Variable group IDs. EX returns these in ascending ID order; use an empty set to remove all groups.", ElementType: types.Int64Type},
+				Resource:   &schemaR.SetAttribute{Optional: true, Computed: true, Validators: []validator.Set{setvalidator.ValueInt64sAre(int64validator.AtLeast(1))}},
+				DataSource: &schemaD.SetAttribute{Computed: true},
+			},
+			"working_directory": superschema.StringAttribute{
+				Common:     &schemaR.StringAttribute{MarkdownDescription: "Repository-relative Ansible working directory. Empty uses the repository root."},
+				Resource:   &schemaR.StringAttribute{Optional: true, Computed: true, PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
+				DataSource: &schemaD.StringAttribute{Computed: true},
+			},
+			"executor_image": superschema.StringAttribute{
+				Common:     &schemaR.StringAttribute{MarkdownDescription: "Runner container image override. Empty uses the runner default."},
+				Resource:   &schemaR.StringAttribute{Optional: true, Computed: true, PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}, Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile(`^(\S.*\S|\S)?$`), "must not have leading or trailing whitespace")}},
+				DataSource: &schemaD.StringAttribute{Computed: true},
+			},
+			"runner_tag_match_mode": superschema.StringAttribute{
+				Common:     &schemaR.StringAttribute{MarkdownDescription: "Runner tag matching policy: all or any."},
+				Resource:   &schemaR.StringAttribute{Optional: true, Computed: true, PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}, Validators: []validator.String{stringvalidator.OneOf("all", "any")}},
+				DataSource: &schemaD.StringAttribute{Computed: true},
+			},
+			"suppress_error_alerts": superschema.BoolAttribute{
+				Common:     &schemaR.BoolAttribute{MarkdownDescription: "Suppress error alerts."},
+				Resource:   &schemaR.BoolAttribute{Optional: true, Computed: true, PlanModifiers: []planmodifier.Bool{boolplanmodifier.UseStateForUnknown()}},
+				DataSource: &schemaD.BoolAttribute{Computed: true},
+			},
+			"runner_tags": superschema.SetAttribute{
+				Common:     &schemaR.SetAttribute{MarkdownDescription: "Runner placement tags.", ElementType: types.StringType},
+				Resource:   &schemaR.SetAttribute{Optional: true, Computed: true, PlanModifiers: []planmodifier.Set{setplanmodifier.UseStateForUnknown()}, Validators: []validator.Set{setvalidator.SizeAtMost(32), setvalidator.ValueStringsAre(canonicalRunnerTagValidator{})}},
+				DataSource: &schemaD.SetAttribute{Computed: true},
 			},
 			"inventory_id": superschema.Int64Attribute{
 				Common: &schemaR.Int64Attribute{

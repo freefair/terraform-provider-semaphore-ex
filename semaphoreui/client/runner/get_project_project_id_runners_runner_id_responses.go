@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetProjectProjectIDRunnersRunnerIDReader is a Reader for the GetProjectProjectIDRunnersRunnerID structure.
@@ -43,13 +43,11 @@ func NewGetProjectProjectIDRunnersRunnerIDOK() *GetProjectProjectIDRunnersRunner
 	return &GetProjectProjectIDRunnersRunnerIDOK{}
 }
 
-/*
-GetProjectProjectIDRunnersRunnerIDOK describes a response with status code 200, with default header values.
-
-Runner
-*/
+// GetProjectProjectIDRunnersRunnerIDOK describes a response with status code 200, with default header values.
+//
+// Runner
 type GetProjectProjectIDRunnersRunnerIDOK struct {
-	Payload *models.RunnerWithToken
+	Payload *models.Runner
 }
 
 // IsSuccess returns true when this get project project Id runners runner Id o k response has a 2xx status code
@@ -92,13 +90,13 @@ func (o *GetProjectProjectIDRunnersRunnerIDOK) String() string {
 	return fmt.Sprintf("[GET /project/{project_id}/runners/{runner_id}][%d] getProjectProjectIdRunnersRunnerIdOK %s", 200, payload)
 }
 
-func (o *GetProjectProjectIDRunnersRunnerIDOK) GetPayload() *models.RunnerWithToken {
+func (o *GetProjectProjectIDRunnersRunnerIDOK) GetPayload() *models.Runner {
 	return o.Payload
 }
 
 func (o *GetProjectProjectIDRunnersRunnerIDOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.RunnerWithToken)
+	o.Payload = new(models.Runner)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && !stderrors.Is(err, io.EOF) {
@@ -113,11 +111,9 @@ func NewGetProjectProjectIDRunnersRunnerIDNotFound() *GetProjectProjectIDRunners
 	return &GetProjectProjectIDRunnersRunnerIDNotFound{}
 }
 
-/*
-GetProjectProjectIDRunnersRunnerIDNotFound describes a response with status code 404, with default header values.
-
-Runner not found
-*/
+// GetProjectProjectIDRunnersRunnerIDNotFound describes a response with status code 404, with default header values.
+//
+// Runner not found
 type GetProjectProjectIDRunnersRunnerIDNotFound struct {
 }
 

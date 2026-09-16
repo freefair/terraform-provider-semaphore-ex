@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // NewPostProjectsRestoreParams creates a new PostProjectsRestoreParams object,

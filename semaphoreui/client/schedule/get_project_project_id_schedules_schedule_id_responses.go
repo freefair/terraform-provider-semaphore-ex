@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetProjectProjectIDSchedulesScheduleIDReader is a Reader for the GetProjectProjectIDSchedulesScheduleID structure.
@@ -37,11 +37,9 @@ func NewGetProjectProjectIDSchedulesScheduleIDOK() *GetProjectProjectIDSchedules
 	return &GetProjectProjectIDSchedulesScheduleIDOK{}
 }
 
-/*
-GetProjectProjectIDSchedulesScheduleIDOK describes a response with status code 200, with default header values.
-
-Schedule
-*/
+// GetProjectProjectIDSchedulesScheduleIDOK describes a response with status code 200, with default header values.
+//
+// Schedule
 type GetProjectProjectIDSchedulesScheduleIDOK struct {
 	Payload *models.Schedule
 }

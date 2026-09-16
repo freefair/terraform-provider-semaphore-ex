@@ -63,10 +63,9 @@ GetProjectProjectIDIntegrationsParams contains all the parameters to send to the
 */
 type GetProjectProjectIDIntegrationsParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

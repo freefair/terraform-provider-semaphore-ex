@@ -44,9 +44,7 @@ func NewClientWithBearerToken(host, basePath, scheme, bearerToken string) Client
 	return &Client{transport: transport, formats: strfmt.Default}
 }
 
-/*
-Client for repository API.
-*/
+// Client for repository API.
 type Client struct {
 	transport runtime.ContextualTransport
 	formats   strfmt.Registry
@@ -115,17 +113,15 @@ type ClientService interface {
 	SetTransport(transport runtime.ContextualTransport)
 }
 
-/*
-DeleteProjectProjectIDRepositoriesRepositoryIDremoves repository.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDRepositoriesRepositoryIDContext] instead.
-*/
+// DeleteProjectProjectIDRepositoriesRepositoryID removes repository.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDRepositoriesRepositoryIDContext] instead.
 func (a *Client) DeleteProjectProjectIDRepositoriesRepositoryID(params *DeleteProjectProjectIDRepositoriesRepositoryIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDRepositoriesRepositoryIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -134,11 +130,9 @@ func (a *Client) DeleteProjectProjectIDRepositoriesRepositoryID(params *DeletePr
 	return a.DeleteProjectProjectIDRepositoriesRepositoryIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDRepositoriesRepositoryIDContextremoves repository.
-
-Do not use the deprecated [DeleteProjectProjectIDRepositoriesRepositoryIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDRepositoriesRepositoryIDContext removes repository.
+//
+// Do not use the deprecated [DeleteProjectProjectIDRepositoriesRepositoryIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDRepositoriesRepositoryIDContext(ctx context.Context, params *DeleteProjectProjectIDRepositoriesRepositoryIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDRepositoriesRepositoryIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -182,17 +176,15 @@ func (a *Client) DeleteProjectProjectIDRepositoriesRepositoryIDContext(ctx conte
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDRepositoriesgets repositories.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDRepositoriesContext] instead.
-*/
+// GetProjectProjectIDRepositories gets repositories.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDRepositoriesContext] instead.
 func (a *Client) GetProjectProjectIDRepositories(params *GetProjectProjectIDRepositoriesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDRepositoriesOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -201,11 +193,9 @@ func (a *Client) GetProjectProjectIDRepositories(params *GetProjectProjectIDRepo
 	return a.GetProjectProjectIDRepositoriesContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDRepositoriesContextgets repositories.
-
-Do not use the deprecated [GetProjectProjectIDRepositoriesParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDRepositoriesContext gets repositories.
+//
+// Do not use the deprecated [GetProjectProjectIDRepositoriesParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDRepositoriesContext(ctx context.Context, params *GetProjectProjectIDRepositoriesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDRepositoriesOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -249,17 +239,15 @@ func (a *Client) GetProjectProjectIDRepositoriesContext(ctx context.Context, par
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDRepositoriesRepositoryIDgets repository.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDRepositoriesRepositoryIDContext] instead.
-*/
+// GetProjectProjectIDRepositoriesRepositoryID gets repository.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDRepositoriesRepositoryIDContext] instead.
 func (a *Client) GetProjectProjectIDRepositoriesRepositoryID(params *GetProjectProjectIDRepositoriesRepositoryIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDRepositoriesRepositoryIDOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -268,11 +256,9 @@ func (a *Client) GetProjectProjectIDRepositoriesRepositoryID(params *GetProjectP
 	return a.GetProjectProjectIDRepositoriesRepositoryIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDRepositoriesRepositoryIDContextgets repository.
-
-Do not use the deprecated [GetProjectProjectIDRepositoriesRepositoryIDParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDRepositoriesRepositoryIDContext gets repository.
+//
+// Do not use the deprecated [GetProjectProjectIDRepositoriesRepositoryIDParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDRepositoriesRepositoryIDContext(ctx context.Context, params *GetProjectProjectIDRepositoriesRepositoryIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDRepositoriesRepositoryIDOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -316,17 +302,15 @@ func (a *Client) GetProjectProjectIDRepositoriesRepositoryIDContext(ctx context.
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDRepositoriesadds repository.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDRepositoriesContext] instead.
-*/
+// PostProjectProjectIDRepositories adds repository.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDRepositoriesContext] instead.
 func (a *Client) PostProjectProjectIDRepositories(params *PostProjectProjectIDRepositoriesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDRepositoriesCreated, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -335,11 +319,9 @@ func (a *Client) PostProjectProjectIDRepositories(params *PostProjectProjectIDRe
 	return a.PostProjectProjectIDRepositoriesContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDRepositoriesContextadds repository.
-
-Do not use the deprecated [PostProjectProjectIDRepositoriesParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDRepositoriesContext adds repository.
+//
+// Do not use the deprecated [PostProjectProjectIDRepositoriesParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDRepositoriesContext(ctx context.Context, params *PostProjectProjectIDRepositoriesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDRepositoriesCreated, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -383,17 +365,15 @@ func (a *Client) PostProjectProjectIDRepositoriesContext(ctx context.Context, pa
 	panic(msg)
 }
 
-/*
-PutProjectProjectIDRepositoriesRepositoryIDupdates repository.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PutProjectProjectIDRepositoriesRepositoryIDContext] instead.
-*/
+// PutProjectProjectIDRepositoriesRepositoryID updates repository.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PutProjectProjectIDRepositoriesRepositoryIDContext] instead.
 func (a *Client) PutProjectProjectIDRepositoriesRepositoryID(params *PutProjectProjectIDRepositoriesRepositoryIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDRepositoriesRepositoryIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -402,11 +382,9 @@ func (a *Client) PutProjectProjectIDRepositoriesRepositoryID(params *PutProjectP
 	return a.PutProjectProjectIDRepositoriesRepositoryIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PutProjectProjectIDRepositoriesRepositoryIDContextupdates repository.
-
-Do not use the deprecated [PutProjectProjectIDRepositoriesRepositoryIDParams.Context] with this method: it would be ignored.
-*/
+// PutProjectProjectIDRepositoriesRepositoryIDContext updates repository.
+//
+// Do not use the deprecated [PutProjectProjectIDRepositoriesRepositoryIDParams.Context] with this method: it would be ignored.
 func (a *Client) PutProjectProjectIDRepositoriesRepositoryIDContext(ctx context.Context, params *PutProjectProjectIDRepositoriesRepositoryIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDRepositoriesRepositoryIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {

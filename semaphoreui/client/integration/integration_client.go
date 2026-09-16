@@ -44,9 +44,7 @@ func NewClientWithBearerToken(host, basePath, scheme, bearerToken string) Client
 	return &Client{transport: transport, formats: strfmt.Default}
 }
 
-/*
-Client for integration API.
-*/
+// Client for integration API.
 type Client struct {
 	transport runtime.ContextualTransport
 	formats   strfmt.Registry
@@ -199,17 +197,15 @@ type ClientService interface {
 	SetTransport(transport runtime.ContextualTransport)
 }
 
-/*
-DeleteProjectProjectIDIntegrationsAliasesAliasIDremoves integration alias.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDIntegrationsAliasesAliasIDContext] instead.
-*/
+// DeleteProjectProjectIDIntegrationsAliasesAliasID removes integration alias.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDIntegrationsAliasesAliasIDContext] instead.
 func (a *Client) DeleteProjectProjectIDIntegrationsAliasesAliasID(params *DeleteProjectProjectIDIntegrationsAliasesAliasIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDIntegrationsAliasesAliasIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -218,11 +214,9 @@ func (a *Client) DeleteProjectProjectIDIntegrationsAliasesAliasID(params *Delete
 	return a.DeleteProjectProjectIDIntegrationsAliasesAliasIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDIntegrationsAliasesAliasIDContextremoves integration alias.
-
-Do not use the deprecated [DeleteProjectProjectIDIntegrationsAliasesAliasIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDIntegrationsAliasesAliasIDContext removes integration alias.
+//
+// Do not use the deprecated [DeleteProjectProjectIDIntegrationsAliasesAliasIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDIntegrationsAliasesAliasIDContext(ctx context.Context, params *DeleteProjectProjectIDIntegrationsAliasesAliasIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDIntegrationsAliasesAliasIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -266,17 +260,15 @@ func (a *Client) DeleteProjectProjectIDIntegrationsAliasesAliasIDContext(ctx con
 	panic(msg)
 }
 
-/*
-DeleteProjectProjectIDIntegrationsIntegrationIDremoves integration.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDIntegrationsIntegrationIDContext] instead.
-*/
+// DeleteProjectProjectIDIntegrationsIntegrationID removes integration.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDIntegrationsIntegrationIDContext] instead.
 func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationID(params *DeleteProjectProjectIDIntegrationsIntegrationIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDIntegrationsIntegrationIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -285,11 +277,9 @@ func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationID(params *DeleteP
 	return a.DeleteProjectProjectIDIntegrationsIntegrationIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDIntegrationsIntegrationIDContextremoves integration.
-
-Do not use the deprecated [DeleteProjectProjectIDIntegrationsIntegrationIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDIntegrationsIntegrationIDContext removes integration.
+//
+// Do not use the deprecated [DeleteProjectProjectIDIntegrationsIntegrationIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDContext(ctx context.Context, params *DeleteProjectProjectIDIntegrationsIntegrationIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDIntegrationsIntegrationIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -333,17 +323,15 @@ func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDContext(ctx cont
 	panic(msg)
 }
 
-/*
-DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDremoves integration alias.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDContext] instead.
-*/
+// DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasID removes integration alias.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDContext] instead.
 func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasID(params *DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -352,11 +340,9 @@ func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasID(p
 	return a.DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDContextremoves integration alias.
-
-Do not use the deprecated [DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDContext removes integration alias.
+//
+// Do not use the deprecated [DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDContext(ctx context.Context, params *DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -400,17 +386,15 @@ func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDCo
 	panic(msg)
 }
 
-/*
-DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDremoves integration matcher.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDContext] instead.
-*/
+// DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherID removes integration matcher.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDContext] instead.
 func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherID(params *DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -419,11 +403,9 @@ func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherI
 	return a.DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDContextremoves integration matcher.
-
-Do not use the deprecated [DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDContext removes integration matcher.
+//
+// Do not use the deprecated [DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDContext(ctx context.Context, params *DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -467,17 +449,15 @@ func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherI
 	panic(msg)
 }
 
-/*
-DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDremoves integration extract value.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDContext] instead.
-*/
+// DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueID removes integration extract value.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDContext] instead.
 func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueID(params *DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -486,11 +466,9 @@ func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractval
 	return a.DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDContextremoves integration extract value.
-
-Do not use the deprecated [DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDContext removes integration extract value.
+//
+// Do not use the deprecated [DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDContext(ctx context.Context, params *DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -534,17 +512,15 @@ func (a *Client) DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractval
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDIntegrationsgets all integrations.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDIntegrationsContext] instead.
-*/
+// GetProjectProjectIDIntegrations gets all integrations.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDIntegrationsContext] instead.
 func (a *Client) GetProjectProjectIDIntegrations(params *GetProjectProjectIDIntegrationsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDIntegrationsOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -553,11 +529,9 @@ func (a *Client) GetProjectProjectIDIntegrations(params *GetProjectProjectIDInte
 	return a.GetProjectProjectIDIntegrationsContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDIntegrationsContextgets all integrations.
-
-Do not use the deprecated [GetProjectProjectIDIntegrationsParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDIntegrationsContext gets all integrations.
+//
+// Do not use the deprecated [GetProjectProjectIDIntegrationsParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDIntegrationsContext(ctx context.Context, params *GetProjectProjectIDIntegrationsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDIntegrationsOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -601,17 +575,15 @@ func (a *Client) GetProjectProjectIDIntegrationsContext(ctx context.Context, par
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDIntegrationsAliasesgets all integration aliases for the project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDIntegrationsAliasesContext] instead.
-*/
+// GetProjectProjectIDIntegrationsAliases gets all integration aliases for the project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDIntegrationsAliasesContext] instead.
 func (a *Client) GetProjectProjectIDIntegrationsAliases(params *GetProjectProjectIDIntegrationsAliasesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDIntegrationsAliasesOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -620,11 +592,9 @@ func (a *Client) GetProjectProjectIDIntegrationsAliases(params *GetProjectProjec
 	return a.GetProjectProjectIDIntegrationsAliasesContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDIntegrationsAliasesContextgets all integration aliases for the project.
-
-Do not use the deprecated [GetProjectProjectIDIntegrationsAliasesParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDIntegrationsAliasesContext gets all integration aliases for the project.
+//
+// Do not use the deprecated [GetProjectProjectIDIntegrationsAliasesParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDIntegrationsAliasesContext(ctx context.Context, params *GetProjectProjectIDIntegrationsAliasesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDIntegrationsAliasesOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -668,17 +638,15 @@ func (a *Client) GetProjectProjectIDIntegrationsAliasesContext(ctx context.Conte
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDIntegrationsIntegrationIDgets integration.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDIntegrationsIntegrationIDContext] instead.
-*/
+// GetProjectProjectIDIntegrationsIntegrationID gets integration.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDIntegrationsIntegrationIDContext] instead.
 func (a *Client) GetProjectProjectIDIntegrationsIntegrationID(params *GetProjectProjectIDIntegrationsIntegrationIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDIntegrationsIntegrationIDOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -687,11 +655,9 @@ func (a *Client) GetProjectProjectIDIntegrationsIntegrationID(params *GetProject
 	return a.GetProjectProjectIDIntegrationsIntegrationIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDIntegrationsIntegrationIDContextgets integration.
-
-Do not use the deprecated [GetProjectProjectIDIntegrationsIntegrationIDParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDIntegrationsIntegrationIDContext gets integration.
+//
+// Do not use the deprecated [GetProjectProjectIDIntegrationsIntegrationIDParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDContext(ctx context.Context, params *GetProjectProjectIDIntegrationsIntegrationIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDIntegrationsIntegrationIDOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -735,17 +701,15 @@ func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDContext(ctx context
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDIntegrationsIntegrationIDAliasesgets all aliases for an integration.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDIntegrationsIntegrationIDAliasesContext] instead.
-*/
+// GetProjectProjectIDIntegrationsIntegrationIDAliases gets all aliases for an integration.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDIntegrationsIntegrationIDAliasesContext] instead.
 func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDAliases(params *GetProjectProjectIDIntegrationsIntegrationIDAliasesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDIntegrationsIntegrationIDAliasesOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -754,11 +718,9 @@ func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDAliases(params *Get
 	return a.GetProjectProjectIDIntegrationsIntegrationIDAliasesContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDIntegrationsIntegrationIDAliasesContextgets all aliases for an integration.
-
-Do not use the deprecated [GetProjectProjectIDIntegrationsIntegrationIDAliasesParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDIntegrationsIntegrationIDAliasesContext gets all aliases for an integration.
+//
+// Do not use the deprecated [GetProjectProjectIDIntegrationsIntegrationIDAliasesParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDAliasesContext(ctx context.Context, params *GetProjectProjectIDIntegrationsIntegrationIDAliasesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDIntegrationsIntegrationIDAliasesOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -802,17 +764,15 @@ func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDAliasesContext(ctx 
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDIntegrationsIntegrationIDMatchersgets integration matcher linked to integration extractor.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDIntegrationsIntegrationIDMatchersContext] instead.
-*/
+// GetProjectProjectIDIntegrationsIntegrationIDMatchers gets integration matcher linked to integration extractor.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDIntegrationsIntegrationIDMatchersContext] instead.
 func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDMatchers(params *GetProjectProjectIDIntegrationsIntegrationIDMatchersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDIntegrationsIntegrationIDMatchersOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -821,11 +781,9 @@ func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDMatchers(params *Ge
 	return a.GetProjectProjectIDIntegrationsIntegrationIDMatchersContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDIntegrationsIntegrationIDMatchersContextgets integration matcher linked to integration extractor.
-
-Do not use the deprecated [GetProjectProjectIDIntegrationsIntegrationIDMatchersParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDIntegrationsIntegrationIDMatchersContext gets integration matcher linked to integration extractor.
+//
+// Do not use the deprecated [GetProjectProjectIDIntegrationsIntegrationIDMatchersParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDMatchersContext(ctx context.Context, params *GetProjectProjectIDIntegrationsIntegrationIDMatchersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDIntegrationsIntegrationIDMatchersOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -869,17 +827,15 @@ func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDMatchersContext(ctx
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDIntegrationsIntegrationIDValuesgets integration extracted values linked to integration extractor.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDIntegrationsIntegrationIDValuesContext] instead.
-*/
+// GetProjectProjectIDIntegrationsIntegrationIDValues gets integration extracted values linked to integration extractor.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDIntegrationsIntegrationIDValuesContext] instead.
 func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDValues(params *GetProjectProjectIDIntegrationsIntegrationIDValuesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDIntegrationsIntegrationIDValuesOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -888,11 +844,9 @@ func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDValues(params *GetP
 	return a.GetProjectProjectIDIntegrationsIntegrationIDValuesContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDIntegrationsIntegrationIDValuesContextgets integration extracted values linked to integration extractor.
-
-Do not use the deprecated [GetProjectProjectIDIntegrationsIntegrationIDValuesParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDIntegrationsIntegrationIDValuesContext gets integration extracted values linked to integration extractor.
+//
+// Do not use the deprecated [GetProjectProjectIDIntegrationsIntegrationIDValuesParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDValuesContext(ctx context.Context, params *GetProjectProjectIDIntegrationsIntegrationIDValuesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDIntegrationsIntegrationIDValuesOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -936,17 +890,15 @@ func (a *Client) GetProjectProjectIDIntegrationsIntegrationIDValuesContext(ctx c
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDIntegrationscreates a new integration.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDIntegrationsContext] instead.
-*/
+// PostProjectProjectIDIntegrations creates a new integration.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDIntegrationsContext] instead.
 func (a *Client) PostProjectProjectIDIntegrations(params *PostProjectProjectIDIntegrationsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDIntegrationsCreated, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -955,11 +907,9 @@ func (a *Client) PostProjectProjectIDIntegrations(params *PostProjectProjectIDIn
 	return a.PostProjectProjectIDIntegrationsContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDIntegrationsContextcreates a new integration.
-
-Do not use the deprecated [PostProjectProjectIDIntegrationsParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDIntegrationsContext creates a new integration.
+//
+// Do not use the deprecated [PostProjectProjectIDIntegrationsParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDIntegrationsContext(ctx context.Context, params *PostProjectProjectIDIntegrationsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDIntegrationsCreated, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1003,17 +953,15 @@ func (a *Client) PostProjectProjectIDIntegrationsContext(ctx context.Context, pa
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDIntegrationsAliasescreates a new integration alias for the project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDIntegrationsAliasesContext] instead.
-*/
+// PostProjectProjectIDIntegrationsAliases creates a new integration alias for the project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDIntegrationsAliasesContext] instead.
 func (a *Client) PostProjectProjectIDIntegrationsAliases(params *PostProjectProjectIDIntegrationsAliasesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDIntegrationsAliasesOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1022,11 +970,9 @@ func (a *Client) PostProjectProjectIDIntegrationsAliases(params *PostProjectProj
 	return a.PostProjectProjectIDIntegrationsAliasesContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDIntegrationsAliasesContextcreates a new integration alias for the project.
-
-Do not use the deprecated [PostProjectProjectIDIntegrationsAliasesParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDIntegrationsAliasesContext creates a new integration alias for the project.
+//
+// Do not use the deprecated [PostProjectProjectIDIntegrationsAliasesParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDIntegrationsAliasesContext(ctx context.Context, params *PostProjectProjectIDIntegrationsAliasesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDIntegrationsAliasesOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1070,17 +1016,15 @@ func (a *Client) PostProjectProjectIDIntegrationsAliasesContext(ctx context.Cont
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDIntegrationsIntegrationIDAliasescreates a new alias for an integration.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDIntegrationsIntegrationIDAliasesContext] instead.
-*/
+// PostProjectProjectIDIntegrationsIntegrationIDAliases creates a new alias for an integration.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDIntegrationsIntegrationIDAliasesContext] instead.
 func (a *Client) PostProjectProjectIDIntegrationsIntegrationIDAliases(params *PostProjectProjectIDIntegrationsIntegrationIDAliasesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDIntegrationsIntegrationIDAliasesOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1089,11 +1033,9 @@ func (a *Client) PostProjectProjectIDIntegrationsIntegrationIDAliases(params *Po
 	return a.PostProjectProjectIDIntegrationsIntegrationIDAliasesContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDIntegrationsIntegrationIDAliasesContextcreates a new alias for an integration.
-
-Do not use the deprecated [PostProjectProjectIDIntegrationsIntegrationIDAliasesParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDIntegrationsIntegrationIDAliasesContext creates a new alias for an integration.
+//
+// Do not use the deprecated [PostProjectProjectIDIntegrationsIntegrationIDAliasesParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDIntegrationsIntegrationIDAliasesContext(ctx context.Context, params *PostProjectProjectIDIntegrationsIntegrationIDAliasesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDIntegrationsIntegrationIDAliasesOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1137,17 +1079,15 @@ func (a *Client) PostProjectProjectIDIntegrationsIntegrationIDAliasesContext(ctx
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDIntegrationsIntegrationIDMatchersadds integration matcher.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDIntegrationsIntegrationIDMatchersContext] instead.
-*/
+// PostProjectProjectIDIntegrationsIntegrationIDMatchers adds integration matcher.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDIntegrationsIntegrationIDMatchersContext] instead.
 func (a *Client) PostProjectProjectIDIntegrationsIntegrationIDMatchers(params *PostProjectProjectIDIntegrationsIntegrationIDMatchersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDIntegrationsIntegrationIDMatchersOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1156,11 +1096,9 @@ func (a *Client) PostProjectProjectIDIntegrationsIntegrationIDMatchers(params *P
 	return a.PostProjectProjectIDIntegrationsIntegrationIDMatchersContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDIntegrationsIntegrationIDMatchersContextadds integration matcher.
-
-Do not use the deprecated [PostProjectProjectIDIntegrationsIntegrationIDMatchersParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDIntegrationsIntegrationIDMatchersContext adds integration matcher.
+//
+// Do not use the deprecated [PostProjectProjectIDIntegrationsIntegrationIDMatchersParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDIntegrationsIntegrationIDMatchersContext(ctx context.Context, params *PostProjectProjectIDIntegrationsIntegrationIDMatchersParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDIntegrationsIntegrationIDMatchersOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1204,17 +1142,15 @@ func (a *Client) PostProjectProjectIDIntegrationsIntegrationIDMatchersContext(ct
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDIntegrationsIntegrationIDValuesadds integration extracted value.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDIntegrationsIntegrationIDValuesContext] instead.
-*/
+// PostProjectProjectIDIntegrationsIntegrationIDValues adds integration extracted value.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDIntegrationsIntegrationIDValuesContext] instead.
 func (a *Client) PostProjectProjectIDIntegrationsIntegrationIDValues(params *PostProjectProjectIDIntegrationsIntegrationIDValuesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDIntegrationsIntegrationIDValuesCreated, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1223,11 +1159,9 @@ func (a *Client) PostProjectProjectIDIntegrationsIntegrationIDValues(params *Pos
 	return a.PostProjectProjectIDIntegrationsIntegrationIDValuesContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDIntegrationsIntegrationIDValuesContextadds integration extracted value.
-
-Do not use the deprecated [PostProjectProjectIDIntegrationsIntegrationIDValuesParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDIntegrationsIntegrationIDValuesContext adds integration extracted value.
+//
+// Do not use the deprecated [PostProjectProjectIDIntegrationsIntegrationIDValuesParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDIntegrationsIntegrationIDValuesContext(ctx context.Context, params *PostProjectProjectIDIntegrationsIntegrationIDValuesParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDIntegrationsIntegrationIDValuesCreated, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1271,17 +1205,15 @@ func (a *Client) PostProjectProjectIDIntegrationsIntegrationIDValuesContext(ctx 
 	panic(msg)
 }
 
-/*
-PutProjectProjectIDIntegrationsIntegrationIDupdates integration.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PutProjectProjectIDIntegrationsIntegrationIDContext] instead.
-*/
+// PutProjectProjectIDIntegrationsIntegrationID updates integration.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PutProjectProjectIDIntegrationsIntegrationIDContext] instead.
 func (a *Client) PutProjectProjectIDIntegrationsIntegrationID(params *PutProjectProjectIDIntegrationsIntegrationIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDIntegrationsIntegrationIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1290,11 +1222,9 @@ func (a *Client) PutProjectProjectIDIntegrationsIntegrationID(params *PutProject
 	return a.PutProjectProjectIDIntegrationsIntegrationIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PutProjectProjectIDIntegrationsIntegrationIDContextupdates integration.
-
-Do not use the deprecated [PutProjectProjectIDIntegrationsIntegrationIDParams.Context] with this method: it would be ignored.
-*/
+// PutProjectProjectIDIntegrationsIntegrationIDContext updates integration.
+//
+// Do not use the deprecated [PutProjectProjectIDIntegrationsIntegrationIDParams.Context] with this method: it would be ignored.
 func (a *Client) PutProjectProjectIDIntegrationsIntegrationIDContext(ctx context.Context, params *PutProjectProjectIDIntegrationsIntegrationIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDIntegrationsIntegrationIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1338,17 +1268,15 @@ func (a *Client) PutProjectProjectIDIntegrationsIntegrationIDContext(ctx context
 	panic(msg)
 }
 
-/*
-PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDupdates integration matcher.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDContext] instead.
-*/
+// PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherID updates integration matcher.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDContext] instead.
 func (a *Client) PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherID(params *PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1357,11 +1285,9 @@ func (a *Client) PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherID(p
 	return a.PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDContextupdates integration matcher.
-
-Do not use the deprecated [PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDParams.Context] with this method: it would be ignored.
-*/
+// PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDContext updates integration matcher.
+//
+// Do not use the deprecated [PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDParams.Context] with this method: it would be ignored.
 func (a *Client) PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDContext(ctx context.Context, params *PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -1405,17 +1331,15 @@ func (a *Client) PutProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDCo
 	panic(msg)
 }
 
-/*
-PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDupdates integration extract value.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDContext] instead.
-*/
+// PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueID updates integration extract value.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDContext] instead.
 func (a *Client) PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueID(params *PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -1424,11 +1348,9 @@ func (a *Client) PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueI
 	return a.PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDContextupdates integration extract value.
-
-Do not use the deprecated [PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams.Context] with this method: it would be ignored.
-*/
+// PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDContext updates integration extract value.
+//
+// Do not use the deprecated [PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams.Context] with this method: it would be ignored.
 func (a *Client) PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDContext(ctx context.Context, params *PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {

@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetPingReader is a Reader for the GetPing structure.
@@ -37,11 +37,9 @@ func NewGetPingOK() *GetPingOK {
 	return &GetPingOK{}
 }
 
-/*
-GetPingOK describes a response with status code 200, with default header values.
-
-Successful "PONG" reply
-*/
+// GetPingOK describes a response with status code 200, with default header values.
+//
+// Successful "PONG" reply
 type GetPingOK struct {
 	ContentType string
 

@@ -274,12 +274,12 @@ type AccessKeyRequestLoginPassword struct {
 }
 
 // Validate validates this access key request login password
-func (m *AccessKeyRequestLoginPassword) Validate(formats strfmt.Registry) error {
+func (m *AccessKeyRequestLoginPassword) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this access key request login password based on context it is used
-func (m *AccessKeyRequestLoginPassword) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *AccessKeyRequestLoginPassword) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 
@@ -320,12 +320,12 @@ type AccessKeyRequestSSH struct {
 }
 
 // Validate validates this access key request SSH
-func (m *AccessKeyRequestSSH) Validate(formats strfmt.Registry) error {
+func (m *AccessKeyRequestSSH) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this access key request SSH based on context it is used
-func (m *AccessKeyRequestSSH) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *AccessKeyRequestSSH) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

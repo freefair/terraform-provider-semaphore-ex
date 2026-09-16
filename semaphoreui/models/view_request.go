@@ -93,7 +93,7 @@ func (m *ViewRequest) validateProjectID(formats strfmt.Registry) error {
 }
 
 // ContextValidate validates this view request based on context it is used
-func (m *ViewRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *ViewRequest) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

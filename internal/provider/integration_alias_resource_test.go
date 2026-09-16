@@ -2,9 +2,9 @@ package provider
 
 import (
 	"fmt"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/integration"
 	"regexp"
 	"strconv"
-	"terraform-provider-semaphoreui/semaphoreui/client/integration"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
@@ -60,51 +60,51 @@ func testAccIntegrationAliasExists(resourceName string) resource.TestCheckFunc {
 
 func testAccIntegrationAliasDependencyConfig(nameSuffix string) string {
 	return fmt.Sprintf(`
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "test-%[1]s"
 }
 
-resource "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "None-%[1]s"
   none       = {}
 }
 
-resource "semaphoreui_project_repository" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_repository" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Repo-%[1]s"
   url        = "git@github.com:example/test.git"
   branch     = "main"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
 }
 
-resource "semaphoreui_project_inventory" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_inventory" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Inventory-%[1]s"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
   file = {
     path          = "path/to/inventory"
-    repository_id = semaphoreui_project_repository.test.id
+    repository_id = semaphore_ex_project_repository.test.id
   }
 }
 
-resource "semaphoreui_project_environment" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_environment" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Env-%[1]s"
 }
 
-resource "semaphoreui_project_template" "test" {
-  project_id     = semaphoreui_project.test.id
-  environment_id = semaphoreui_project_environment.test.id
-  inventory_id   = semaphoreui_project_inventory.test.id
-  repository_id  = semaphoreui_project_repository.test.id
+resource "semaphore_ex_project_template" "test" {
+  project_id     = semaphore_ex_project.test.id
+  environment_id = semaphore_ex_project_environment.test.id
+  inventory_id   = semaphore_ex_project_inventory.test.id
+  repository_id  = semaphore_ex_project_repository.test.id
   name           = "Template-%[1]s"
   playbook       = "playbook.yml"
 }
 
-resource "semaphoreui_project_integration" "test" {
-  project_id  = semaphoreui_project.test.id
-  template_id = semaphoreui_project_template.test.id
+resource "semaphore_ex_project_integration" "test" {
+  project_id  = semaphore_ex_project.test.id
+  template_id = semaphore_ex_project_template.test.id
   name        = "Integration-%[1]s"
 }
 `, nameSuffix)
@@ -144,31 +144,31 @@ func TestAcc_IntegrationAliasResource_integrationScoped(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: testAccIntegrationAliasDependencyConfig(nameSuffix) + `
-resource "semaphoreui_integration_alias" "test" {
-  project_id     = semaphoreui_project.test.id
-  integration_id = semaphoreui_project_integration.test.id
+resource "semaphore_ex_integration_alias" "test" {
+  project_id     = semaphore_ex_project.test.id
+  integration_id = semaphore_ex_project_integration.test.id
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccIntegrationAliasExists("semaphoreui_integration_alias.test"),
-					resource.TestCheckResourceAttrSet("semaphoreui_integration_alias.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_integration_alias.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_integration_alias.test", "integration_id"),
-					resource.TestMatchResourceAttr("semaphoreui_integration_alias.test", "url",
+					testAccIntegrationAliasExists("semaphore_ex_integration_alias.test"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_integration_alias.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_integration_alias.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_integration_alias.test", "integration_id"),
+					resource.TestMatchResourceAttr("semaphore_ex_integration_alias.test", "url",
 						regexp.MustCompile(`^https?://[^/]+/api/integrations/[a-z0-9]+$`)),
 				),
 			},
 			{
-				ResourceName:      "semaphoreui_integration_alias.test",
+				ResourceName:      "semaphore_ex_integration_alias.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccIntegrationAliasImportIDScoped("semaphoreui_integration_alias.test"),
+				ImportStateIdFunc: testAccIntegrationAliasImportIDScoped("semaphore_ex_integration_alias.test"),
 			},
 			// Delete
 			{
 				Config: testAccIntegrationAliasDependencyConfig(nameSuffix),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_integration_alias.test"),
+					testAccResourceNotExists("semaphore_ex_integration_alias.test"),
 				),
 			},
 		},
@@ -184,30 +184,30 @@ func TestAcc_IntegrationAliasResource_projectScoped(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: testAccIntegrationAliasDependencyConfig(nameSuffix) + `
-resource "semaphoreui_integration_alias" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_integration_alias" "test" {
+  project_id = semaphore_ex_project.test.id
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccIntegrationAliasExists("semaphoreui_integration_alias.test"),
-					resource.TestCheckResourceAttrSet("semaphoreui_integration_alias.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_integration_alias.test", "project_id"),
-					resource.TestCheckNoResourceAttr("semaphoreui_integration_alias.test", "integration_id"),
-					resource.TestMatchResourceAttr("semaphoreui_integration_alias.test", "url",
+					testAccIntegrationAliasExists("semaphore_ex_integration_alias.test"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_integration_alias.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_integration_alias.test", "project_id"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_integration_alias.test", "integration_id"),
+					resource.TestMatchResourceAttr("semaphore_ex_integration_alias.test", "url",
 						regexp.MustCompile(`^https?://[^/]+/api/integrations/[a-z0-9]+$`)),
 				),
 			},
 			{
-				ResourceName:      "semaphoreui_integration_alias.test",
+				ResourceName:      "semaphore_ex_integration_alias.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccIntegrationAliasImportIDProject("semaphoreui_integration_alias.test"),
+				ImportStateIdFunc: testAccIntegrationAliasImportIDProject("semaphore_ex_integration_alias.test"),
 			},
 			// Delete
 			{
 				Config: testAccIntegrationAliasDependencyConfig(nameSuffix),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_integration_alias.test"),
+					testAccResourceNotExists("semaphore_ex_integration_alias.test"),
 				),
 			},
 		},
@@ -224,20 +224,20 @@ func TestAcc_IntegrationAliasResource_scopeSwitchForcesReplace(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: testAccIntegrationAliasDependencyConfig(nameSuffix) + `
-resource "semaphoreui_integration_alias" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_integration_alias" "test" {
+  project_id = semaphore_ex_project.test.id
 }
 `,
-				Check: testAccIntegrationAliasExists("semaphoreui_integration_alias.test"),
+				Check: testAccIntegrationAliasExists("semaphore_ex_integration_alias.test"),
 			},
 			{
 				Config: testAccIntegrationAliasDependencyConfig(nameSuffix) + `
-resource "semaphoreui_integration_alias" "test" {
-  project_id     = semaphoreui_project.test.id
-  integration_id = semaphoreui_project_integration.test.id
+resource "semaphore_ex_integration_alias" "test" {
+  project_id     = semaphore_ex_project.test.id
+  integration_id = semaphore_ex_project_integration.test.id
 }
 `,
-				Check: testAccIntegrationAliasExists("semaphoreui_integration_alias.test"),
+				Check: testAccIntegrationAliasExists("semaphore_ex_integration_alias.test"),
 			},
 		},
 	})

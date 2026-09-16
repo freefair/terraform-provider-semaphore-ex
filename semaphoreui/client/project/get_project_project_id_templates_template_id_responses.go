@@ -13,7 +13,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 
-	"terraform-provider-semaphoreui/semaphoreui/models"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 )
 
 // GetProjectProjectIDTemplatesTemplateIDReader is a Reader for the GetProjectProjectIDTemplatesTemplateID structure.

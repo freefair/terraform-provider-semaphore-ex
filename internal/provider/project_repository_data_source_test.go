@@ -8,54 +8,54 @@ import (
 
 func testAccProjectRepositoryDataSourceConfigByID() string {
 	return `
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "Project 1"
 }
 
-resource "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "None"
   none       = {}
 }
 
-resource "semaphoreui_project_repository" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_repository" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Test Repository"
   url        = "/path/to/repo"
   branch     = ""
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
 }
 
-data "semaphoreui_project_repository" "test" {
-  project_id = semaphoreui_project.test.id
-  id         = semaphoreui_project_repository.test.id
+data "semaphore_ex_project_repository" "test" {
+  project_id = semaphore_ex_project.test.id
+  id         = semaphore_ex_project_repository.test.id
 }`
 }
 
 func testAccProjectRepositoryDataSourceConfigByName() string {
 	return `
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "Project 1"
 }
 
-resource "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "None"
   none       = {}
 }
 
-resource "semaphoreui_project_repository" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_repository" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Semaphore"
   url        = "https://github.com/semaphoreui/semaphore.git"
   branch     = "develop"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
 }
 
-data "semaphoreui_project_repository" "test" {
-  project_id = semaphoreui_project.test.id
+data "semaphore_ex_project_repository" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Semaphore"
-  depends_on = [semaphoreui_project_repository.test]
+  depends_on = [semaphore_ex_project_repository.test]
 }`
 }
 
@@ -67,12 +67,12 @@ func TestAcc_ProjectRepositoryDataSource_basicID(t *testing.T) {
 			{
 				Config: testAccProjectRepositoryDataSourceConfigByID(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_project_repository.test", "name", "Test Repository"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_repository.test", "url", "/path/to/repo"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_repository.test", "branch", ""),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_repository.test", "id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_repository.test", "project_id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_repository.test", "ssh_key_id"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_repository.test", "name", "Test Repository"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_repository.test", "url", "/path/to/repo"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_repository.test", "branch", ""),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_repository.test", "id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_repository.test", "project_id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_repository.test", "ssh_key_id"),
 				),
 			},
 		},
@@ -87,12 +87,12 @@ func TestAcc_ProjectRepositoryDataSource_basicName(t *testing.T) {
 			{
 				Config: testAccProjectRepositoryDataSourceConfigByName(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_project_repository.test", "name", "Semaphore"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_repository.test", "url", "https://github.com/semaphoreui/semaphore.git"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_repository.test", "branch", "develop"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_repository.test", "id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_repository.test", "project_id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_repository.test", "ssh_key_id"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_repository.test", "name", "Semaphore"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_repository.test", "url", "https://github.com/semaphoreui/semaphore.git"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_repository.test", "branch", "develop"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_repository.test", "id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_repository.test", "project_id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_repository.test", "ssh_key_id"),
 				),
 			},
 		},

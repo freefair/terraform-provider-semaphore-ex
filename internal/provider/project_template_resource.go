@@ -3,13 +3,14 @@ package provider
 import (
 	"context"
 	"encoding/json"
+	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/template"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
+	"github.com/hashicorp/terraform-plugin-framework-validators/resourcevalidator"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"sort"
-	apiclient "terraform-provider-semaphoreui/semaphoreui/client"
-	"terraform-provider-semaphoreui/semaphoreui/client/template"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -102,18 +103,36 @@ func (v playbookRequiredValidator) ValidateResource(ctx context.Context, req res
 }
 
 func (r *projectTemplateResource) ConfigValidators(_ context.Context) []resource.ConfigValidator {
-	return []resource.ConfigValidator{playbookRequiredValidator{}}
+	return []resource.ConfigValidator{playbookRequiredValidator{}, resourcevalidator.ExactlyOneOf(path.MatchRoot("environment_id"), path.MatchRoot("environment_ids"))}
 }
 
 func convertProjectTemplateModelToTemplateRequest(ctx context.Context, template ProjectTemplateModel) *models.TemplateRequest {
-	// SemaphoreUI v2.16+ replaced the singular environment_id with an
-	// environment_ids array. The legacy environment_id is still accepted on
-	// create but is read back as 0; only environment_ids round-trips on GET.
-	envID := template.EnvironmentID.ValueInt64()
+	envIDs := []int64{}
+	if !template.EnvironmentIDs.IsNull() && !template.EnvironmentIDs.IsUnknown() {
+		template.EnvironmentIDs.ElementsAs(ctx, &envIDs, false)
+	}
+	// The legacy input changes one group; unchanged legacy configurations retain
+	// all groups discovered on refresh rather than silently deleting them.
+	if !template.EnvironmentID.IsNull() && !template.EnvironmentID.IsUnknown() {
+		legacy := template.EnvironmentID.ValueInt64()
+		found := false
+		for _, id := range envIDs {
+			if id == legacy {
+				found = true
+			}
+		}
+		if !found {
+			envIDs = []int64{legacy}
+		}
+	}
+	sort.Slice(envIDs, func(i, j int) bool { return envIDs[i] < envIDs[j] })
 	model := models.TemplateRequest{
 		ProjectID:               template.ProjectID.ValueInt64(),
-		EnvironmentID:           envID,
-		EnvironmentIds:          []int64{envID},
+		EnvironmentIds:          envIDs,
+		WorkingDirectory:        template.WorkingDirectory.ValueStringPointer(),
+		ExecutorImage:           template.ExecutorImage.ValueStringPointer(),
+		SuppressErrorAlerts:     template.SuppressErrorAlerts.ValueBool(),
+		RunnerTagMatchMode:      template.RunnerTagMatchMode.ValueString(),
 		InventoryID:             template.InventoryID.ValueInt64(),
 		RepositoryID:            template.RepositoryID.ValueInt64(),
 		App:                     template.App.ValueString(),
@@ -121,6 +140,15 @@ func convertProjectTemplateModelToTemplateRequest(ctx context.Context, template 
 		Playbook:                template.Playbook.ValueString(),
 		AllowOverrideArgsInTask: template.AllowOverrideArgsInTask.ValueBool(),
 		SuppressSuccessAlerts:   template.SuppressSuccessAlerts.ValueBool(),
+	}
+	if !template.RunnerTags.IsNull() && !template.RunnerTags.IsUnknown() {
+		template.RunnerTags.ElementsAs(ctx, &model.RunnerTags, false)
+	}
+	if model.WorkingDirectory != nil && *model.WorkingDirectory == "" {
+		model.WorkingDirectory = nil
+	}
+	if model.RunnerTagMatchMode == "" {
+		model.RunnerTagMatchMode = "all"
 	}
 	if !template.ID.IsNull() && !template.ID.IsUnknown() {
 		model.ID = template.ID.ValueInt64()
@@ -221,16 +249,44 @@ func (a ByVaultID) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByVaultID) Less(i, j int) bool { return a[i].ID < a[j].ID }
 
 func convertTemplateResponseToProjectTemplateModel(ctx context.Context, request *models.Template, prev *ProjectTemplateModel) ProjectTemplateModel {
-	// v2.16+ stores environment in environment_ids[]; legacy environment_id
-	// reads back as 0 even when set. Prefer the array when present.
-	envID := request.EnvironmentID
-	if len(request.EnvironmentIds) > 0 {
-		envID = request.EnvironmentIds[0]
+	envIDs := request.EnvironmentIds
+	if envIDs == nil {
+		envIDs = []int64{}
+		if request.EnvironmentID > 0 {
+			envIDs = append(envIDs, request.EnvironmentID)
+		}
+	}
+	groups, _ := types.SetValueFrom(ctx, types.Int64Type, envIDs)
+	legacy := types.Int64Null()
+	if len(envIDs) > 0 {
+		legacy = types.Int64Value(envIDs[0])
+	}
+	tags := request.RunnerTags
+	if tags == nil {
+		tags = []string{}
+	}
+	runnerTags, _ := types.SetValueFrom(ctx, types.StringType, tags)
+	workingDirectory, executorImage := "", ""
+	if request.WorkingDirectory != nil {
+		workingDirectory = *request.WorkingDirectory
+	}
+	if request.ExecutorImage != nil {
+		executorImage = *request.ExecutorImage
+	}
+	matchMode := request.RunnerTagMatchMode
+	if matchMode == "" {
+		matchMode = "all"
 	}
 	model := ProjectTemplateModel{
 		ID:                      types.Int64Value(request.ID),
 		ProjectID:               types.Int64Value(request.ProjectID),
-		EnvironmentID:           types.Int64Value(envID),
+		EnvironmentID:           legacy,
+		EnvironmentIDs:          groups,
+		WorkingDirectory:        types.StringValue(workingDirectory),
+		ExecutorImage:           types.StringValue(executorImage),
+		SuppressErrorAlerts:     types.BoolValue(request.SuppressErrorAlerts),
+		RunnerTags:              runnerTags,
+		RunnerTagMatchMode:      types.StringValue(matchMode),
 		InventoryID:             types.Int64Value(request.InventoryID),
 		RepositoryID:            types.Int64Value(request.RepositoryID),
 		App:                     types.StringValue(request.App),
@@ -427,6 +483,17 @@ func (r *projectTemplateResource) Update(ctx context.Context, req resource.Updat
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	var state ProjectTemplateModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	// Computed group IDs must remain unknown when the legacy input changes.
+	// Preserve refreshed memberships only for an unchanged legacy input.
+	if plan.EnvironmentIDs.IsUnknown() && plan.EnvironmentID.Equal(state.EnvironmentID) {
+		plan.EnvironmentIDs = state.EnvironmentIDs
 	}
 
 	_, err := r.client.Template.PutProjectProjectIDTemplatesTemplateID(&template.PutProjectProjectIDTemplatesTemplateIDParams{

@@ -63,16 +63,14 @@ GetProjectProjectIDSchedulesScheduleIDParams contains all the parameters to send
 */
 type GetProjectProjectIDSchedulesScheduleIDParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* ScheduleID.
-
-	   schedule ID
-	*/
+	// ScheduleID.
+	//
+	// schedule ID
 	ScheduleID int64
 
 	HTTPClient *http.Client

@@ -129,7 +129,7 @@ func (m *ProjectInviteRequest) validateRole(formats strfmt.Registry) error {
 }
 
 // ContextValidate validates this project invite request based on context it is used
-func (m *ProjectInviteRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *ProjectInviteRequest) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

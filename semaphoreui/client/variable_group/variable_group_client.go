@@ -44,9 +44,7 @@ func NewClientWithBearerToken(host, basePath, scheme, bearerToken string) Client
 	return &Client{transport: transport, formats: strfmt.Default}
 }
 
-/*
-Client for variable group API.
-*/
+// Client for variable group API.
 type Client struct {
 	transport runtime.ContextualTransport
 	formats   strfmt.Registry
@@ -115,17 +113,15 @@ type ClientService interface {
 	SetTransport(transport runtime.ContextualTransport)
 }
 
-/*
-DeleteProjectProjectIDEnvironmentEnvironmentIDremoves environment.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDEnvironmentEnvironmentIDContext] instead.
-*/
+// DeleteProjectProjectIDEnvironmentEnvironmentID removes environment.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDEnvironmentEnvironmentIDContext] instead.
 func (a *Client) DeleteProjectProjectIDEnvironmentEnvironmentID(params *DeleteProjectProjectIDEnvironmentEnvironmentIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDEnvironmentEnvironmentIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -134,11 +130,9 @@ func (a *Client) DeleteProjectProjectIDEnvironmentEnvironmentID(params *DeletePr
 	return a.DeleteProjectProjectIDEnvironmentEnvironmentIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDEnvironmentEnvironmentIDContextremoves environment.
-
-Do not use the deprecated [DeleteProjectProjectIDEnvironmentEnvironmentIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDEnvironmentEnvironmentIDContext removes environment.
+//
+// Do not use the deprecated [DeleteProjectProjectIDEnvironmentEnvironmentIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDEnvironmentEnvironmentIDContext(ctx context.Context, params *DeleteProjectProjectIDEnvironmentEnvironmentIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDEnvironmentEnvironmentIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -182,17 +176,15 @@ func (a *Client) DeleteProjectProjectIDEnvironmentEnvironmentIDContext(ctx conte
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDEnvironmentgets environment.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDEnvironmentContext] instead.
-*/
+// GetProjectProjectIDEnvironment gets environment.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDEnvironmentContext] instead.
 func (a *Client) GetProjectProjectIDEnvironment(params *GetProjectProjectIDEnvironmentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDEnvironmentOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -201,11 +193,9 @@ func (a *Client) GetProjectProjectIDEnvironment(params *GetProjectProjectIDEnvir
 	return a.GetProjectProjectIDEnvironmentContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDEnvironmentContextgets environment.
-
-Do not use the deprecated [GetProjectProjectIDEnvironmentParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDEnvironmentContext gets environment.
+//
+// Do not use the deprecated [GetProjectProjectIDEnvironmentParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDEnvironmentContext(ctx context.Context, params *GetProjectProjectIDEnvironmentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDEnvironmentOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -249,17 +239,15 @@ func (a *Client) GetProjectProjectIDEnvironmentContext(ctx context.Context, para
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDEnvironmentEnvironmentIDgets environment.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDEnvironmentEnvironmentIDContext] instead.
-*/
+// GetProjectProjectIDEnvironmentEnvironmentID gets environment.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDEnvironmentEnvironmentIDContext] instead.
 func (a *Client) GetProjectProjectIDEnvironmentEnvironmentID(params *GetProjectProjectIDEnvironmentEnvironmentIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDEnvironmentEnvironmentIDOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -268,11 +256,9 @@ func (a *Client) GetProjectProjectIDEnvironmentEnvironmentID(params *GetProjectP
 	return a.GetProjectProjectIDEnvironmentEnvironmentIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDEnvironmentEnvironmentIDContextgets environment.
-
-Do not use the deprecated [GetProjectProjectIDEnvironmentEnvironmentIDParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDEnvironmentEnvironmentIDContext gets environment.
+//
+// Do not use the deprecated [GetProjectProjectIDEnvironmentEnvironmentIDParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDEnvironmentEnvironmentIDContext(ctx context.Context, params *GetProjectProjectIDEnvironmentEnvironmentIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDEnvironmentEnvironmentIDOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -316,17 +302,15 @@ func (a *Client) GetProjectProjectIDEnvironmentEnvironmentIDContext(ctx context.
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDEnvironmentadds environment.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDEnvironmentContext] instead.
-*/
+// PostProjectProjectIDEnvironment adds environment.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDEnvironmentContext] instead.
 func (a *Client) PostProjectProjectIDEnvironment(params *PostProjectProjectIDEnvironmentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDEnvironmentCreated, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -335,11 +319,9 @@ func (a *Client) PostProjectProjectIDEnvironment(params *PostProjectProjectIDEnv
 	return a.PostProjectProjectIDEnvironmentContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDEnvironmentContextadds environment.
-
-Do not use the deprecated [PostProjectProjectIDEnvironmentParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDEnvironmentContext adds environment.
+//
+// Do not use the deprecated [PostProjectProjectIDEnvironmentParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDEnvironmentContext(ctx context.Context, params *PostProjectProjectIDEnvironmentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDEnvironmentCreated, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -383,17 +365,15 @@ func (a *Client) PostProjectProjectIDEnvironmentContext(ctx context.Context, par
 	panic(msg)
 }
 
-/*
-PutProjectProjectIDEnvironmentEnvironmentIDupdates environment.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PutProjectProjectIDEnvironmentEnvironmentIDContext] instead.
-*/
+// PutProjectProjectIDEnvironmentEnvironmentID updates environment.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PutProjectProjectIDEnvironmentEnvironmentIDContext] instead.
 func (a *Client) PutProjectProjectIDEnvironmentEnvironmentID(params *PutProjectProjectIDEnvironmentEnvironmentIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDEnvironmentEnvironmentIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -402,11 +382,9 @@ func (a *Client) PutProjectProjectIDEnvironmentEnvironmentID(params *PutProjectP
 	return a.PutProjectProjectIDEnvironmentEnvironmentIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PutProjectProjectIDEnvironmentEnvironmentIDContextupdates environment.
-
-Do not use the deprecated [PutProjectProjectIDEnvironmentEnvironmentIDParams.Context] with this method: it would be ignored.
-*/
+// PutProjectProjectIDEnvironmentEnvironmentIDContext updates environment.
+//
+// Do not use the deprecated [PutProjectProjectIDEnvironmentEnvironmentIDParams.Context] with this method: it would be ignored.
 func (a *Client) PutProjectProjectIDEnvironmentEnvironmentIDContext(ctx context.Context, params *PutProjectProjectIDEnvironmentEnvironmentIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDEnvironmentEnvironmentIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {

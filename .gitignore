@@ -39,3 +39,7 @@ website/vendor
 
 # Keep windows files with windows line endings
 *.winfile eol=crlf
+
+# Local generated agent context and isolated acceptance checkout
+.claude/
+.test-semaphore-ex/

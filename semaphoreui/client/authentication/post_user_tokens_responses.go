@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag/jsonutils"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // PostUserTokensReader is a Reader for the PostUserTokens structure.
@@ -39,11 +39,9 @@ func NewPostUserTokensCreated() *PostUserTokensCreated {
 	return &PostUserTokensCreated{}
 }
 
-/*
-PostUserTokensCreated describes a response with status code 201, with default header values.
-
-API Token
-*/
+// PostUserTokensCreated describes a response with status code 201, with default header values.
+//
+// API Token
 type PostUserTokensCreated struct {
 	Payload *models.APIToken
 }
@@ -104,10 +102,9 @@ func (o *PostUserTokensCreated) readResponse(response runtime.ClientResponse, co
 	return nil
 }
 
-/*
-PostUserTokensBody post user tokens body
-swagger:model PostUserTokensBody
-*/
+// PostUserTokensBody post user tokens body
+//
+// swagger:model PostUserTokensBody
 type PostUserTokensBody struct {
 
 	// name
@@ -116,12 +113,12 @@ type PostUserTokensBody struct {
 }
 
 // Validate validates this post user tokens body
-func (o *PostUserTokensBody) Validate(formats strfmt.Registry) error {
+func (o *PostUserTokensBody) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this post user tokens body based on context it is used
-func (o *PostUserTokensBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (o *PostUserTokensBody) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

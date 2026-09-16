@@ -558,12 +558,12 @@ type ProjectBackupEnvironmentsItems0 struct {
 }
 
 // Validate validates this project backup environments items0
-func (m *ProjectBackupEnvironmentsItems0) Validate(formats strfmt.Registry) error {
+func (m *ProjectBackupEnvironmentsItems0) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this project backup environments items0 based on context it is used
-func (m *ProjectBackupEnvironmentsItems0) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *ProjectBackupEnvironmentsItems0) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 
@@ -667,7 +667,7 @@ func (m *ProjectBackupInventoriesItems0) validateType(formats strfmt.Registry) e
 }
 
 // ContextValidate validates this project backup inventories items0 based on context it is used
-func (m *ProjectBackupInventoriesItems0) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *ProjectBackupInventoriesItems0) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 
@@ -762,7 +762,7 @@ func (m *ProjectBackupKeysItems0) validateType(formats strfmt.Registry) error {
 }
 
 // ContextValidate validates this project backup keys items0 based on context it is used
-func (m *ProjectBackupKeysItems0) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *ProjectBackupKeysItems0) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 
@@ -833,7 +833,7 @@ func (m *ProjectBackupMeta) validateMaxParallelTasks(formats strfmt.Registry) er
 }
 
 // ContextValidate validates this project backup meta based on context it is used
-func (m *ProjectBackupMeta) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *ProjectBackupMeta) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 
@@ -874,12 +874,12 @@ type ProjectBackupRepositoriesItems0 struct {
 }
 
 // Validate validates this project backup repositories items0
-func (m *ProjectBackupRepositoriesItems0) Validate(formats strfmt.Registry) error {
+func (m *ProjectBackupRepositoriesItems0) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this project backup repositories items0 based on context it is used
-func (m *ProjectBackupRepositoriesItems0) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *ProjectBackupRepositoriesItems0) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 
@@ -962,12 +962,12 @@ type ProjectBackupTemplatesItems0 struct {
 }
 
 // Validate validates this project backup templates items0
-func (m *ProjectBackupTemplatesItems0) Validate(formats strfmt.Registry) error {
+func (m *ProjectBackupTemplatesItems0) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this project backup templates items0 based on context it is used
-func (m *ProjectBackupTemplatesItems0) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *ProjectBackupTemplatesItems0) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 
@@ -1029,7 +1029,7 @@ func (m *ProjectBackupViewsItems0) validatePosition(formats strfmt.Registry) err
 }
 
 // ContextValidate validates this project backup views items0 based on context it is used
-func (m *ProjectBackupViewsItems0) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *ProjectBackupViewsItems0) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

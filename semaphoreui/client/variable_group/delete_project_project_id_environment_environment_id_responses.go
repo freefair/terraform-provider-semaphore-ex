@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDEnvironmentEnvironmentIDNoContent() *DeleteProject
 	return &DeleteProjectProjectIDEnvironmentEnvironmentIDNoContent{}
 }
 
-/*
-DeleteProjectProjectIDEnvironmentEnvironmentIDNoContent describes a response with status code 204, with default header values.
-
-environment removed
-*/
+// DeleteProjectProjectIDEnvironmentEnvironmentIDNoContent describes a response with status code 204, with default header values.
+//
+// environment removed
 type DeleteProjectProjectIDEnvironmentEnvironmentIDNoContent struct {
 }
 

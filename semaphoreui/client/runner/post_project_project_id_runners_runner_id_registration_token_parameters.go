@@ -63,16 +63,14 @@ PostProjectProjectIDRunnersRunnerIDRegistrationTokenParams contains all the para
 */
 type PostProjectProjectIDRunnersRunnerIDRegistrationTokenParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* RunnerID.
-
-	   Project runner ID
-	*/
+	// RunnerID.
+	//
+	// Project runner ID
 	RunnerID int64
 
 	HTTPClient *http.Client

@@ -31,12 +31,12 @@ type Event struct {
 }
 
 // Validate validates this event
-func (m *Event) Validate(formats strfmt.Registry) error {
+func (m *Event) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this event based on context it is used
-func (m *Event) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *Event) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

@@ -3,9 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
+	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/project"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	apiclient "terraform-provider-semaphoreui/semaphoreui/client"
-	"terraform-provider-semaphoreui/semaphoreui/client/project"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 )
@@ -61,6 +61,7 @@ func (d *projectUserDataSource) getProjectUserModelFromAPI(projectId types.Int64
 				ProjectID: projectId,
 				UserID:    userId,
 				Role:      types.StringValue(projectUser.Role),
+				Revision:  types.Int64Value(projectUser.Revision),
 				Username:  types.StringValue(projectUser.Username),
 				Name:      types.StringValue(projectUser.Name),
 			}, nil

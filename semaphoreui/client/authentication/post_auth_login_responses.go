@@ -39,11 +39,9 @@ func NewPostAuthLoginNoContent() *PostAuthLoginNoContent {
 	return &PostAuthLoginNoContent{}
 }
 
-/*
-PostAuthLoginNoContent describes a response with status code 204, with default header values.
-
-You are logged in
-*/
+// PostAuthLoginNoContent describes a response with status code 204, with default header values.
+//
+// You are logged in
 type PostAuthLoginNoContent struct {
 }
 
@@ -95,11 +93,9 @@ func NewPostAuthLoginBadRequest() *PostAuthLoginBadRequest {
 	return &PostAuthLoginBadRequest{}
 }
 
-/*
-PostAuthLoginBadRequest describes a response with status code 400, with default header values.
-
-something in body is missing / is invalid
-*/
+// PostAuthLoginBadRequest describes a response with status code 400, with default header values.
+//
+// something in body is missing / is invalid
 type PostAuthLoginBadRequest struct {
 }
 

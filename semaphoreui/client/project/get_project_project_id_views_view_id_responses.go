@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetProjectProjectIDViewsViewIDReader is a Reader for the GetProjectProjectIDViewsViewID structure.
@@ -37,11 +37,9 @@ func NewGetProjectProjectIDViewsViewIDOK() *GetProjectProjectIDViewsViewIDOK {
 	return &GetProjectProjectIDViewsViewIDOK{}
 }
 
-/*
-GetProjectProjectIDViewsViewIDOK describes a response with status code 200, with default header values.
-
-view object
-*/
+// GetProjectProjectIDViewsViewIDOK describes a response with status code 200, with default header values.
+//
+// view object
 type GetProjectProjectIDViewsViewIDOK struct {
 	Payload *models.View
 }

@@ -35,11 +35,9 @@ func NewPostProjectProjectIDTasksTaskIDStopNoContent() *PostProjectProjectIDTask
 	return &PostProjectProjectIDTasksTaskIDStopNoContent{}
 }
 
-/*
-PostProjectProjectIDTasksTaskIDStopNoContent describes a response with status code 204, with default header values.
-
-Task queued
-*/
+// PostProjectProjectIDTasksTaskIDStopNoContent describes a response with status code 204, with default header values.
+//
+// Task queued
 type PostProjectProjectIDTasksTaskIDStopNoContent struct {
 }
 
@@ -86,10 +84,9 @@ func (o *PostProjectProjectIDTasksTaskIDStopNoContent) readResponse(response run
 	return nil
 }
 
-/*
-PostProjectProjectIDTasksTaskIDStopBody post project project ID tasks task ID stop body
-swagger:model PostProjectProjectIDTasksTaskIDStopBody
-*/
+// PostProjectProjectIDTasksTaskIDStopBody post project project ID tasks task ID stop body
+//
+// swagger:model PostProjectProjectIDTasksTaskIDStopBody
 type PostProjectProjectIDTasksTaskIDStopBody struct {
 
 	// Force stop (kill) the task immediately
@@ -97,12 +94,12 @@ type PostProjectProjectIDTasksTaskIDStopBody struct {
 }
 
 // Validate validates this post project project ID tasks task ID stop body
-func (o *PostProjectProjectIDTasksTaskIDStopBody) Validate(formats strfmt.Registry) error {
+func (o *PostProjectProjectIDTasksTaskIDStopBody) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this post project project ID tasks task ID stop body based on context it is used
-func (o *PostProjectProjectIDTasksTaskIDStopBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (o *PostProjectProjectIDTasksTaskIDStopBody) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

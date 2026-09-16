@@ -2,10 +2,10 @@ package provider
 
 import (
 	"fmt"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/repository"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"strconv"
-	"terraform-provider-semaphoreui/semaphoreui/client/repository"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -48,12 +48,12 @@ func testAccProjectRepositoryExists(resourceName string) resource.TestCheckFunc 
 
 func testAccProjectRepositoryEmptyConfig(nameSuffix string) string {
 	return fmt.Sprintf(`
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "test-%[1]s"
 }
 
-resource "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name	     = "test-%[1]s"
   none = {}
 }
@@ -63,12 +63,12 @@ resource "semaphoreui_project_key" "test" {
 func testAccProjectRepositoryConfig(nameSuffix string, url string, branch string) string {
 	return fmt.Sprintf(`
 %[1]s
-resource "semaphoreui_project_repository" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_repository" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Test %[2]s"
   url        = "%[3]s"
   branch     = "%[4]s"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
 }`, testAccProjectRepositoryEmptyConfig(nameSuffix), nameSuffix, url, branch)
 }
 
@@ -93,40 +93,40 @@ func TestAcc_ProjectRepositoryResource_basic(t *testing.T) {
 			{
 				Config: testAccProjectRepositoryConfig(nameSuffix, "https://github.com/semaphoreui/semaphore.git", "develop"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectRepositoryExists("semaphoreui_project_repository.test"),
-					resource.TestCheckResourceAttr("semaphoreui_project_repository.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_repository.test", "url", "https://github.com/semaphoreui/semaphore.git"),
-					resource.TestCheckResourceAttr("semaphoreui_project_repository.test", "branch", "develop"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_repository.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_repository.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_repository.test", "ssh_key_id"),
+					testAccProjectRepositoryExists("semaphore_ex_project_repository.test"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_repository.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_repository.test", "url", "https://github.com/semaphoreui/semaphore.git"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_repository.test", "branch", "develop"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_repository.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_repository.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_repository.test", "ssh_key_id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_repository.test",
+				ResourceName:      "semaphore_ex_project_repository.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectRepositoryImportID("semaphoreui_project_repository.test"),
+				ImportStateIdFunc: testAccProjectRepositoryImportID("semaphore_ex_project_repository.test"),
 			},
 			// Update and Read testing
 			{
 				Config: testAccProjectRepositoryConfig(nameSuffix, "/absolute/path/to/repo", ""),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectRepositoryExists("semaphoreui_project_repository.test"),
-					resource.TestCheckResourceAttr("semaphoreui_project_repository.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_repository.test", "url", "/absolute/path/to/repo"),
-					resource.TestCheckResourceAttr("semaphoreui_project_repository.test", "branch", ""),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_repository.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_repository.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_repository.test", "ssh_key_id"),
+					testAccProjectRepositoryExists("semaphore_ex_project_repository.test"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_repository.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_repository.test", "url", "/absolute/path/to/repo"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_repository.test", "branch", ""),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_repository.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_repository.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_repository.test", "ssh_key_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: testAccProjectRepositoryEmptyConfig(nameSuffix),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_repository.test"),
+					testAccResourceNotExists("semaphore_ex_project_repository.test"),
 				),
 			},
 		},

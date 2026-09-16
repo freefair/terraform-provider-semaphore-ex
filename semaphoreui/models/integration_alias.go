@@ -22,12 +22,12 @@ type IntegrationAlias struct {
 }
 
 // Validate validates this integration alias
-func (m *IntegrationAlias) Validate(formats strfmt.Registry) error {
+func (m *IntegrationAlias) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this integration alias based on context it is used
-func (m *IntegrationAlias) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *IntegrationAlias) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

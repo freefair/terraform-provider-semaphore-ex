@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDKeysKeyIDNoContent() *DeleteProjectProjectIDKeysKe
 	return &DeleteProjectProjectIDKeysKeyIDNoContent{}
 }
 
-/*
-DeleteProjectProjectIDKeysKeyIDNoContent describes a response with status code 204, with default header values.
-
-access key removed
-*/
+// DeleteProjectProjectIDKeysKeyIDNoContent describes a response with status code 204, with default header values.
+//
+// access key removed
 type DeleteProjectProjectIDKeysKeyIDNoContent struct {
 }
 

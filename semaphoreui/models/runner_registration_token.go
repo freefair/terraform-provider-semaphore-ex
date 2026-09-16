@@ -28,7 +28,7 @@ type RunnerRegistrationToken struct {
 }
 
 // Validate validates this runner registration token
-func (m *RunnerRegistrationToken) Validate(formats strfmt.Registry) error {
+func (m *RunnerRegistrationToken) Validate(_ strfmt.Registry) error {
 	return nil
 }
 

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 
-	apiclient "terraform-provider-semaphoreui/semaphoreui/client"
-	"terraform-provider-semaphoreui/semaphoreui/client/runner"
-	"terraform-provider-semaphoreui/semaphoreui/models"
+	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/runner"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 
 	"github.com/go-openapi/runtime"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -63,14 +63,15 @@ func (r *runnerResource) Schema(ctx context.Context, _ resource.SchemaRequest, r
 	resp.Schema = RunnerSchema().GetResource(ctx)
 }
 
-func convertRunnerModelToRunnerRequest(ctx context.Context, model RunnerModel) (*models.RunnerRequest, diag.Diagnostics) {
+func convertRunnerModelToRunnerRequest(ctx context.Context, model RunnerModel, fallbackPolicy string) (*models.RunnerRequest, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	request := models.RunnerRequest{
-		Name:             model.Name.ValueString(),
-		Webhook:          model.Webhook.ValueString(),
-		MaxParallelTasks: model.MaxParallelTasks.ValueInt64(),
-		Active:           model.Active.ValueBool(),
-		IsDefault:        model.IsDefault.ValueBool(),
+		Name:               model.Name.ValueString(),
+		Webhook:            model.Webhook.ValueString(),
+		MaxParallelTasks:   model.MaxParallelTasks.ValueInt64(),
+		Active:             model.Active.ValueBool(),
+		IsDefault:          model.IsDefault.ValueBool(),
+		RegistrationPolicy: runnerRegistrationPolicy(model.RegistrationPolicy, fallbackPolicy),
 	}
 	if !model.Tags.IsNull() && !model.Tags.IsUnknown() {
 		var tags []string
@@ -80,27 +81,32 @@ func convertRunnerModelToRunnerRequest(ctx context.Context, model RunnerModel) (
 	return &request, diags
 }
 
-// convertRunnerResponseToRunnerModel maps an API response onto the model. The
-// token and private key are only present on responses backed by RunnerWithToken
-// (create and single-runner GET); they are empty for unregistered runners and
-// for list responses, which callers wrap without those fields.
-func convertRunnerResponseToRunnerModel(ctx context.Context, response *models.RunnerWithToken) (RunnerModel, diag.Diagnostics) {
+func runnerRegistrationPolicy(value types.String, fallback string) string {
+	if value.IsNull() || value.IsUnknown() {
+		return fallback
+	}
+	return value.ValueString()
+}
+
+// convertRunnerResponseToRunnerModel maps only durable runner configuration.
+// Runner credentials are intentionally not state: the API returns registration
+// credentials once and redacts them on later reads.
+func convertRunnerResponseToRunnerModel(ctx context.Context, response *models.Runner) (RunnerModel, diag.Diagnostics) {
 	tagsSource := response.Tags
 	if tagsSource == nil {
 		tagsSource = []string{}
 	}
 	tags, diags := types.SetValueFrom(ctx, types.StringType, tagsSource)
 	model := RunnerModel{
-		ID:               types.Int64Value(response.ID),
-		Name:             types.StringValue(response.Name),
-		Webhook:          types.StringValue(response.Webhook),
-		MaxParallelTasks: types.Int64Value(response.MaxParallelTasks),
-		Active:           types.BoolValue(response.Active),
-		Tags:             tags,
-		IsDefault:        types.BoolValue(response.IsDefault),
-		Registered:       types.BoolValue(response.Registered),
-		Token:            types.StringValue(response.Token),
-		PrivateKey:       types.StringValue(response.PrivateKey),
+		ID:                 types.Int64Value(response.ID),
+		Name:               types.StringValue(response.Name),
+		Webhook:            types.StringValue(response.Webhook),
+		MaxParallelTasks:   types.Int64Value(response.MaxParallelTasks),
+		Active:             types.BoolValue(response.Active),
+		Tags:               tags,
+		IsDefault:          types.BoolValue(response.IsDefault),
+		Registered:         types.BoolValue(response.Registered),
+		RegistrationPolicy: types.StringValue(response.RegistrationPolicy),
 	}
 	return model, diags
 }
@@ -112,7 +118,7 @@ func (r *runnerResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	request, diags := convertRunnerModelToRunnerRequest(ctx, plan)
+	request, diags := convertRunnerModelToRunnerRequest(ctx, plan, "standard")
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -137,7 +143,7 @@ func (r *runnerResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	model, diags := convertRunnerResponseToRunnerModel(ctx, response.Payload)
+	model, diags := convertRunnerResponseToRunnerModel(ctx, &response.Payload.Runner)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -204,7 +210,11 @@ func (r *runnerResource) Update(ctx context.Context, req resource.UpdateRequest,
 		return
 	}
 
-	request, diags := convertRunnerModelToRunnerRequest(ctx, plan)
+	if state.RegistrationPolicy.IsNull() || state.RegistrationPolicy.IsUnknown() || state.RegistrationPolicy.ValueString() == "" {
+		resp.Diagnostics.AddError("Runner Registration Policy Unavailable", "The current runner registration policy is missing from state. Refresh or import the runner before updating it; the provider will not weaken its policy.")
+		return
+	}
+	request, diags := convertRunnerModelToRunnerRequest(ctx, plan, state.RegistrationPolicy.ValueString())
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return

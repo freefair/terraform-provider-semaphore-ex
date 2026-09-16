@@ -44,9 +44,7 @@ func NewClientWithBearerToken(host, basePath, scheme, bearerToken string) Client
 	return &Client{transport: transport, formats: strfmt.Default}
 }
 
-/*
-Client for key store API.
-*/
+// Client for key store API.
 type Client struct {
 	transport runtime.ContextualTransport
 	formats   strfmt.Registry
@@ -109,17 +107,15 @@ type ClientService interface {
 	SetTransport(transport runtime.ContextualTransport)
 }
 
-/*
-DeleteProjectProjectIDKeysKeyIDremoves access key.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDKeysKeyIDContext] instead.
-*/
+// DeleteProjectProjectIDKeysKeyID removes access key.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDKeysKeyIDContext] instead.
 func (a *Client) DeleteProjectProjectIDKeysKeyID(params *DeleteProjectProjectIDKeysKeyIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDKeysKeyIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -128,11 +124,9 @@ func (a *Client) DeleteProjectProjectIDKeysKeyID(params *DeleteProjectProjectIDK
 	return a.DeleteProjectProjectIDKeysKeyIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDKeysKeyIDContextremoves access key.
-
-Do not use the deprecated [DeleteProjectProjectIDKeysKeyIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDKeysKeyIDContext removes access key.
+//
+// Do not use the deprecated [DeleteProjectProjectIDKeysKeyIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDKeysKeyIDContext(ctx context.Context, params *DeleteProjectProjectIDKeysKeyIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDKeysKeyIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -176,17 +170,15 @@ func (a *Client) DeleteProjectProjectIDKeysKeyIDContext(ctx context.Context, par
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDKeysgets access keys linked to project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDKeysContext] instead.
-*/
+// GetProjectProjectIDKeys gets access keys linked to project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDKeysContext] instead.
 func (a *Client) GetProjectProjectIDKeys(params *GetProjectProjectIDKeysParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDKeysOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -195,11 +187,9 @@ func (a *Client) GetProjectProjectIDKeys(params *GetProjectProjectIDKeysParams, 
 	return a.GetProjectProjectIDKeysContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDKeysContextgets access keys linked to project.
-
-Do not use the deprecated [GetProjectProjectIDKeysParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDKeysContext gets access keys linked to project.
+//
+// Do not use the deprecated [GetProjectProjectIDKeysParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDKeysContext(ctx context.Context, params *GetProjectProjectIDKeysParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDKeysOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -243,17 +233,15 @@ func (a *Client) GetProjectProjectIDKeysContext(ctx context.Context, params *Get
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDKeysadds access key.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDKeysContext] instead.
-*/
+// PostProjectProjectIDKeys adds access key.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDKeysContext] instead.
 func (a *Client) PostProjectProjectIDKeys(params *PostProjectProjectIDKeysParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDKeysCreated, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -262,11 +250,9 @@ func (a *Client) PostProjectProjectIDKeys(params *PostProjectProjectIDKeysParams
 	return a.PostProjectProjectIDKeysContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDKeysContextadds access key.
-
-Do not use the deprecated [PostProjectProjectIDKeysParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDKeysContext adds access key.
+//
+// Do not use the deprecated [PostProjectProjectIDKeysParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDKeysContext(ctx context.Context, params *PostProjectProjectIDKeysParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDKeysCreated, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -310,17 +296,15 @@ func (a *Client) PostProjectProjectIDKeysContext(ctx context.Context, params *Po
 	panic(msg)
 }
 
-/*
-PutProjectProjectIDKeysKeyIDupdates access key.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PutProjectProjectIDKeysKeyIDContext] instead.
-*/
+// PutProjectProjectIDKeysKeyID updates access key.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PutProjectProjectIDKeysKeyIDContext] instead.
 func (a *Client) PutProjectProjectIDKeysKeyID(params *PutProjectProjectIDKeysKeyIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDKeysKeyIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -329,11 +313,9 @@ func (a *Client) PutProjectProjectIDKeysKeyID(params *PutProjectProjectIDKeysKey
 	return a.PutProjectProjectIDKeysKeyIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PutProjectProjectIDKeysKeyIDContextupdates access key.
-
-Do not use the deprecated [PutProjectProjectIDKeysKeyIDParams.Context] with this method: it would be ignored.
-*/
+// PutProjectProjectIDKeysKeyIDContext updates access key.
+//
+// Do not use the deprecated [PutProjectProjectIDKeysKeyIDParams.Context] with this method: it would be ignored.
 func (a *Client) PutProjectProjectIDKeysKeyIDContext(ctx context.Context, params *PutProjectProjectIDKeysKeyIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PutProjectProjectIDKeysKeyIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {

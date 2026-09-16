@@ -38,11 +38,9 @@ func NewPostUsersUserIDPasswordNoContent() *PostUsersUserIDPasswordNoContent {
 	return &PostUsersUserIDPasswordNoContent{}
 }
 
-/*
-PostUsersUserIDPasswordNoContent describes a response with status code 204, with default header values.
-
-Password updated
-*/
+// PostUsersUserIDPasswordNoContent describes a response with status code 204, with default header values.
+//
+// Password updated
 type PostUsersUserIDPasswordNoContent struct {
 }
 
@@ -89,10 +87,9 @@ func (o *PostUsersUserIDPasswordNoContent) readResponse(response runtime.ClientR
 	return nil
 }
 
-/*
-PostUsersUserIDPasswordBody post users user ID password body
-swagger:model PostUsersUserIDPasswordBody
-*/
+// PostUsersUserIDPasswordBody post users user ID password body
+//
+// swagger:model PostUsersUserIDPasswordBody
 type PostUsersUserIDPasswordBody struct {
 
 	// password
@@ -127,7 +124,7 @@ func (o *PostUsersUserIDPasswordBody) validatePassword(formats strfmt.Registry) 
 }
 
 // ContextValidate validates this post users user ID password body based on context it is used
-func (o *PostUsersUserIDPasswordBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (o *PostUsersUserIDPasswordBody) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

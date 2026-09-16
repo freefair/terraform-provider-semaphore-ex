@@ -39,11 +39,9 @@ func NewPutProjectProjectIDRunnersRunnerIDNoContent() *PutProjectProjectIDRunner
 	return &PutProjectProjectIDRunnersRunnerIDNoContent{}
 }
 
-/*
-PutProjectProjectIDRunnersRunnerIDNoContent describes a response with status code 204, with default header values.
-
-Runner updated
-*/
+// PutProjectProjectIDRunnersRunnerIDNoContent describes a response with status code 204, with default header values.
+//
+// Runner updated
 type PutProjectProjectIDRunnersRunnerIDNoContent struct {
 }
 
@@ -95,11 +93,9 @@ func NewPutProjectProjectIDRunnersRunnerIDBadRequest() *PutProjectProjectIDRunne
 	return &PutProjectProjectIDRunnersRunnerIDBadRequest{}
 }
 
-/*
-PutProjectProjectIDRunnersRunnerIDBadRequest describes a response with status code 400, with default header values.
-
-Invalid request body or mismatched project ID
-*/
+// PutProjectProjectIDRunnersRunnerIDBadRequest describes a response with status code 400, with default header values.
+//
+// Invalid request body or mismatched project ID
 type PutProjectProjectIDRunnersRunnerIDBadRequest struct {
 }
 

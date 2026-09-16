@@ -63,10 +63,9 @@ GetUsersUserIDParams contains all the parameters to send to the API endpoint
 */
 type GetUsersUserIDParams struct {
 
-	/* UserID.
-
-	   User ID
-	*/
+	// UserID.
+	//
+	// User ID
 	UserID int64
 
 	HTTPClient *http.Client

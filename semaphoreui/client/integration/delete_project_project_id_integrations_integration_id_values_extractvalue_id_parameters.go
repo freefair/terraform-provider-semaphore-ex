@@ -63,22 +63,19 @@ DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams contai
 */
 type DeleteProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDParams struct {
 
-	/* ExtractvalueID.
-
-	   extractValue ID
-	*/
+	// ExtractvalueID.
+	//
+	// extractValue ID
 	ExtractvalueID int64
 
-	/* IntegrationID.
-
-	   integration ID
-	*/
+	// IntegrationID.
+	//
+	// integration ID
 	IntegrationID int64
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

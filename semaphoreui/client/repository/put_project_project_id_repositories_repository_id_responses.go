@@ -39,11 +39,9 @@ func NewPutProjectProjectIDRepositoriesRepositoryIDNoContent() *PutProjectProjec
 	return &PutProjectProjectIDRepositoriesRepositoryIDNoContent{}
 }
 
-/*
-PutProjectProjectIDRepositoriesRepositoryIDNoContent describes a response with status code 204, with default header values.
-
-Repository updated
-*/
+// PutProjectProjectIDRepositoriesRepositoryIDNoContent describes a response with status code 204, with default header values.
+//
+// Repository updated
 type PutProjectProjectIDRepositoriesRepositoryIDNoContent struct {
 }
 
@@ -95,11 +93,9 @@ func NewPutProjectProjectIDRepositoriesRepositoryIDBadRequest() *PutProjectProje
 	return &PutProjectProjectIDRepositoriesRepositoryIDBadRequest{}
 }
 
-/*
-PutProjectProjectIDRepositoriesRepositoryIDBadRequest describes a response with status code 400, with default header values.
-
-Bad request
-*/
+// PutProjectProjectIDRepositoriesRepositoryIDBadRequest describes a response with status code 400, with default header values.
+//
+// Bad request
 type PutProjectProjectIDRepositoriesRepositoryIDBadRequest struct {
 }
 

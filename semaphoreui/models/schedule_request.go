@@ -45,6 +45,9 @@ type ScheduleRequest struct {
 	// template id
 	TemplateID int64 `json:"template_id,omitempty"`
 
+	// IANA timezone; null uses the server default.
+	Timezone *string `json:"timezone,omitempty"`
+
 	// type
 	// Enum: ["","run_at"]
 	Type string `json:"type,omitempty"`

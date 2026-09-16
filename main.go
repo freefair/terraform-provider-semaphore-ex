@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 
-	"terraform-provider-semaphoreui/internal/provider"
+	"github.com/freefair/terraform-provider-semaphore-ex/internal/provider"
 )
 
 var (
@@ -26,7 +26,7 @@ func main() {
 	flag.Parse()
 
 	opts := providerserver.ServeOpts{
-		Address: "registry.terraform.io/semaphoreui/semaphore",
+		Address: "registry.terraform.io/freefair/semaphore-ex",
 		Debug:   debug,
 	}
 

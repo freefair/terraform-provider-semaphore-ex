@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetRunnersReader is a Reader for the GetRunners structure.
@@ -37,11 +37,9 @@ func NewGetRunnersOK() *GetRunnersOK {
 	return &GetRunnersOK{}
 }
 
-/*
-GetRunnersOK describes a response with status code 200, with default header values.
-
-Runners
-*/
+// GetRunnersOK describes a response with status code 200, with default header values.
+//
+// Runners
 type GetRunnersOK struct {
 	Payload []*models.Runner
 }

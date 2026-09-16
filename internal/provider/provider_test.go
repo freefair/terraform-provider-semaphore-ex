@@ -1,8 +1,9 @@
 package provider
 
 import (
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
+	"net/url"
 	"os"
-	"terraform-provider-semaphoreui/semaphoreui/client"
 	"testing"
 
 	httptransport "github.com/go-openapi/runtime/client"
@@ -14,7 +15,7 @@ import (
 
 var (
 	testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServer, error){
-		"semaphoreui": providerserver.NewProtocol6WithError(New("test")()),
+		"semaphore": providerserver.NewProtocol6WithError(New("test")()),
 	}
 )
 
@@ -34,7 +35,11 @@ var tc *client.SemaphoreUI
 func testClient() *client.SemaphoreUI {
 	if tc == nil {
 
-		r := httptransport.New("localhost:13000", "/api", []string{"http"})
+		u, err := url.Parse(os.Getenv("SEMAPHOREUI_API_BASE_URL"))
+		if err != nil {
+			panic(err)
+		}
+		r := httptransport.New(u.Host, u.Path, []string{u.Scheme})
 		r.DefaultAuthentication = httptransport.BearerToken(testApiToken())
 
 		tc = client.New(r, strfmt.Default)

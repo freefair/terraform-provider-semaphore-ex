@@ -34,12 +34,12 @@ type AnsibleTaskParams struct {
 }
 
 // Validate validates this ansible task params
-func (m *AnsibleTaskParams) Validate(formats strfmt.Registry) error {
+func (m *AnsibleTaskParams) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this ansible task params based on context it is used
-func (m *AnsibleTaskParams) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *AnsibleTaskParams) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

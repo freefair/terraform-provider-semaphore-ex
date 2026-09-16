@@ -39,11 +39,9 @@ func NewPutProjectProjectIDUsersUserIDNoContent() *PutProjectProjectIDUsersUserI
 	return &PutProjectProjectIDUsersUserIDNoContent{}
 }
 
-/*
-PutProjectProjectIDUsersUserIDNoContent describes a response with status code 204, with default header values.
-
-User updated
-*/
+// PutProjectProjectIDUsersUserIDNoContent describes a response with status code 204, with default header values.
+//
+// User updated
 type PutProjectProjectIDUsersUserIDNoContent struct {
 }
 
@@ -90,11 +88,14 @@ func (o *PutProjectProjectIDUsersUserIDNoContent) readResponse(response runtime.
 	return nil
 }
 
-/*
-PutProjectProjectIDUsersUserIDBody put project project ID users user ID body
-swagger:model PutProjectProjectIDUsersUserIDBody
-*/
+// PutProjectProjectIDUsersUserIDBody put project project ID users user ID body
+//
+// swagger:model PutProjectProjectIDUsersUserIDBody
 type PutProjectProjectIDUsersUserIDBody struct {
+
+	// revision
+	// Minimum: 1
+	Revision int64 `json:"revision,omitempty"`
 
 	// role
 	// Example: owner
@@ -106,6 +107,10 @@ type PutProjectProjectIDUsersUserIDBody struct {
 func (o *PutProjectProjectIDUsersUserIDBody) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := o.validateRevision(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := o.validateRole(formats); err != nil {
 		res = append(res, err)
 	}
@@ -113,6 +118,18 @@ func (o *PutProjectProjectIDUsersUserIDBody) Validate(formats strfmt.Registry) e
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (o *PutProjectProjectIDUsersUserIDBody) validateRevision(formats strfmt.Registry) error {
+	if typeutils.IsZero(o.Revision) { // not required
+		return nil
+	}
+
+	if err := validate.MinimumInt("Project User"+"."+"revision", "body", o.Revision, 1, false); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -165,7 +182,7 @@ func (o *PutProjectProjectIDUsersUserIDBody) validateRole(formats strfmt.Registr
 }
 
 // ContextValidate validates this put project project ID users user ID body based on context it is used
-func (o *PutProjectProjectIDUsersUserIDBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (o *PutProjectProjectIDUsersUserIDBody) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

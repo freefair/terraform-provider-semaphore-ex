@@ -19,12 +19,12 @@ type RunnerActive struct {
 }
 
 // Validate validates this runner active
-func (m *RunnerActive) Validate(formats strfmt.Registry) error {
+func (m *RunnerActive) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this runner active based on context it is used
-func (m *RunnerActive) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *RunnerActive) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

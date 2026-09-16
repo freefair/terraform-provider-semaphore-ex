@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDSchedulesScheduleIDNoContent() *DeleteProjectProje
 	return &DeleteProjectProjectIDSchedulesScheduleIDNoContent{}
 }
 
-/*
-DeleteProjectProjectIDSchedulesScheduleIDNoContent describes a response with status code 204, with default header values.
-
-schedule deleted
-*/
+// DeleteProjectProjectIDSchedulesScheduleIDNoContent describes a response with status code 204, with default header values.
+//
+// schedule deleted
 type DeleteProjectProjectIDSchedulesScheduleIDNoContent struct {
 }
 

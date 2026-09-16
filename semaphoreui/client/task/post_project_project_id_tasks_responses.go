@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag/jsonutils"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // PostProjectProjectIDTasksReader is a Reader for the PostProjectProjectIDTasks structure.
@@ -39,11 +39,9 @@ func NewPostProjectProjectIDTasksCreated() *PostProjectProjectIDTasksCreated {
 	return &PostProjectProjectIDTasksCreated{}
 }
 
-/*
-PostProjectProjectIDTasksCreated describes a response with status code 201, with default header values.
-
-Task queued
-*/
+// PostProjectProjectIDTasksCreated describes a response with status code 201, with default header values.
+//
+// Task queued
 type PostProjectProjectIDTasksCreated struct {
 	Payload *models.Task
 }
@@ -104,10 +102,9 @@ func (o *PostProjectProjectIDTasksCreated) readResponse(response runtime.ClientR
 	return nil
 }
 
-/*
-PostProjectProjectIDTasksBody post project project ID tasks body
-swagger:model PostProjectProjectIDTasksBody
-*/
+// PostProjectProjectIDTasksBody post project project ID tasks body
+//
+// swagger:model PostProjectProjectIDTasksBody
 type PostProjectProjectIDTasksBody struct {
 
 	// arguments
@@ -145,12 +142,12 @@ type PostProjectProjectIDTasksBody struct {
 }
 
 // Validate validates this post project project ID tasks body
-func (o *PostProjectProjectIDTasksBody) Validate(formats strfmt.Registry) error {
+func (o *PostProjectProjectIDTasksBody) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this post project project ID tasks body based on context it is used
-func (o *PostProjectProjectIDTasksBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (o *PostProjectProjectIDTasksBody) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

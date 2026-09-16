@@ -39,11 +39,9 @@ func NewPostProjectProjectIDIntegrationsIntegrationIDMatchersOK() *PostProjectPr
 	return &PostProjectProjectIDIntegrationsIntegrationIDMatchersOK{}
 }
 
-/*
-PostProjectProjectIDIntegrationsIntegrationIDMatchersOK describes a response with status code 200, with default header values.
-
-Integration Matcher Created
-*/
+// PostProjectProjectIDIntegrationsIntegrationIDMatchersOK describes a response with status code 200, with default header values.
+//
+// Integration Matcher Created
 type PostProjectProjectIDIntegrationsIntegrationIDMatchersOK struct {
 }
 
@@ -95,11 +93,9 @@ func NewPostProjectProjectIDIntegrationsIntegrationIDMatchersBadRequest() *PostP
 	return &PostProjectProjectIDIntegrationsIntegrationIDMatchersBadRequest{}
 }
 
-/*
-PostProjectProjectIDIntegrationsIntegrationIDMatchersBadRequest describes a response with status code 400, with default header values.
-
-Bad Integration Matcher params
-*/
+// PostProjectProjectIDIntegrationsIntegrationIDMatchersBadRequest describes a response with status code 400, with default header values.
+//
+// Bad Integration Matcher params
 type PostProjectProjectIDIntegrationsIntegrationIDMatchersBadRequest struct {
 }
 

@@ -3,12 +3,12 @@ package provider
 import (
 	"context"
 	"errors"
+	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/runner"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	apiclient "terraform-provider-semaphoreui/semaphoreui/client"
-	"terraform-provider-semaphoreui/semaphoreui/client/runner"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -51,15 +51,16 @@ func (r *projectRunnerResource) Schema(ctx context.Context, _ resource.SchemaReq
 	resp.Schema = ProjectRunnerSchema().GetResource(ctx)
 }
 
-func convertProjectRunnerModelToRunnerRequest(ctx context.Context, model ProjectRunnerModel) (*models.RunnerRequest, diag.Diagnostics) {
+func convertProjectRunnerModelToRunnerRequest(ctx context.Context, model ProjectRunnerModel, fallbackPolicy string) (*models.RunnerRequest, diag.Diagnostics) {
 	var diags diag.Diagnostics
 	request := models.RunnerRequest{
-		ProjectID:        model.ProjectID.ValueInt64(),
-		Name:             model.Name.ValueString(),
-		Webhook:          model.Webhook.ValueString(),
-		MaxParallelTasks: model.MaxParallelTasks.ValueInt64(),
-		Active:           model.Active.ValueBool(),
-		IsDefault:        model.IsDefault.ValueBool(),
+		ProjectID:          model.ProjectID.ValueInt64(),
+		Name:               model.Name.ValueString(),
+		Webhook:            model.Webhook.ValueString(),
+		MaxParallelTasks:   model.MaxParallelTasks.ValueInt64(),
+		Active:             model.Active.ValueBool(),
+		IsDefault:          model.IsDefault.ValueBool(),
+		RegistrationPolicy: runnerRegistrationPolicy(model.RegistrationPolicy, fallbackPolicy),
 	}
 	if !model.Tags.IsNull() && !model.Tags.IsUnknown() {
 		var tags []string
@@ -69,28 +70,25 @@ func convertProjectRunnerModelToRunnerRequest(ctx context.Context, model Project
 	return &request, diags
 }
 
-// convertRunnerResponseToProjectRunnerModel maps an API response onto the model.
-// The token and private key are only present on responses backed by
-// RunnerWithToken (create and single-runner GET); they are empty for unregistered
-// runners and for list responses, which callers wrap without those fields.
-func convertRunnerResponseToProjectRunnerModel(ctx context.Context, response *models.RunnerWithToken, projectID types.Int64) (ProjectRunnerModel, diag.Diagnostics) {
+// convertRunnerResponseToProjectRunnerModel maps durable runner configuration.
+// Registration credentials are returned once and are never persisted in state.
+func convertRunnerResponseToProjectRunnerModel(ctx context.Context, response *models.Runner, projectID types.Int64) (ProjectRunnerModel, diag.Diagnostics) {
 	tagsSource := response.Tags
 	if tagsSource == nil {
 		tagsSource = []string{}
 	}
 	tags, diags := types.SetValueFrom(ctx, types.StringType, tagsSource)
 	model := ProjectRunnerModel{
-		ID:               types.Int64Value(response.ID),
-		ProjectID:        projectID,
-		Name:             types.StringValue(response.Name),
-		Webhook:          types.StringValue(response.Webhook),
-		MaxParallelTasks: types.Int64Value(response.MaxParallelTasks),
-		Active:           types.BoolValue(response.Active),
-		Tags:             tags,
-		IsDefault:        types.BoolValue(response.IsDefault),
-		Registered:       types.BoolValue(response.Registered),
-		Token:            types.StringValue(response.Token),
-		PrivateKey:       types.StringValue(response.PrivateKey),
+		ID:                 types.Int64Value(response.ID),
+		ProjectID:          projectID,
+		Name:               types.StringValue(response.Name),
+		Webhook:            types.StringValue(response.Webhook),
+		MaxParallelTasks:   types.Int64Value(response.MaxParallelTasks),
+		Active:             types.BoolValue(response.Active),
+		Tags:               tags,
+		IsDefault:          types.BoolValue(response.IsDefault),
+		Registered:         types.BoolValue(response.Registered),
+		RegistrationPolicy: types.StringValue(response.RegistrationPolicy),
 	}
 	return model, diags
 }
@@ -102,7 +100,7 @@ func (r *projectRunnerResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	request, diags := convertProjectRunnerModelToRunnerRequest(ctx, plan)
+	request, diags := convertProjectRunnerModelToRunnerRequest(ctx, plan, "standard")
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -128,7 +126,7 @@ func (r *projectRunnerResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	model, diags := convertRunnerResponseToProjectRunnerModel(ctx, response.Payload, plan.ProjectID)
+	model, diags := convertRunnerResponseToProjectRunnerModel(ctx, &response.Payload.Runner, plan.ProjectID)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -197,7 +195,11 @@ func (r *projectRunnerResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	request, diags := convertProjectRunnerModelToRunnerRequest(ctx, plan)
+	if state.RegistrationPolicy.IsNull() || state.RegistrationPolicy.IsUnknown() || state.RegistrationPolicy.ValueString() == "" {
+		resp.Diagnostics.AddError("Project Runner Registration Policy Unavailable", "The current runner registration policy is missing from state. Refresh or import the runner before updating it; the provider will not weaken its policy.")
+		return
+	}
+	request, diags := convertProjectRunnerModelToRunnerRequest(ctx, plan, state.RegistrationPolicy.ValueString())
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return

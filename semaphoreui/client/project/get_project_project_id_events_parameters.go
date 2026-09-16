@@ -63,10 +63,9 @@ GetProjectProjectIDEventsParams contains all the parameters to send to the API e
 */
 type GetProjectProjectIDEventsParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

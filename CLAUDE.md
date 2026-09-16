@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Terraform provider for [SemaphoreUI](https://semaphoreui.com/), built on the terraform-plugin-framework (not the legacy SDKv2). Published to the Terraform Registry as `CruGlobal/semaphoreui`.
+Terraform provider for [SemaphoreUI](https://semaphoreui.com/), built on the terraform-plugin-framework (not the legacy SDKv2). Targets provider source `freefair/semaphore-ex` with resource prefix `semaphore_ex_`. Registry publication is a separate release step.
 
 Conventional Commits drive release-please (CHANGELOG.md + version bumps), so commit messages matter.
 
@@ -16,7 +16,7 @@ The project uses [Task](https://taskfile.dev) (`Taskfile.yml`). Common targets:
 - `task fmt` — `gofmt -s -w -e .`
 - `task lint` — `golangci-lint run --tests=false` (tests are intentionally excluded)
 - `task test` — unit tests: `go test -v -cover -timeout=120s -parallel=10 ./internal/...`
-- `task testacc` — acceptance tests against dockerized SemaphoreUI (see below)
+- `task testacc` — acceptance tests against an isolated Semaphore EX binary (see below)
 - `task generate` — regenerates `docs/` via tfplugindocs (CI fails if the diff is non-empty)
 - `task client` — regenerates `semaphoreui/` API client from `api-docs.yml` via `go-swagger` (requires `swagger` binary)
 - `task docker:start` / `task docker:stop` — bring the test environment up/down manually
@@ -30,15 +30,11 @@ For acceptance tests, `TF_ACC=1` plus the `SEMAPHOREUI_*` env vars must be set �
 
 ## Acceptance test environment
 
-`task testacc` orchestrates a real test environment:
-
-1. `task docker:start` brings up SemaphoreUI + MySQL via `docker-compose.yml` on ports `13000` (Semaphore) and `13306` (MySQL).
-2. `scripts/wait_for_test_env_ready.sh` polls the container health check.
-3. `scripts/setup_test_env.sh` injects a freshly generated API token directly into the MySQL `user__token` table — there is no API endpoint for token creation, so this DB write is the only way to seed auth.
-4. `go test` runs against the live server.
-5. `task docker:stop` tears it all down (with `-v`, so all data is lost).
-
-The SemaphoreUI version under test comes from the `SEMAPHORE_VERSION` env var (default `v2.18.6`). CI runs the matrix across the latest 3 minor lines (currently `v2.16.51 / v2.17.39 / v2.18.6`); see `.github/workflows/test.yml`.
+`SEMAPHORE_EX_TEST_BINARY=/absolute/path/to/semaphore task testacc` starts a temporary loopback-only EX server with its own SQLite database and generated credentials.
+The test fixture owns and cleans up that process and database; failure logs are retained.
+CI builds the exact EX source revision pinned in `.github/workflows/test.yml`.
+For an existing explicitly authorized test instance, set `TF_ACC=1`, `SEMAPHOREUI_API_BASE_URL`, and `SEMAPHOREUI_API_TOKEN` and run `go test` directly.
+Do not infer API compatibility from `task test`: acceptance tests are skipped without `TF_ACC`.
 
 ## Architecture
 
@@ -74,7 +70,7 @@ Authentication, Integration, Inventory, KeyStore, Operations,
 Project, Repository, Schedule, Task, Template, User, VariableGroup.
 ```
 
-`VariableGroup` owns the environment endpoints — non-obvious because the resource is `semaphoreui_project_environment`. Operations for templates, inventories, keys, repositories, and schedules live on their dedicated sub-clients, not on `Project`. When grepping for a new operation, search by HTTP path (e.g. `PostProjectProjectIDInventory`) rather than guessing the sub-client.
+`VariableGroup` owns the environment endpoints — non-obvious because the resource is `semaphore_ex_project_environment`. Operations for templates, inventories, keys, repositories, and schedules live on their dedicated sub-clients, not on `Project`. When grepping for a new operation, search by HTTP path (e.g. `PostProjectProjectIDInventory`) rather than guessing the sub-client.
 
 The provider supports `tls_skip_verify` for self-signed TLS; if set, `Configure` constructs an `http.Client` with `InsecureSkipVerify` and hands it to `httptransport.NewWithClient`. The host string omits the port when it matches the scheme's default (`:443` for https, `:80` for http) — some upstream proxies reject SNI/Host headers that include the default port (issue #56).
 
@@ -93,13 +89,18 @@ The local `api-docs.yml` is a *patched* copy of the upstream spec from a tagged 
 - `Project.alert_chat` / `ProjectRequest.alert_chat`
 - `ViewRequest.id` — upstream omits it, but the PUT views endpoint returns 400 without it
 
-A related response-schema patch also lives in the spec: the single-runner GET responses (`/runners/{runner_id}` and `/project/{project_id}/runners/{runner_id}`) are pointed at `RunnerWithToken` instead of `Runner` so the `runner` / `project_runner` resources can surface `token` and `private_key` on read (both are empty strings for unregistered runners; the list endpoints still return bare `Runner`).
+Runner detail GETs return `Runner`, without credentials. Create responses and the separate registration-token endpoint have distinct one-time credential semantics; resource state stores only durable runner configuration.
 
 When bumping `api-docs.yml`, re-import upstream verbatim first (one commit), then re-apply the nullability patches based on which tests fail (a follow-up commit). The two-commit split keeps the diff legible — reviewers can see what came from upstream versus what we patched locally.
 
-### Template `environment_id` quirk
+### EX contracts
 
-SemaphoreUI v2.16+ introduced `environment_ids` (array) and stopped returning the singular `environment_id` on GET (always 0). The `convertProjectTemplateModelToTemplateRequest` converter writes to both fields on requests; `convertTemplateResponseToProjectTemplateModel` reads from `environment_ids[0]` with a fallback to `environment_id`. The Terraform schema's `environment_id` attribute is unchanged — the translation is invisible to users.
+Templates accept the set `environment_ids` or deprecated singular `environment_id`.
+SQL returns unique memberships in ascending ID order, so use set semantics and retain the full collection on refresh and import.
+Optional/computed EX settings preserve imported values when configuration omits them.
+Project-user revision is computed from the server response and prior state is echoed on updates; do not fetch a fresh revision or retry 409 automatically.
+Runner resources expose durable settings and registration policy; the dedicated registration-token resource owns one-time registration credentials.
+See `docs/adr/0001-semaphore-ex-provider.md` and `docs/migration.md`.
 
 ### Environment secret update gotcha
 
@@ -107,7 +108,7 @@ The Semaphore API does not honor type changes on secret update operations — on
 
 ## Regenerating code
 
-- **API client** (after `api-docs.yml` changes): `task client`. Requires `swagger` binary from `go-swagger` (`go install github.com/go-swagger/go-swagger/cmd/swagger@latest`).
+- **API client** (after `api-docs.yml` changes): `task client`. Requires `swagger` binary from `go-swagger` (`go install github.com/go-swagger/go-swagger/cmd/swagger@v0.36.6`).
 - **Docs** (after schema changes): `task generate`. Requires `terraform` in PATH (for `terraform fmt`). CI's `generate` job fails if the resulting diff isn't committed.
 
 ## Tooling notes

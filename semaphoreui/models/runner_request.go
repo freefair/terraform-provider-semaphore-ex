@@ -4,9 +4,13 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag/jsonutils"
+	"github.com/go-openapi/swag/typeutils"
+	"github.com/go-openapi/validate"
 )
 
 // RunnerRequest runner request
@@ -33,6 +37,10 @@ type RunnerRequest struct {
 	//
 	Registered bool `json:"registered,omitempty"`
 
+	// registration policy
+	// Enum: ["standard","secure"]
+	RegistrationPolicy string `json:"registration_policy,omitempty"`
+
 	// tags
 	Tags []string `json:"tags"`
 
@@ -42,11 +50,62 @@ type RunnerRequest struct {
 
 // Validate validates this runner request
 func (m *RunnerRequest) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateRegistrationPolicy(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+var runnerRequestTypeRegistrationPolicyPropEnum []any
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["standard","secure"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		runnerRequestTypeRegistrationPolicyPropEnum = append(runnerRequestTypeRegistrationPolicyPropEnum, v)
+	}
+}
+
+const (
+
+	// RunnerRequestRegistrationPolicyStandard captures enum value "standard"
+	RunnerRequestRegistrationPolicyStandard string = "standard"
+
+	// RunnerRequestRegistrationPolicySecure captures enum value "secure"
+	RunnerRequestRegistrationPolicySecure string = "secure"
+)
+
+// prop value enum
+func (m *RunnerRequest) validateRegistrationPolicyEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, runnerRequestTypeRegistrationPolicyPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *RunnerRequest) validateRegistrationPolicy(formats strfmt.Registry) error {
+	if typeutils.IsZero(m.RegistrationPolicy) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateRegistrationPolicyEnum("registration_policy", "body", m.RegistrationPolicy); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // ContextValidate validates this runner request based on context it is used
-func (m *RunnerRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *RunnerRequest) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

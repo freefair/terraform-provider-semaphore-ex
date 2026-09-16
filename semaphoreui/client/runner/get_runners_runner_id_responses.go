@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetRunnersRunnerIDReader is a Reader for the GetRunnersRunnerID structure.
@@ -43,13 +43,11 @@ func NewGetRunnersRunnerIDOK() *GetRunnersRunnerIDOK {
 	return &GetRunnersRunnerIDOK{}
 }
 
-/*
-GetRunnersRunnerIDOK describes a response with status code 200, with default header values.
-
-Runner
-*/
+// GetRunnersRunnerIDOK describes a response with status code 200, with default header values.
+//
+// Runner
 type GetRunnersRunnerIDOK struct {
-	Payload *models.RunnerWithToken
+	Payload *models.Runner
 }
 
 // IsSuccess returns true when this get runners runner Id o k response has a 2xx status code
@@ -92,13 +90,13 @@ func (o *GetRunnersRunnerIDOK) String() string {
 	return fmt.Sprintf("[GET /runners/{runner_id}][%d] getRunnersRunnerIdOK %s", 200, payload)
 }
 
-func (o *GetRunnersRunnerIDOK) GetPayload() *models.RunnerWithToken {
+func (o *GetRunnersRunnerIDOK) GetPayload() *models.Runner {
 	return o.Payload
 }
 
 func (o *GetRunnersRunnerIDOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.RunnerWithToken)
+	o.Payload = new(models.Runner)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && !stderrors.Is(err, io.EOF) {
@@ -113,11 +111,9 @@ func NewGetRunnersRunnerIDNotFound() *GetRunnersRunnerIDNotFound {
 	return &GetRunnersRunnerIDNotFound{}
 }
 
-/*
-GetRunnersRunnerIDNotFound describes a response with status code 404, with default header values.
-
-Runner not found
-*/
+// GetRunnersRunnerIDNotFound describes a response with status code 404, with default header values.
+//
+// Runner not found
 type GetRunnersRunnerIDNotFound struct {
 }
 

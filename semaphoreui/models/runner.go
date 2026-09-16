@@ -4,6 +4,7 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -43,6 +44,10 @@ type Runner struct {
 	// Whether the runner has been registered (has an auth token).
 	Registered bool `json:"registered,omitempty"`
 
+	// registration policy
+	// Enum: ["standard","secure"]
+	RegistrationPolicy string `json:"registration_policy,omitempty"`
+
 	// tags
 	Tags []string `json:"tags"`
 
@@ -62,6 +67,10 @@ func (m *Runner) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateRegistrationPolicy(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateTouched(formats); err != nil {
 		res = append(res, err)
 	}
@@ -78,6 +87,48 @@ func (m *Runner) validateCleaningRequested(formats strfmt.Registry) error {
 	}
 
 	if err := validate.FormatOf("cleaning_requested", "body", "date-time", m.CleaningRequested.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var runnerTypeRegistrationPolicyPropEnum []any
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["standard","secure"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		runnerTypeRegistrationPolicyPropEnum = append(runnerTypeRegistrationPolicyPropEnum, v)
+	}
+}
+
+const (
+
+	// RunnerRegistrationPolicyStandard captures enum value "standard"
+	RunnerRegistrationPolicyStandard string = "standard"
+
+	// RunnerRegistrationPolicySecure captures enum value "secure"
+	RunnerRegistrationPolicySecure string = "secure"
+)
+
+// prop value enum
+func (m *Runner) validateRegistrationPolicyEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, runnerTypeRegistrationPolicyPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Runner) validateRegistrationPolicy(formats strfmt.Registry) error {
+	if typeutils.IsZero(m.RegistrationPolicy) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateRegistrationPolicyEnum("registration_policy", "body", m.RegistrationPolicy); err != nil {
 		return err
 	}
 

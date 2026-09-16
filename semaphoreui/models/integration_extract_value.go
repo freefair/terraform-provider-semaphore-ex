@@ -201,7 +201,7 @@ func (m *IntegrationExtractValue) validateVariableType(formats strfmt.Registry) 
 }
 
 // ContextValidate validates this integration extract value based on context it is used
-func (m *IntegrationExtractValue) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *IntegrationExtractValue) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

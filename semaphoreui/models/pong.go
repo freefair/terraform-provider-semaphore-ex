@@ -14,11 +14,11 @@ import (
 type Pong string
 
 // Validate validates this pong
-func (m Pong) Validate(formats strfmt.Registry) error {
+func (m Pong) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this pong based on context it is used
-func (m Pong) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m Pong) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }

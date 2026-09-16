@@ -33,11 +33,9 @@ func NewDeleteUserTokensAPITokenIDNoContent() *DeleteUserTokensAPITokenIDNoConte
 	return &DeleteUserTokensAPITokenIDNoContent{}
 }
 
-/*
-DeleteUserTokensAPITokenIDNoContent describes a response with status code 204, with default header values.
-
-Expired API Token
-*/
+// DeleteUserTokensAPITokenIDNoContent describes a response with status code 204, with default header values.
+//
+// Expired API Token
 type DeleteUserTokensAPITokenIDNoContent struct {
 }
 

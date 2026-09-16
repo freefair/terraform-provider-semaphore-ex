@@ -2,8 +2,8 @@ package provider
 
 import (
 	"fmt"
-	"terraform-provider-semaphoreui/semaphoreui/client/runner"
-	"terraform-provider-semaphoreui/semaphoreui/models"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/runner"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
@@ -52,12 +52,12 @@ func testAccCaptureAttr(resourceName, attr string, dest *string) resource.TestCh
 
 func testAccRunnerRegistrationTokenConfig(nameSuffix, rotation string) string {
 	return fmt.Sprintf(`
-resource "semaphoreui_runner" "test" {
+resource "semaphore_ex_runner" "test" {
   name   = "Test %[1]s"
   active = false
 }
-resource "semaphoreui_runner_registration_token" "test" {
-  runner_id = semaphoreui_runner.test.id
+resource "semaphore_ex_runner_registration_token" "test" {
+  runner_id = semaphore_ex_runner.test.id
   keepers = {
     rotation = "%[2]s"
   }
@@ -75,19 +75,19 @@ func TestAcc_RunnerRegistrationTokenResource_basic(t *testing.T) {
 			{
 				Config: testAccRunnerRegistrationTokenConfig(nameSuffix, "1"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttrSet("semaphoreui_runner_registration_token.test", "registration_token"),
-					resource.TestCheckResourceAttrSet("semaphoreui_runner_registration_token.test", "runner_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_runner_registration_token.test", "id"),
-					resource.TestCheckResourceAttr("semaphoreui_runner_registration_token.test", "keepers.rotation", "1"),
-					testAccCaptureAttr("semaphoreui_runner_registration_token.test", "registration_token", &token1),
+					resource.TestCheckResourceAttrSet("semaphore_ex_runner_registration_token.test", "registration_token"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_runner_registration_token.test", "runner_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_runner_registration_token.test", "id"),
+					resource.TestCheckResourceAttr("semaphore_ex_runner_registration_token.test", "keepers.rotation", "1"),
+					testAccCaptureAttr("semaphore_ex_runner_registration_token.test", "registration_token", &token1),
 				),
 			},
 			// Rotation: changing keepers forces a brand new token.
 			{
 				Config: testAccRunnerRegistrationTokenConfig(nameSuffix, "2"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("semaphoreui_runner_registration_token.test", "keepers.rotation", "2"),
-					resource.TestCheckResourceAttrWith("semaphoreui_runner_registration_token.test", "registration_token", func(v string) error {
+					resource.TestCheckResourceAttr("semaphore_ex_runner_registration_token.test", "keepers.rotation", "2"),
+					resource.TestCheckResourceAttrWith("semaphore_ex_runner_registration_token.test", "registration_token", func(v string) error {
 						if v == "" {
 							return fmt.Errorf("registration_token is empty")
 						}

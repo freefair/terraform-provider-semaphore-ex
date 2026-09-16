@@ -176,7 +176,7 @@ func (m *InventoryRequest) validateType(formats strfmt.Registry) error {
 }
 
 // ContextValidate validates this inventory request based on context it is used
-func (m *InventoryRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *InventoryRequest) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

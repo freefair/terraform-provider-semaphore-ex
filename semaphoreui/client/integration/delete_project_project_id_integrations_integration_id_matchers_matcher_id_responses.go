@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoConten
 	return &DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent{}
 }
 
-/*
-DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent describes a response with status code 204, with default header values.
-
-integration matcher removed
-*/
+// DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent describes a response with status code 204, with default header values.
+//
+// integration matcher removed
 type DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDNoContent struct {
 }
 

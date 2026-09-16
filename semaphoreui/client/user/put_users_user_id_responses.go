@@ -33,11 +33,9 @@ func NewPutUsersUserIDNoContent() *PutUsersUserIDNoContent {
 	return &PutUsersUserIDNoContent{}
 }
 
-/*
-PutUsersUserIDNoContent describes a response with status code 204, with default header values.
-
-User Updated
-*/
+// PutUsersUserIDNoContent describes a response with status code 204, with default header values.
+//
+// User Updated
 type PutUsersUserIDNoContent struct {
 }
 

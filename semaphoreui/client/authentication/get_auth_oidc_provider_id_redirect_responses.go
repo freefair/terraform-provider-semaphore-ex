@@ -33,11 +33,9 @@ func NewGetAuthOidcProviderIDRedirectFound() *GetAuthOidcProviderIDRedirectFound
 	return &GetAuthOidcProviderIDRedirectFound{}
 }
 
-/*
-GetAuthOidcProviderIDRedirectFound describes a response with status code 302, with default header values.
-
-Redirection to the Semaphore root URL on success, or to the login page on error
-*/
+// GetAuthOidcProviderIDRedirectFound describes a response with status code 302, with default header values.
+//
+// Redirection to the Semaphore root URL on success, or to the login page on error
 type GetAuthOidcProviderIDRedirectFound struct {
 }
 

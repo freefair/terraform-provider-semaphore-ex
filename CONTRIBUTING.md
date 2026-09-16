@@ -1,4 +1,4 @@
-# Contributing to `terraform-provider-semaphoreui`
+# Contributing to `terraform-provider-semaphore-ex`
 
 Thanks for your interest in contributing. This provider is maintained on
 a best-effort basis with AI assistance (see the status callout in the
@@ -36,21 +36,18 @@ The repo uses [Task](https://taskfile.dev) (`Taskfile.yml`):
 
 - `task lint` — `golangci-lint` v2 (tests excluded; see `.golangci.yml`)
 - `task test` — unit tests, fast
-- `task testacc` — acceptance tests against a Dockerized SemaphoreUI
-  (orchestrates `docker compose up`, seeds an API token directly into
-  the MySQL `user__token` table, runs the suite, tears down)
+- `task testacc` — acceptance tests against a fresh isolated Semaphore EX server; set `SEMAPHORE_EX_TEST_BINARY` to a built EX binary.
 - `task generate` — regenerates `docs/` via `tfplugindocs`; CI fails if
   the diff is non-empty
 
 Run a single acceptance test:
 
 ```sh
-SEMAPHORE_VERSION=v2.18.6 task testacc -- -run TestAcc_ProjectResource_basic
+SEMAPHORE_EX_TEST_BINARY=/absolute/path/to/semaphore-ex/bin/semaphore task testacc -- -run TestAcc_ProjectResource_basic
 ```
 
-Tests prefixed `TestAcc_` require the live API. The matrix in
-`.github/workflows/test.yml` exercises the three most recent SemaphoreUI
-minor lines.
+Tests prefixed `TestAcc_` require the live API. The workflow in
+`.github/workflows/test.yml` builds the pinned Semaphore EX revision and exercises its API.
 
 ## Failing-test-first for bug fixes and features
 

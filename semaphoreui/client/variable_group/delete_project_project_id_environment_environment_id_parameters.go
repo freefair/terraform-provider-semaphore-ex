@@ -63,16 +63,14 @@ DeleteProjectProjectIDEnvironmentEnvironmentIDParams contains all the parameters
 */
 type DeleteProjectProjectIDEnvironmentEnvironmentIDParams struct {
 
-	/* EnvironmentID.
-
-	   environment ID
-	*/
+	// EnvironmentID.
+	//
+	// environment ID
 	EnvironmentID int64
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

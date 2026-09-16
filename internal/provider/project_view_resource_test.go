@@ -2,10 +2,10 @@ package provider
 
 import (
 	"fmt"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/project"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"strconv"
-	"terraform-provider-semaphoreui/semaphoreui/client/project"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -46,12 +46,12 @@ func testAccProjectViewExists(resourceName string) resource.TestCheckFunc {
 
 func testAccProjectViewConfig(title string, position int64) string {
 	return fmt.Sprintf(`
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "test-project"
 }
 
-resource "semaphoreui_project_view" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_view" "test" {
+  project_id = semaphore_ex_project.test.id
   title      = "%s"
   position   = %d
 }
@@ -79,39 +79,39 @@ func TestAcc_ProjectViewResource_basic(t *testing.T) {
 			{
 				Config: testAccProjectViewConfig(title, 1),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectViewExists("semaphoreui_project_view.test"),
-					resource.TestCheckResourceAttr("semaphoreui_project_view.test", "title", title),
-					resource.TestCheckResourceAttr("semaphoreui_project_view.test", "position", "1"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_view.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_view.test", "project_id"),
+					testAccProjectViewExists("semaphore_ex_project_view.test"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_view.test", "title", title),
+					resource.TestCheckResourceAttr("semaphore_ex_project_view.test", "position", "1"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_view.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_view.test", "project_id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_view.test",
+				ResourceName:      "semaphore_ex_project_view.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectViewImportID("semaphoreui_project_view.test"),
+				ImportStateIdFunc: testAccProjectViewImportID("semaphore_ex_project_view.test"),
 			},
 			// Update testing
 			{
 				Config: testAccProjectViewConfig(title, 5),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectViewExists("semaphoreui_project_view.test"),
-					resource.TestCheckResourceAttr("semaphoreui_project_view.test", "title", title),
-					resource.TestCheckResourceAttr("semaphoreui_project_view.test", "position", "5"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_view.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_view.test", "project_id"),
+					testAccProjectViewExists("semaphore_ex_project_view.test"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_view.test", "title", title),
+					resource.TestCheckResourceAttr("semaphore_ex_project_view.test", "position", "5"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_view.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_view.test", "project_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: `
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "test-project"
 }`,
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_view.test"),
+					testAccResourceNotExists("semaphore_ex_project_view.test"),
 				),
 			},
 		},

@@ -63,22 +63,19 @@ DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDParams contains all
 */
 type DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDParams struct {
 
-	/* AliasID.
-
-	   Integration Alias ID
-	*/
+	// AliasID.
+	//
+	// Integration Alias ID
 	AliasID int64
 
-	/* IntegrationID.
-
-	   integration ID
-	*/
+	// IntegrationID.
+	//
+	// integration ID
 	IntegrationID int64
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

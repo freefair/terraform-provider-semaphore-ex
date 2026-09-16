@@ -33,11 +33,9 @@ func NewGetAuthOidcProviderIDLoginFound() *GetAuthOidcProviderIDLoginFound {
 	return &GetAuthOidcProviderIDLoginFound{}
 }
 
-/*
-GetAuthOidcProviderIDLoginFound describes a response with status code 302, with default header values.
-
-Redirection to the OIDC provider on success, or to the login page on error
-*/
+// GetAuthOidcProviderIDLoginFound describes a response with status code 302, with default header values.
+//
+// Redirection to the OIDC provider on success, or to the login page on error
 type GetAuthOidcProviderIDLoginFound struct {
 }
 

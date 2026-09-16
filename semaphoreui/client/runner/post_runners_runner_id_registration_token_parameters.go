@@ -63,10 +63,9 @@ PostRunnersRunnerIDRegistrationTokenParams contains all the parameters to send t
 */
 type PostRunnersRunnerIDRegistrationTokenParams struct {
 
-	/* RunnerID.
-
-	   Global runner ID
-	*/
+	// RunnerID.
+	//
+	// Global runner ID
 	RunnerID int64
 
 	HTTPClient *http.Client

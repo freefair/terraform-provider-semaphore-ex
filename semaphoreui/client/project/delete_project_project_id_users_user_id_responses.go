@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDUsersUserIDNoContent() *DeleteProjectProjectIDUser
 	return &DeleteProjectProjectIDUsersUserIDNoContent{}
 }
 
-/*
-DeleteProjectProjectIDUsersUserIDNoContent describes a response with status code 204, with default header values.
-
-User removed
-*/
+// DeleteProjectProjectIDUsersUserIDNoContent describes a response with status code 204, with default header values.
+//
+// User removed
 type DeleteProjectProjectIDUsersUserIDNoContent struct {
 }
 

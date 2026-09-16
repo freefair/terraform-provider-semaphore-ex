@@ -63,16 +63,14 @@ DeleteProjectProjectIDUsersUserIDParams contains all the parameters to send to t
 */
 type DeleteProjectProjectIDUsersUserIDParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* UserID.
-
-	   User ID
-	*/
+	// UserID.
+	//
+	// User ID
 	UserID int64
 
 	HTTPClient *http.Client

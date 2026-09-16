@@ -52,37 +52,43 @@ jobs:
           git diff --compact-summary --exit-code || \
             (echo; echo "Unexpected difference in directories after code generation. Run 'task generate' command and commit."; exit 1)
 
-  # Run acceptance tests in a matrix with Semaphore UI versions
+  # Build the exact EX contract revision and test in a disposable SQLite environment.
   test:
-    name: Terraform Provider Acceptance Tests
+    name: Semaphore EX Acceptance Tests
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        semaphore:
-          - 'v2.16.51'
-          - 'v2.17.39'
-          - 'v2.18.6'
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          repository: freefair/semaphore-ex
+          ref: 448976be2a2177907067cb88a7463e9fd0ba5510
+          path: .test-semaphore-ex
       - uses: actions/setup-go@v6
         with:
-          go-version-file: 'go.mod'
+          go-version-file: '.test-semaphore-ex/go.mod'
           cache: true
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24.19.0'
       - uses: hashicorp/setup-terraform@v4
         with:
-          terraform_version: '1.15.x'
+          terraform_version: '1.15.2'
           terraform_wrapper: false
       - uses: arduino/setup-task@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: go mod download
-      - run: task testacc
+      - name: Build Semaphore EX
+        working-directory: .test-semaphore-ex
+        run: |
+          npm ci --prefix web
+          task build:fe
+          task build:be
+      - name: Run isolated acceptance tests
+        run: task testacc
         env:
-            SEMAPHORE_VERSION: ${{ matrix.semaphore }}
-        timeout-minutes: 10
+          SEMAPHORE_EX_TEST_BINARY: ${{ github.workspace }}/.test-semaphore-ex/bin/semaphore
 
   # Wrapper job to allow us to require all tests in the matrix
   all-tests:

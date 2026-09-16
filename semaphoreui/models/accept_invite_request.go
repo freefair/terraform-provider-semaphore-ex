@@ -45,7 +45,7 @@ func (m *AcceptInviteRequest) validateToken(formats strfmt.Registry) error {
 }
 
 // ContextValidate validates this accept invite request based on context it is used
-func (m *AcceptInviteRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *AcceptInviteRequest) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

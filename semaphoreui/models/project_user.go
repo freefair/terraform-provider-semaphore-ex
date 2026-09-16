@@ -25,6 +25,10 @@ type ProjectUser struct {
 	// name
 	Name string `json:"name,omitempty"`
 
+	// Server-owned membership revision for optimistic concurrency.
+	// Minimum: 1
+	Revision int64 `json:"revision,omitempty"`
+
 	// role
 	// Enum: ["owner","manager","task_runner","guest"]
 	Role string `json:"role,omitempty"`
@@ -38,6 +42,10 @@ func (m *ProjectUser) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateRevision(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -57,6 +65,18 @@ func (m *ProjectUser) validateID(formats strfmt.Registry) error {
 	}
 
 	if err := validate.MinimumInt("id", "body", m.ID, 1, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *ProjectUser) validateRevision(formats strfmt.Registry) error {
+	if typeutils.IsZero(m.Revision) { // not required
+		return nil
+	}
+
+	if err := validate.MinimumInt("revision", "body", m.Revision, 1, false); err != nil {
 		return err
 	}
 
@@ -112,7 +132,7 @@ func (m *ProjectUser) validateRole(formats strfmt.Registry) error {
 }
 
 // ContextValidate validates this project user based on context it is used
-func (m *ProjectUser) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *ProjectUser) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

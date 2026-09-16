@@ -63,10 +63,9 @@ PostProjectProjectIDNotificationsTestParams contains all the parameters to send 
 */
 type PostProjectProjectIDNotificationsTestParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

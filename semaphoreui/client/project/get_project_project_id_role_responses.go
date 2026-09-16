@@ -38,11 +38,9 @@ func NewGetProjectProjectIDRoleOK() *GetProjectProjectIDRoleOK {
 	return &GetProjectProjectIDRoleOK{}
 }
 
-/*
-GetProjectProjectIDRoleOK describes a response with status code 200, with default header values.
-
-Permissions
-*/
+// GetProjectProjectIDRoleOK describes a response with status code 200, with default header values.
+//
+// Permissions
 type GetProjectProjectIDRoleOK struct {
 	Payload *GetProjectProjectIDRoleOKBody
 }
@@ -103,10 +101,9 @@ func (o *GetProjectProjectIDRoleOK) readResponse(response runtime.ClientResponse
 	return nil
 }
 
-/*
-GetProjectProjectIDRoleOKBody get project project ID role o k body
-swagger:model GetProjectProjectIDRoleOKBody
-*/
+// GetProjectProjectIDRoleOKBody get project project ID role o k body
+//
+// swagger:model GetProjectProjectIDRoleOKBody
 type GetProjectProjectIDRoleOKBody struct {
 
 	// permissions
@@ -119,12 +116,12 @@ type GetProjectProjectIDRoleOKBody struct {
 }
 
 // Validate validates this get project project ID role o k body
-func (o *GetProjectProjectIDRoleOKBody) Validate(formats strfmt.Registry) error {
+func (o *GetProjectProjectIDRoleOKBody) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this get project project ID role o k body based on context it is used
-func (o *GetProjectProjectIDRoleOKBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (o *GetProjectProjectIDRoleOKBody) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

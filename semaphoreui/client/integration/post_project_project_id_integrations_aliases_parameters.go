@@ -63,10 +63,9 @@ PostProjectProjectIDIntegrationsAliasesParams contains all the parameters to sen
 */
 type PostProjectProjectIDIntegrationsAliasesParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

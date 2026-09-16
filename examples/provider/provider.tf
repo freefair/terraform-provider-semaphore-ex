@@ -1,14 +1,13 @@
-# Configure the SemaphoreUI provider using required_providers.
+# The local name semaphore matches Terraform's inferred resource prefix.
 terraform {
   required_providers {
-    semaphoreui = {
-      source  = "semaphoreui/semaphore"
-      version = "~> 0.3"
+    semaphore = {
+      source = "freefair/semaphore-ex"
     }
   }
 }
 
-provider "semaphoreui" {
-  api_base_url = "http://localhost:3000/api" # Default: "http://localhost:3000/api"
-  api_token    = "your token"
+provider "semaphore" {
+  api_base_url = "http://localhost:3000/api"
+  # Supply the token through SEMAPHOREUI_API_TOKEN.
 }

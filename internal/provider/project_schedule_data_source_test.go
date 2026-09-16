@@ -8,36 +8,36 @@ import (
 
 func testAccProjectScheduleDataSourceConfigByID() string {
 	return `
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "Project"
 }
 
-resource "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "None"
   none       = {}
 }
 
-resource "semaphoreui_project_repository" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_repository" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Repo"
   url        = "git@github.com:example/test.git"
   branch     = "main"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
 }
 
-resource "semaphoreui_project_inventory" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_inventory" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Inventory"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
   file = {
     path          = "path/to/inventory"
-    repository_id = semaphoreui_project_repository.test.id
+    repository_id = semaphore_ex_project_repository.test.id
   }
 }
 
-resource "semaphoreui_project_environment" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_environment" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Environment"
   secrets = [{
     name  = "SECRET_ONE"
@@ -47,27 +47,27 @@ resource "semaphoreui_project_environment" "test" {
 }
 
 # Task Template
-resource "semaphoreui_project_template" "test" {
-  project_id     = semaphoreui_project.test.id
-  environment_id = semaphoreui_project_environment.test.id
-  inventory_id   = semaphoreui_project_inventory.test.id
-  repository_id  = semaphoreui_project_repository.test.id
+resource "semaphore_ex_project_template" "test" {
+  project_id     = semaphore_ex_project.test.id
+  environment_id = semaphore_ex_project_environment.test.id
+  inventory_id   = semaphore_ex_project_inventory.test.id
+  repository_id  = semaphore_ex_project_repository.test.id
   name           = "Template"
   playbook       = "playbook.yml"
   description    = "Description"
 }
 
-resource "semaphoreui_project_schedule" "test" {
-  project_id  = semaphoreui_project.test.id
-  template_id = semaphoreui_project_template.test.id
+resource "semaphore_ex_project_schedule" "test" {
+  project_id  = semaphore_ex_project.test.id
+  template_id = semaphore_ex_project_template.test.id
   name        = "Test Schedule"
   cron_format = "0 0 * * *"
   enabled     = true
 }
 
-data "semaphoreui_project_schedule" "test" {
-  project_id = semaphoreui_project.test.id
-  id         = semaphoreui_project_schedule.test.id
+data "semaphore_ex_project_schedule" "test" {
+  project_id = semaphore_ex_project.test.id
+  id         = semaphore_ex_project_schedule.test.id
 }`
 }
 
@@ -79,11 +79,11 @@ func TestAcc_ProjectScheduleDataSource_basicID(t *testing.T) {
 			{
 				Config: testAccProjectScheduleDataSourceConfigByID(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_project_schedule.test", "name", "Test Schedule"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_schedule.test", "cron_format", "0 0 * * *"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project_schedule.test", "enabled", "true"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_schedule.test", "id"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project_schedule.test", "project_id"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_schedule.test", "name", "Test Schedule"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_schedule.test", "cron_format", "0 0 * * *"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project_schedule.test", "enabled", "true"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_schedule.test", "id"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project_schedule.test", "project_id"),
 				),
 			},
 		},

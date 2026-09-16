@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // PostRunnersReader is a Reader for the PostRunners structure.
@@ -43,11 +43,9 @@ func NewPostRunnersCreated() *PostRunnersCreated {
 	return &PostRunnersCreated{}
 }
 
-/*
-PostRunnersCreated describes a response with status code 201, with default header values.
-
-Runner created
-*/
+// PostRunnersCreated describes a response with status code 201, with default header values.
+//
+// Runner created
 type PostRunnersCreated struct {
 	Payload *models.RunnerWithToken
 }
@@ -113,11 +111,9 @@ func NewPostRunnersBadRequest() *PostRunnersBadRequest {
 	return &PostRunnersBadRequest{}
 }
 
-/*
-PostRunnersBadRequest describes a response with status code 400, with default header values.
-
-Runner not created
-*/
+// PostRunnersBadRequest describes a response with status code 400, with default header values.
+//
+// Runner not created
 type PostRunnersBadRequest struct {
 }
 

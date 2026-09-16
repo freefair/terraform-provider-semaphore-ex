@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetProjectProjectIDIntegrationsAliasesReader is a Reader for the GetProjectProjectIDIntegrationsAliases structure.
@@ -37,11 +37,9 @@ func NewGetProjectProjectIDIntegrationsAliasesOK() *GetProjectProjectIDIntegrati
 	return &GetProjectProjectIDIntegrationsAliasesOK{}
 }
 
-/*
-GetProjectProjectIDIntegrationsAliasesOK describes a response with status code 200, with default header values.
-
-Integration Aliases
-*/
+// GetProjectProjectIDIntegrationsAliasesOK describes a response with status code 200, with default header values.
+//
+// Integration Aliases
 type GetProjectProjectIDIntegrationsAliasesOK struct {
 	Payload []*models.IntegrationAlias
 }

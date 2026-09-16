@@ -63,16 +63,14 @@ GetProjectProjectIDInventoryInventoryIDParams contains all the parameters to sen
 */
 type GetProjectProjectIDInventoryInventoryIDParams struct {
 
-	/* InventoryID.
-
-	   inventory ID
-	*/
+	// InventoryID.
+	//
+	// inventory ID
 	InventoryID int64
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

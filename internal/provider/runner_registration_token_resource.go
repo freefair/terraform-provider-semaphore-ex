@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 
+	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/runner"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	apiclient "terraform-provider-semaphoreui/semaphoreui/client"
-	"terraform-provider-semaphoreui/semaphoreui/client/runner"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // runnerRegistrationTokenID builds the synthetic resource ID from the owning

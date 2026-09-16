@@ -2,11 +2,11 @@ package provider
 
 import (
 	"context"
+	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/schedule"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	apiclient "terraform-provider-semaphoreui/semaphoreui/client"
-	"terraform-provider-semaphoreui/semaphoreui/client/schedule"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -56,6 +56,7 @@ func convertProjectScheduleModelToRepositorySchedule(schedule ProjectScheduleMod
 		Name:       schedule.Name.ValueString(),
 		CronFormat: schedule.CronFormat.ValueString(),
 		Active:     schedule.Enabled.ValueBool(),
+		Timezone:   schedule.Timezone.ValueStringPointer(),
 	}
 	if !schedule.ID.IsNull() && !schedule.ID.IsUnknown() {
 		model.ID = schedule.ID.ValueInt64()
@@ -64,6 +65,10 @@ func convertProjectScheduleModelToRepositorySchedule(schedule ProjectScheduleMod
 }
 
 func convertScheduleResponseToProjectScheduleModel(request *models.Schedule) ProjectScheduleModel {
+	timezone := ""
+	if request.Timezone != nil {
+		timezone = *request.Timezone
+	}
 	return ProjectScheduleModel{
 		ID:         types.Int64Value(request.ID),
 		ProjectID:  types.Int64Value(request.ProjectID),
@@ -71,6 +76,7 @@ func convertScheduleResponseToProjectScheduleModel(request *models.Schedule) Pro
 		Name:       types.StringValue(request.Name),
 		CronFormat: types.StringValue(request.CronFormat),
 		Enabled:    types.BoolValue(request.Active),
+		Timezone:   types.StringValue(timezone),
 	}
 }
 
@@ -138,7 +144,7 @@ func (r *projectScheduleResource) Update(ctx context.Context, req resource.Updat
 		return
 	}
 
-	_, err := r.client.Schedule.PutProjectProjectIDSchedulesScheduleID(&schedule.PutProjectProjectIDSchedulesScheduleIDParams{
+	_, _, err := r.client.Schedule.PutProjectProjectIDSchedulesScheduleID(&schedule.PutProjectProjectIDSchedulesScheduleIDParams{
 		ProjectID:  plan.ProjectID.ValueInt64(),
 		ScheduleID: plan.ID.ValueInt64(),
 		Schedule:   convertProjectScheduleModelToRepositorySchedule(plan),

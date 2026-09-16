@@ -39,11 +39,9 @@ func NewPutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoConten
 	return &PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoContent{}
 }
 
-/*
-PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoContent describes a response with status code 204, with default header values.
-
-Integration Extract Value updated
-*/
+// PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoContent describes a response with status code 204, with default header values.
+//
+// Integration Extract Value updated
 type PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDNoContent struct {
 }
 
@@ -95,11 +93,9 @@ func NewPutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDBadReque
 	return &PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDBadRequest{}
 }
 
-/*
-PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDBadRequest describes a response with status code 400, with default header values.
-
-Bad integration extract value parameter
-*/
+// PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDBadRequest describes a response with status code 400, with default header values.
+//
+// Bad integration extract value parameter
 type PutProjectProjectIDIntegrationsIntegrationIDValuesExtractvalueIDBadRequest struct {
 }
 

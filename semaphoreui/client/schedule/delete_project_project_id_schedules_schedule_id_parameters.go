@@ -63,16 +63,14 @@ DeleteProjectProjectIDSchedulesScheduleIDParams contains all the parameters to s
 */
 type DeleteProjectProjectIDSchedulesScheduleIDParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* ScheduleID.
-
-	   schedule ID
-	*/
+	// ScheduleID.
+	//
+	// schedule ID
 	ScheduleID int64
 
 	HTTPClient *http.Client

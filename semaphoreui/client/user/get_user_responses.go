@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetUserReader is a Reader for the GetUser structure.
@@ -37,11 +37,9 @@ func NewGetUserOK() *GetUserOK {
 	return &GetUserOK{}
 }
 
-/*
-GetUserOK describes a response with status code 200, with default header values.
-
-User
-*/
+// GetUserOK describes a response with status code 200, with default header values.
+//
+// User
 type GetUserOK struct {
 	Payload *models.User
 }

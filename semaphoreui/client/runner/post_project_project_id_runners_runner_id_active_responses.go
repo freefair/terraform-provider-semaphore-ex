@@ -39,11 +39,9 @@ func NewPostProjectProjectIDRunnersRunnerIDActiveNoContent() *PostProjectProject
 	return &PostProjectProjectIDRunnersRunnerIDActiveNoContent{}
 }
 
-/*
-PostProjectProjectIDRunnersRunnerIDActiveNoContent describes a response with status code 204, with default header values.
-
-Runner active state updated
-*/
+// PostProjectProjectIDRunnersRunnerIDActiveNoContent describes a response with status code 204, with default header values.
+//
+// Runner active state updated
 type PostProjectProjectIDRunnersRunnerIDActiveNoContent struct {
 }
 
@@ -95,11 +93,9 @@ func NewPostProjectProjectIDRunnersRunnerIDActiveBadRequest() *PostProjectProjec
 	return &PostProjectProjectIDRunnersRunnerIDActiveBadRequest{}
 }
 
-/*
-PostProjectProjectIDRunnersRunnerIDActiveBadRequest describes a response with status code 400, with default header values.
-
-Invalid request body
-*/
+// PostProjectProjectIDRunnersRunnerIDActiveBadRequest describes a response with status code 400, with default header values.
+//
+// Invalid request body
 type PostProjectProjectIDRunnersRunnerIDActiveBadRequest struct {
 }
 

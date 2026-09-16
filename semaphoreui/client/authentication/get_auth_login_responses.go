@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetAuthLoginReader is a Reader for the GetAuthLogin structure.
@@ -37,11 +37,9 @@ func NewGetAuthLoginOK() *GetAuthLoginOK {
 	return &GetAuthLoginOK{}
 }
 
-/*
-GetAuthLoginOK describes a response with status code 200, with default header values.
-
-Login metadata
-*/
+// GetAuthLoginOK describes a response with status code 200, with default header values.
+//
+// Login metadata
 type GetAuthLoginOK struct {
 	Payload *models.LoginMetadata
 }

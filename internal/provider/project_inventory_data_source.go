@@ -3,8 +3,8 @@ package provider
 import (
 	"context"
 	"fmt"
-	apiclient "terraform-provider-semaphoreui/semaphoreui/client"
-	"terraform-provider-semaphoreui/semaphoreui/client/inventory"
+	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/inventory"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 )

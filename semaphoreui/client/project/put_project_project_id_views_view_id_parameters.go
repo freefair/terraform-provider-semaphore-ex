@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag/conv"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // NewPutProjectProjectIDViewsViewIDParams creates a new PutProjectProjectIDViewsViewIDParams object,
@@ -64,19 +64,17 @@ PutProjectProjectIDViewsViewIDParams contains all the parameters to send to the 
 */
 type PutProjectProjectIDViewsViewIDParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	// View.
 	View *models.ViewRequest
 
-	/* ViewID.
-
-	   view ID
-	*/
+	// ViewID.
+	//
+	// view ID
 	ViewID int64
 
 	HTTPClient *http.Client

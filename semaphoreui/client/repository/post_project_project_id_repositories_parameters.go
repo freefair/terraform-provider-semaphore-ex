@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag/conv"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // NewPostProjectProjectIDRepositoriesParams creates a new PostProjectProjectIDRepositoriesParams object,
@@ -67,10 +67,9 @@ type PostProjectProjectIDRepositoriesParams struct {
 	// Repository.
 	Repository *models.RepositoryRequest
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

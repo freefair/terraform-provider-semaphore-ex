@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	superschema "github.com/orange-cloudavenue/terraform-plugin-framework-superschema"
 
-	"terraform-provider-semaphoreui/semaphoreui/models"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 )
 
 // TaskParamsModel mirrors the SemaphoreUI TaskPrams JSON object. Used by

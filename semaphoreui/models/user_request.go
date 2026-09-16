@@ -70,7 +70,7 @@ func (m *UserRequest) validatePassword(formats strfmt.Registry) error {
 }
 
 // ContextValidate validates this user request based on context it is used
-func (m *UserRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *UserRequest) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

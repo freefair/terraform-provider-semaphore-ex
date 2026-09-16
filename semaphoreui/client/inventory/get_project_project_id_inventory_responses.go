@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetProjectProjectIDInventoryReader is a Reader for the GetProjectProjectIDInventory structure.
@@ -37,11 +37,9 @@ func NewGetProjectProjectIDInventoryOK() *GetProjectProjectIDInventoryOK {
 	return &GetProjectProjectIDInventoryOK{}
 }
 
-/*
-GetProjectProjectIDInventoryOK describes a response with status code 200, with default header values.
-
-inventory
-*/
+// GetProjectProjectIDInventoryOK describes a response with status code 200, with default header values.
+//
+// inventory
 type GetProjectProjectIDInventoryOK struct {
 	Payload []*models.Inventory
 }

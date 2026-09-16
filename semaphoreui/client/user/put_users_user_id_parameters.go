@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag/conv"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // NewPutUsersUserIDParams creates a new PutUsersUserIDParams object,
@@ -67,10 +67,9 @@ type PutUsersUserIDParams struct {
 	// User.
 	User *models.UserPutRequest
 
-	/* UserID.
-
-	   User ID
-	*/
+	// UserID.
+	//
+	// User ID
 	UserID int64
 
 	HTTPClient *http.Client

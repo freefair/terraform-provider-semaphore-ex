@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // PostUsersReader is a Reader for the PostUsers structure.
@@ -43,11 +43,9 @@ func NewPostUsersCreated() *PostUsersCreated {
 	return &PostUsersCreated{}
 }
 
-/*
-PostUsersCreated describes a response with status code 201, with default header values.
-
-User created
-*/
+// PostUsersCreated describes a response with status code 201, with default header values.
+//
+// User created
 type PostUsersCreated struct {
 	Payload *models.User
 }
@@ -113,11 +111,9 @@ func NewPostUsersBadRequest() *PostUsersBadRequest {
 	return &PostUsersBadRequest{}
 }
 
-/*
-PostUsersBadRequest describes a response with status code 400, with default header values.
-
-User creation failed
-*/
+// PostUsersBadRequest describes a response with status code 400, with default header values.
+//
+// User creation failed
 type PostUsersBadRequest struct {
 }
 

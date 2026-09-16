@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetAppsReader is a Reader for the GetApps structure.
@@ -37,11 +37,9 @@ func NewGetAppsOK() *GetAppsOK {
 	return &GetAppsOK{}
 }
 
-/*
-GetAppsOK describes a response with status code 200, with default header values.
-
-Apps
-*/
+// GetAppsOK describes a response with status code 200, with default header values.
+//
+// Apps
 type GetAppsOK struct {
 	Payload []models.App
 }

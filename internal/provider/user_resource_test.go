@@ -2,11 +2,11 @@ package provider
 
 import (
 	"fmt"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/user"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"regexp"
 	"strconv"
-	"terraform-provider-semaphoreui/semaphoreui/client/user"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -35,7 +35,7 @@ func testAccUserExists(resourceName string) resource.TestCheckFunc {
 
 func testAccUserConfig(userNameSuffix string, userExtras string) string {
 	return fmt.Sprintf(`
-resource "semaphoreui_user" "test" {
+resource "semaphore_ex_user" "test" {
   username = "test-%[1]s"
   name     = "Test User"
   email    = "test@example.com"
@@ -45,17 +45,17 @@ resource "semaphoreui_user" "test" {
 
 func testAccUserConfig_Exists(userNameSuffix string) string {
 	return fmt.Sprintf(`
-resource "semaphoreui_user" "existing" {
+resource "semaphore_ex_user" "existing" {
   username = "test-%[1]s"
   name	   = "Test User"
   email	   = "test@example.com"
 }
 
-resource "semaphoreui_user" "test" {
+resource "semaphore_ex_user" "test" {
   username       = "test-%[1]s"
   name           = "Test User"
   email          = "test@example.com"
-  depends_on = [semaphoreui_user.existing]
+  depends_on = [semaphore_ex_user.existing]
 }`, userNameSuffix)
 }
 
@@ -81,28 +81,28 @@ func TestAcc_UserResource_basic(t *testing.T) {
 				Config: testAccUserConfig(userNameSuffix, `  admin = true
 password = "password!"`),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccUserExists("semaphoreui_user.test"),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "username", fmt.Sprintf("test-%s", userNameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "external", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "name", "Test User"),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "password", "password!"),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "admin", "true"),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "alert", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "email", "test@example.com"),
-					resource.TestCheckResourceAttrSet("semaphoreui_user.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_user.test", "created"),
+					testAccUserExists("semaphore_ex_user.test"),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "username", fmt.Sprintf("test-%s", userNameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "external", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "name", "Test User"),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "password", "password!"),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "admin", "true"),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "alert", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "email", "test@example.com"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_user.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_user.test", "created"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_user.test",
+				ResourceName:      "semaphore_ex_user.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccUserImportID("semaphoreui_user.test"),
+				ImportStateIdFunc: testAccUserImportID("semaphore_ex_user.test"),
 				// Password is encrypted and not returned by the API on import
 				ImportStateVerifyIgnore: []string{"password"},
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "password", ""),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "password", ""),
 				),
 			},
 			// Update and Read testing
@@ -110,13 +110,13 @@ password = "password!"`),
 				Config: testAccUserConfig(userNameSuffix, `  admin = false
 password = "something"`),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "username", fmt.Sprintf("test-%s", userNameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "email", "test@example.com"),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "name", "Test User"),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "password", "something"),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "admin", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "alert", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_user.test", "external", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "username", fmt.Sprintf("test-%s", userNameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "email", "test@example.com"),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "name", "Test User"),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "password", "something"),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "admin", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "alert", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_user.test", "external", "false"),
 				),
 			},
 		},

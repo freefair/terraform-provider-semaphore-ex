@@ -19,6 +19,9 @@ type RunnerWithToken struct {
 	// Generated private key, returned only when the server creates the key pair. Empty when the runner is not registered.
 	PrivateKey string `json:"private_key,omitempty"`
 
+	// One-time project runner registration token returned on create.
+	RegistrationToken string `json:"registration_token,omitempty"`
+
 	// Token the runner uses to authenticate. Empty when the runner is not registered.
 	Token string `json:"token,omitempty"`
 }
@@ -36,6 +39,8 @@ func (m *RunnerWithToken) UnmarshalJSON(raw []byte) error {
 	var dataAO1 struct {
 		PrivateKey string `json:"private_key,omitempty"`
 
+		RegistrationToken string `json:"registration_token,omitempty"`
+
 		Token string `json:"token,omitempty"`
 	}
 	if err := jsonutils.ReadJSON(raw, &dataAO1); err != nil {
@@ -43,6 +48,8 @@ func (m *RunnerWithToken) UnmarshalJSON(raw []byte) error {
 	}
 
 	m.PrivateKey = dataAO1.PrivateKey
+
+	m.RegistrationToken = dataAO1.RegistrationToken
 
 	m.Token = dataAO1.Token
 
@@ -61,10 +68,14 @@ func (m RunnerWithToken) MarshalJSON() ([]byte, error) {
 	var dataAO1 struct {
 		PrivateKey string `json:"private_key,omitempty"`
 
+		RegistrationToken string `json:"registration_token,omitempty"`
+
 		Token string `json:"token,omitempty"`
 	}
 
 	dataAO1.PrivateKey = m.PrivateKey
+
+	dataAO1.RegistrationToken = m.RegistrationToken
 
 	dataAO1.Token = m.Token
 

@@ -33,11 +33,9 @@ func NewPutProjectProjectIDEnvironmentEnvironmentIDNoContent() *PutProjectProjec
 	return &PutProjectProjectIDEnvironmentEnvironmentIDNoContent{}
 }
 
-/*
-PutProjectProjectIDEnvironmentEnvironmentIDNoContent describes a response with status code 204, with default header values.
-
-Environment Updated
-*/
+// PutProjectProjectIDEnvironmentEnvironmentIDNoContent describes a response with status code 204, with default header values.
+//
+// Environment Updated
 type PutProjectProjectIDEnvironmentEnvironmentIDNoContent struct {
 }
 

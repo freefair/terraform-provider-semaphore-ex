@@ -13,6 +13,7 @@ type ProjectUserModel struct {
 	ProjectID types.Int64  `tfsdk:"project_id"`
 	UserID    types.Int64  `tfsdk:"user_id"`
 	Role      types.String `tfsdk:"role"`
+	Revision  types.Int64  `tfsdk:"revision"`
 	Username  types.String `tfsdk:"username"`
 	Name      types.String `tfsdk:"name"`
 }
@@ -54,6 +55,14 @@ func ProjectUserSchema() superschema.Schema {
 				DataSource: &schemaD.StringAttribute{
 					Computed: true,
 				},
+			},
+			"revision": superschema.Int64Attribute{
+				Common: &schemaR.Int64Attribute{
+					MarkdownDescription: "Current membership revision used for optimistic concurrency control.",
+					Computed:            true,
+				},
+				Resource:   &schemaR.Int64Attribute{},
+				DataSource: &schemaD.Int64Attribute{},
 			},
 			"username": superschema.StringAttribute{
 				Common: &schemaR.StringAttribute{

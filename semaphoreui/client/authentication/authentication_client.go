@@ -44,9 +44,7 @@ func NewClientWithBearerToken(host, basePath, scheme, bearerToken string) Client
 	return &Client{transport: transport, formats: strfmt.Default}
 }
 
-/*
-Client for authentication API.
-*/
+// Client for authentication API.
 type Client struct {
 	transport runtime.ContextualTransport
 	formats   strfmt.Registry
@@ -133,17 +131,15 @@ type ClientService interface {
 	SetTransport(transport runtime.ContextualTransport)
 }
 
-/*
-DeleteUserTokensAPITokenIDexpires API token.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteUserTokensAPITokenIDContext] instead.
-*/
+// DeleteUserTokensAPITokenID expires API token.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteUserTokensAPITokenIDContext] instead.
 func (a *Client) DeleteUserTokensAPITokenID(params *DeleteUserTokensAPITokenIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteUserTokensAPITokenIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -152,11 +148,9 @@ func (a *Client) DeleteUserTokensAPITokenID(params *DeleteUserTokensAPITokenIDPa
 	return a.DeleteUserTokensAPITokenIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteUserTokensAPITokenIDContextexpires API token.
-
-Do not use the deprecated [DeleteUserTokensAPITokenIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteUserTokensAPITokenIDContext expires API token.
+//
+// Do not use the deprecated [DeleteUserTokensAPITokenIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteUserTokensAPITokenIDContext(ctx context.Context, params *DeleteUserTokensAPITokenIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteUserTokensAPITokenIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -200,19 +194,17 @@ func (a *Client) DeleteUserTokensAPITokenIDContext(ctx context.Context, params *
 	panic(msg)
 }
 
-/*
-GetAuthLoginfetches login metadata.
-
-Fetches metadata for login, such as available OIDC providers.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetAuthLoginContext] instead.
-*/
+// GetAuthLogin fetches login metadata.
+//
+// Fetches metadata for login, such as available OIDC providers.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetAuthLoginContext] instead.
 func (a *Client) GetAuthLogin(params *GetAuthLoginParams, opts ...ClientOption) (*GetAuthLoginOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -221,13 +213,11 @@ func (a *Client) GetAuthLogin(params *GetAuthLoginParams, opts ...ClientOption) 
 	return a.GetAuthLoginContext(ctx, params, opts...)
 }
 
-/*
-GetAuthLoginContextfetches login metadata.
-
-Fetches metadata for login, such as available OIDC providers.
-
-Do not use the deprecated [GetAuthLoginParams.Context] with this method: it would be ignored.
-*/
+// GetAuthLoginContext fetches login metadata.
+//
+// Fetches metadata for login, such as available OIDC providers.
+//
+// Do not use the deprecated [GetAuthLoginParams.Context] with this method: it would be ignored.
 func (a *Client) GetAuthLoginContext(ctx context.Context, params *GetAuthLoginParams, opts ...ClientOption) (*GetAuthLoginOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -270,19 +260,17 @@ func (a *Client) GetAuthLoginContext(ctx context.Context, params *GetAuthLoginPa
 	panic(msg)
 }
 
-/*
-GetAuthOidcProviderIDLoginbegins o ID c authentication flow and redirect to o ID c provider.
-
-The user agent is redirected to this endpoint when chosing to sign in via OIDC.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetAuthOidcProviderIDLoginContext] instead.
-*/
+// GetAuthOidcProviderIDLogin begins o ID c authentication flow and redirect to o ID c provider.
+//
+// The user agent is redirected to this endpoint when chosing to sign in via OIDC.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetAuthOidcProviderIDLoginContext] instead.
 func (a *Client) GetAuthOidcProviderIDLogin(params *GetAuthOidcProviderIDLoginParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) error {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -291,13 +279,11 @@ func (a *Client) GetAuthOidcProviderIDLogin(params *GetAuthOidcProviderIDLoginPa
 	return a.GetAuthOidcProviderIDLoginContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetAuthOidcProviderIDLoginContextbegins o ID c authentication flow and redirect to o ID c provider.
-
-The user agent is redirected to this endpoint when chosing to sign in via OIDC.
-
-Do not use the deprecated [GetAuthOidcProviderIDLoginParams.Context] with this method: it would be ignored.
-*/
+// GetAuthOidcProviderIDLoginContext begins o ID c authentication flow and redirect to o ID c provider.
+//
+// The user agent is redirected to this endpoint when chosing to sign in via OIDC.
+//
+// Do not use the deprecated [GetAuthOidcProviderIDLoginParams.Context] with this method: it would be ignored.
 func (a *Client) GetAuthOidcProviderIDLoginContext(ctx context.Context, params *GetAuthOidcProviderIDLoginParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) error {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -330,19 +316,17 @@ func (a *Client) GetAuthOidcProviderIDLoginContext(ctx context.Context, params *
 	return nil
 }
 
-/*
-GetAuthOidcProviderIDRedirectfinishes o ID c authentication flow upon succes you will be logged in.
-
-The user agent is redirected here by the OIDC provider to complete authentication.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetAuthOidcProviderIDRedirectContext] instead.
-*/
+// GetAuthOidcProviderIDRedirect finishes o ID c authentication flow upon succes you will be logged in.
+//
+// The user agent is redirected here by the OIDC provider to complete authentication.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetAuthOidcProviderIDRedirectContext] instead.
 func (a *Client) GetAuthOidcProviderIDRedirect(params *GetAuthOidcProviderIDRedirectParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) error {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -351,13 +335,11 @@ func (a *Client) GetAuthOidcProviderIDRedirect(params *GetAuthOidcProviderIDRedi
 	return a.GetAuthOidcProviderIDRedirectContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetAuthOidcProviderIDRedirectContextfinishes o ID c authentication flow upon succes you will be logged in.
-
-The user agent is redirected here by the OIDC provider to complete authentication.
-
-Do not use the deprecated [GetAuthOidcProviderIDRedirectParams.Context] with this method: it would be ignored.
-*/
+// GetAuthOidcProviderIDRedirectContext finishes o ID c authentication flow upon succes you will be logged in.
+//
+// The user agent is redirected here by the OIDC provider to complete authentication.
+//
+// Do not use the deprecated [GetAuthOidcProviderIDRedirectParams.Context] with this method: it would be ignored.
 func (a *Client) GetAuthOidcProviderIDRedirectContext(ctx context.Context, params *GetAuthOidcProviderIDRedirectParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) error {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -390,17 +372,15 @@ func (a *Client) GetAuthOidcProviderIDRedirectContext(ctx context.Context, param
 	return nil
 }
 
-/*
-GetUserTokensfetches API tokens for user.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetUserTokensContext] instead.
-*/
+// GetUserTokens fetches API tokens for user.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetUserTokensContext] instead.
 func (a *Client) GetUserTokens(params *GetUserTokensParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetUserTokensOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -409,11 +389,9 @@ func (a *Client) GetUserTokens(params *GetUserTokensParams, authInfo runtime.Cli
 	return a.GetUserTokensContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetUserTokensContextfetches API tokens for user.
-
-Do not use the deprecated [GetUserTokensParams.Context] with this method: it would be ignored.
-*/
+// GetUserTokensContext fetches API tokens for user.
+//
+// Do not use the deprecated [GetUserTokensParams.Context] with this method: it would be ignored.
 func (a *Client) GetUserTokensContext(ctx context.Context, params *GetUserTokensParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetUserTokensOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -457,19 +435,17 @@ func (a *Client) GetUserTokensContext(ctx context.Context, params *GetUserTokens
 	panic(msg)
 }
 
-/*
-PostAuthLoginperforms login.
-
-Upon success you will be logged in.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostAuthLoginContext] instead.
-*/
+// PostAuthLogin performs login.
+//
+// Upon success you will be logged in.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostAuthLoginContext] instead.
 func (a *Client) PostAuthLogin(params *PostAuthLoginParams, opts ...ClientOption) (*PostAuthLoginNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -478,13 +454,11 @@ func (a *Client) PostAuthLogin(params *PostAuthLoginParams, opts ...ClientOption
 	return a.PostAuthLoginContext(ctx, params, opts...)
 }
 
-/*
-PostAuthLoginContextperforms login.
-
-Upon success you will be logged in.
-
-Do not use the deprecated [PostAuthLoginParams.Context] with this method: it would be ignored.
-*/
+// PostAuthLoginContext performs login.
+//
+// Upon success you will be logged in.
+//
+// Do not use the deprecated [PostAuthLoginParams.Context] with this method: it would be ignored.
 func (a *Client) PostAuthLoginContext(ctx context.Context, params *PostAuthLoginParams, opts ...ClientOption) (*PostAuthLoginNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -527,17 +501,15 @@ func (a *Client) PostAuthLoginContext(ctx context.Context, params *PostAuthLogin
 	panic(msg)
 }
 
-/*
-PostAuthLogoutdestroys current session.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostAuthLogoutContext] instead.
-*/
+// PostAuthLogout destroys current session.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostAuthLogoutContext] instead.
 func (a *Client) PostAuthLogout(params *PostAuthLogoutParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostAuthLogoutNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -546,11 +518,9 @@ func (a *Client) PostAuthLogout(params *PostAuthLogoutParams, authInfo runtime.C
 	return a.PostAuthLogoutContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostAuthLogoutContextdestroys current session.
-
-Do not use the deprecated [PostAuthLogoutParams.Context] with this method: it would be ignored.
-*/
+// PostAuthLogoutContext destroys current session.
+//
+// Do not use the deprecated [PostAuthLogoutParams.Context] with this method: it would be ignored.
 func (a *Client) PostAuthLogoutContext(ctx context.Context, params *PostAuthLogoutParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostAuthLogoutNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -594,17 +564,15 @@ func (a *Client) PostAuthLogoutContext(ctx context.Context, params *PostAuthLogo
 	panic(msg)
 }
 
-/*
-PostUserTokenscreates an API token.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostUserTokensContext] instead.
-*/
+// PostUserTokens creates an API token.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostUserTokensContext] instead.
 func (a *Client) PostUserTokens(params *PostUserTokensParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostUserTokensCreated, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -613,11 +581,9 @@ func (a *Client) PostUserTokens(params *PostUserTokensParams, authInfo runtime.C
 	return a.PostUserTokensContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostUserTokensContextcreates an API token.
-
-Do not use the deprecated [PostUserTokensParams.Context] with this method: it would be ignored.
-*/
+// PostUserTokensContext creates an API token.
+//
+// Do not use the deprecated [PostUserTokensParams.Context] with this method: it would be ignored.
 func (a *Client) PostUserTokensContext(ctx context.Context, params *PostUserTokensParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostUserTokensCreated, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {

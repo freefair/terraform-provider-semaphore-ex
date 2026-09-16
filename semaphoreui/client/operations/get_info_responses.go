@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetInfoReader is a Reader for the GetInfo structure.
@@ -37,11 +37,9 @@ func NewGetInfoOK() *GetInfoOK {
 	return &GetInfoOK{}
 }
 
-/*
-GetInfoOK describes a response with status code 200, with default header values.
-
-ok
-*/
+// GetInfoOK describes a response with status code 200, with default header values.
+//
+// ok
 type GetInfoOK struct {
 	Payload *models.InfoType
 }

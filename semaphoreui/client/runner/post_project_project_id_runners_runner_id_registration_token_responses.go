@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // PostProjectProjectIDRunnersRunnerIDRegistrationTokenReader is a Reader for the PostProjectProjectIDRunnersRunnerIDRegistrationToken structure.
@@ -43,11 +43,9 @@ func NewPostProjectProjectIDRunnersRunnerIDRegistrationTokenOK() *PostProjectPro
 	return &PostProjectProjectIDRunnersRunnerIDRegistrationTokenOK{}
 }
 
-/*
-PostProjectProjectIDRunnersRunnerIDRegistrationTokenOK describes a response with status code 200, with default header values.
-
-New registration token
-*/
+// PostProjectProjectIDRunnersRunnerIDRegistrationTokenOK describes a response with status code 200, with default header values.
+//
+// New registration token
 type PostProjectProjectIDRunnersRunnerIDRegistrationTokenOK struct {
 	Payload *models.RunnerRegistrationToken
 }
@@ -113,11 +111,9 @@ func NewPostProjectProjectIDRunnersRunnerIDRegistrationTokenBadRequest() *PostPr
 	return &PostProjectProjectIDRunnersRunnerIDRegistrationTokenBadRequest{}
 }
 
-/*
-PostProjectProjectIDRunnersRunnerIDRegistrationTokenBadRequest describes a response with status code 400, with default header values.
-
-Runner is already registered
-*/
+// PostProjectProjectIDRunnersRunnerIDRegistrationTokenBadRequest describes a response with status code 400, with default header values.
+//
+// Runner is already registered
 type PostProjectProjectIDRunnersRunnerIDRegistrationTokenBadRequest struct {
 }
 

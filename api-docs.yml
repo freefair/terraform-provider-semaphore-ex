@@ -148,6 +148,10 @@ definitions:
   ProjectUser:
     type: object
     properties:
+      revision:
+        type: integer
+        minimum: 1
+        description: Server-owned membership revision for optimistic concurrency.
       id:
         type: integer
         minimum: 1
@@ -902,6 +906,21 @@ definitions:
   TemplateRequest:
     type: object
     properties:
+      working_directory:
+        type: string
+        x-nullable: true
+      executor_image:
+        type: string
+        x-nullable: true
+      suppress_error_alerts:
+        type: boolean
+      runner_tags:
+        type: array
+        items:
+          type: string
+      runner_tag_match_mode:
+        type: string
+        enum: [all, any]
       id:
         type: integer
         example: 1
@@ -973,6 +992,21 @@ definitions:
   Template:
     type: object
     properties:
+      working_directory:
+        type: string
+        x-nullable: true
+      executor_image:
+        type: string
+        x-nullable: true
+      suppress_error_alerts:
+        type: boolean
+      runner_tags:
+        type: array
+        items:
+          type: string
+      runner_tag_match_mode:
+        type: string
+        enum: [all, any]
       id:
         type: integer
         minimum: 1
@@ -1085,6 +1119,10 @@ definitions:
   ScheduleRequest:
     type: object
     properties:
+      timezone:
+        type: string
+        x-nullable: true
+        description: IANA timezone; null uses the server default.
       id:
         type: integer
       cron_format:
@@ -1111,6 +1149,10 @@ definitions:
   Schedule:
     type: object
     properties:
+      timezone:
+        type: string
+        x-nullable: true
+        description: IANA timezone; null uses the server default.
       id:
         type: integer
       cron_format:
@@ -1172,6 +1214,9 @@ definitions:
   Runner:
     type: object
     properties:
+      registration_policy:
+        type: string
+        enum: [standard, secure]
       id:
         type: integer
         readOnly: true
@@ -1211,6 +1256,9 @@ definitions:
   RunnerRequest:
     type: object
     properties:
+      registration_policy:
+        type: string
+        enum: [standard, secure]
       project_id:
         type: integer
         description: Required for project runners and must match the URL project. Ignored for global runners.
@@ -1242,6 +1290,9 @@ definitions:
       - $ref: "#/definitions/Runner"
       - type: object
         properties:
+          registration_token:
+            type: string
+            description: One-time project runner registration token returned on create.
           token:
             type: string
             description: Token the runner uses to authenticate. Empty when the runner is not registered.
@@ -2146,6 +2197,9 @@ paths:
           schema:
             type: object
             properties:
+              revision:
+                type: integer
+                minimum: 1
               role:
                 type: string
                 enum: [owner, manager, task_runner, guest]
@@ -2981,8 +3035,12 @@ paths:
           schema:
             $ref: "#/definitions/ScheduleRequest"
       responses:
-        204:
+        200:
           description: schedule updated
+          schema:
+            $ref: "#/definitions/Schedule"
+        204:
+          description: schedule updated (legacy server)
 
   /project/{project_id}/schedules:
     parameters:
@@ -3301,7 +3359,7 @@ paths:
         200:
           description: Runner
           schema:
-            $ref: "#/definitions/RunnerWithToken"
+            $ref: "#/definitions/Runner"
         404:
           description: Runner not found
     put:
@@ -3430,7 +3488,7 @@ paths:
         200:
           description: Runner
           schema:
-            $ref: "#/definitions/RunnerWithToken"
+            $ref: "#/definitions/Runner"
         404:
           description: Runner not found
     put:

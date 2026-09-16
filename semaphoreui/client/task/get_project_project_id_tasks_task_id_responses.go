@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetProjectProjectIDTasksTaskIDReader is a Reader for the GetProjectProjectIDTasksTaskID structure.
@@ -37,11 +37,9 @@ func NewGetProjectProjectIDTasksTaskIDOK() *GetProjectProjectIDTasksTaskIDOK {
 	return &GetProjectProjectIDTasksTaskIDOK{}
 }
 
-/*
-GetProjectProjectIDTasksTaskIDOK describes a response with status code 200, with default header values.
-
-Task
-*/
+// GetProjectProjectIDTasksTaskIDOK describes a response with status code 200, with default header values.
+//
+// Task
 type GetProjectProjectIDTasksTaskIDOK struct {
 	Payload *models.Task
 }

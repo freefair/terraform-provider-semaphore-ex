@@ -63,16 +63,14 @@ GetProjectProjectIDTemplatesTemplateIDParams contains all the parameters to send
 */
 type GetProjectProjectIDTemplatesTemplateIDParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* TemplateID.
-
-	   template ID
-	*/
+	// TemplateID.
+	//
+	// template ID
 	TemplateID int64
 
 	HTTPClient *http.Client

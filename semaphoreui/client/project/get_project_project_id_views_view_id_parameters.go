@@ -63,16 +63,14 @@ GetProjectProjectIDViewsViewIDParams contains all the parameters to send to the 
 */
 type GetProjectProjectIDViewsViewIDParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* ViewID.
-
-	   view ID
-	*/
+	// ViewID.
+	//
+	// view ID
 	ViewID int64
 
 	HTTPClient *http.Client

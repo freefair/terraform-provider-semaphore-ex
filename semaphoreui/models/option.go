@@ -24,12 +24,12 @@ type Option struct {
 }
 
 // Validate validates this option
-func (m *Option) Validate(formats strfmt.Registry) error {
+func (m *Option) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this option based on context it is used
-func (m *Option) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *Option) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

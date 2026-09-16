@@ -63,22 +63,19 @@ DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDParams contains 
 */
 type DeleteProjectProjectIDIntegrationsIntegrationIDMatchersMatcherIDParams struct {
 
-	/* IntegrationID.
-
-	   integration ID
-	*/
+	// IntegrationID.
+	//
+	// integration ID
 	IntegrationID int64
 
-	/* MatcherID.
-
-	   matcher ID
-	*/
+	// MatcherID.
+	//
+	// matcher ID
 	MatcherID int64
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

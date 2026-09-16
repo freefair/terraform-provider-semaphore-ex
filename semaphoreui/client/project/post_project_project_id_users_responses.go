@@ -39,11 +39,9 @@ func NewPostProjectProjectIDUsersNoContent() *PostProjectProjectIDUsersNoContent
 	return &PostProjectProjectIDUsersNoContent{}
 }
 
-/*
-PostProjectProjectIDUsersNoContent describes a response with status code 204, with default header values.
-
-User added
-*/
+// PostProjectProjectIDUsersNoContent describes a response with status code 204, with default header values.
+//
+// User added
 type PostProjectProjectIDUsersNoContent struct {
 }
 
@@ -90,10 +88,9 @@ func (o *PostProjectProjectIDUsersNoContent) readResponse(response runtime.Clien
 	return nil
 }
 
-/*
-PostProjectProjectIDUsersBody post project project ID users body
-swagger:model PostProjectProjectIDUsersBody
-*/
+// PostProjectProjectIDUsersBody post project project ID users body
+//
+// swagger:model PostProjectProjectIDUsersBody
 type PostProjectProjectIDUsersBody struct {
 
 	// role
@@ -185,7 +182,7 @@ func (o *PostProjectProjectIDUsersBody) validateUserID(formats strfmt.Registry) 
 }
 
 // ContextValidate validates this post project project ID users body based on context it is used
-func (o *PostProjectProjectIDUsersBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (o *PostProjectProjectIDUsersBody) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

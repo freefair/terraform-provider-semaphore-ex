@@ -33,11 +33,9 @@ func NewGetProjectProjectIDTasksTaskIDRawOutputOK() *GetProjectProjectIDTasksTas
 	return &GetProjectProjectIDTasksTaskIDRawOutputOK{}
 }
 
-/*
-GetProjectProjectIDTasksTaskIDRawOutputOK describes a response with status code 200, with default header values.
-
-output
-*/
+// GetProjectProjectIDTasksTaskIDRawOutputOK describes a response with status code 200, with default header values.
+//
+// output
 type GetProjectProjectIDTasksTaskIDRawOutputOK struct {
 	ContentType string
 }

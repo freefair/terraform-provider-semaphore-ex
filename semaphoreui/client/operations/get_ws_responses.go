@@ -39,11 +39,9 @@ func NewGetWsOK() *GetWsOK {
 	return &GetWsOK{}
 }
 
-/*
-GetWsOK describes a response with status code 200, with default header values.
-
-OK
-*/
+// GetWsOK describes a response with status code 200, with default header values.
+//
+// OK
 type GetWsOK struct {
 }
 
@@ -95,11 +93,9 @@ func NewGetWsUnauthorized() *GetWsUnauthorized {
 	return &GetWsUnauthorized{}
 }
 
-/*
-GetWsUnauthorized describes a response with status code 401, with default header values.
-
-not authenticated
-*/
+// GetWsUnauthorized describes a response with status code 401, with default header values.
+//
+// not authenticated
 type GetWsUnauthorized struct {
 }
 

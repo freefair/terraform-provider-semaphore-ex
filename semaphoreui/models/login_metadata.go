@@ -140,12 +140,12 @@ type LoginMetadataOidcProvidersItems0 struct {
 }
 
 // Validate validates this login metadata oidc providers items0
-func (m *LoginMetadataOidcProvidersItems0) Validate(formats strfmt.Registry) error {
+func (m *LoginMetadataOidcProvidersItems0) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this login metadata oidc providers items0 based on context it is used
-func (m *LoginMetadataOidcProvidersItems0) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *LoginMetadataOidcProvidersItems0) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

@@ -2,10 +2,10 @@ package provider
 
 import (
 	"fmt"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/schedule"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"strconv"
-	"terraform-provider-semaphoreui/semaphoreui/client/schedule"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -50,44 +50,44 @@ func testAccProjectScheduleExists(resourceName string) resource.TestCheckFunc {
 
 func testAccProjectScheduleDependencyConfig(nameSuffix string) string {
 	return fmt.Sprintf(`
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "test-%[1]s"
 }
 
-resource "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "None-%[1]s"
   none       = {}
 }
 
-resource "semaphoreui_project_repository" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_repository" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Repo-%[1]s"
   url        = "git@github.com:example/test.git"
   branch     = "main"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
 }
 
-resource "semaphoreui_project_inventory" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_inventory" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Inventory-%[1]s"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
   file = {
     path          = "path/to/inventory"
-    repository_id = semaphoreui_project_repository.test.id
+    repository_id = semaphore_ex_project_repository.test.id
   }
 }
 
-resource "semaphoreui_project_environment" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_environment" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Env-%[1]s"
 }
 
-resource "semaphoreui_project_template" "test" {
-  project_id     = semaphoreui_project.test.id
-  environment_id = semaphoreui_project_environment.test.id
-  inventory_id   = semaphoreui_project_inventory.test.id
-  repository_id  = semaphoreui_project_repository.test.id
+resource "semaphore_ex_project_template" "test" {
+  project_id     = semaphore_ex_project.test.id
+  environment_id = semaphore_ex_project_environment.test.id
+  inventory_id   = semaphore_ex_project_inventory.test.id
+  repository_id  = semaphore_ex_project_repository.test.id
   name           = "Template-%[1]s"
   playbook       = "playbook.yml"
 }
@@ -97,10 +97,10 @@ resource "semaphoreui_project_template" "test" {
 func testAccProjectScheduleConfig(nameSuffix string, enabled bool) string {
 	return fmt.Sprintf(`
 %[1]s
-resource "semaphoreui_project_schedule" "test" {
-  project_id  = semaphoreui_project.test.id
+resource "semaphore_ex_project_schedule" "test" {
+  project_id  = semaphore_ex_project.test.id
   name        = "Test %[2]s"
-  template_id = semaphoreui_project_template.test.id
+  template_id = semaphore_ex_project_template.test.id
   cron_format = "0 0 * * *"
   enabled = %[3]t
 }
@@ -128,40 +128,40 @@ func TestAcc_ProjectScheduleResource_basic(t *testing.T) {
 			{
 				Config: testAccProjectScheduleConfig(nameSuffix, false),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectScheduleExists("semaphoreui_project_schedule.test"),
-					resource.TestCheckResourceAttr("semaphoreui_project_schedule.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_schedule.test", "cron_format", "0 0 * * *"),
-					resource.TestCheckResourceAttr("semaphoreui_project_schedule.test", "enabled", "false"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_schedule.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_schedule.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_schedule.test", "template_id"),
+					testAccProjectScheduleExists("semaphore_ex_project_schedule.test"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_schedule.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_schedule.test", "cron_format", "0 0 * * *"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_schedule.test", "enabled", "false"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_schedule.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_schedule.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_schedule.test", "template_id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_schedule.test",
+				ResourceName:      "semaphore_ex_project_schedule.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectScheduleImportID("semaphoreui_project_schedule.test"),
+				ImportStateIdFunc: testAccProjectScheduleImportID("semaphore_ex_project_schedule.test"),
 			},
 			// Update testing
 			{
 				Config: testAccProjectScheduleConfig(nameSuffix, true),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectScheduleExists("semaphoreui_project_schedule.test"),
-					resource.TestCheckResourceAttr("semaphoreui_project_schedule.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_schedule.test", "cron_format", "0 0 * * *"),
-					resource.TestCheckResourceAttr("semaphoreui_project_schedule.test", "enabled", "true"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_schedule.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_schedule.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_schedule.test", "template_id"),
+					testAccProjectScheduleExists("semaphore_ex_project_schedule.test"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_schedule.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_schedule.test", "cron_format", "0 0 * * *"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_schedule.test", "enabled", "true"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_schedule.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_schedule.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_schedule.test", "template_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: testAccProjectScheduleDependencyConfig(nameSuffix),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_schedule.test"),
+					testAccResourceNotExists("semaphore_ex_project_schedule.test"),
 				),
 			},
 		},

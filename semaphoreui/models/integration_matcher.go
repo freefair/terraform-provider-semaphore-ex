@@ -204,7 +204,7 @@ func (m *IntegrationMatcher) validateMethod(formats strfmt.Registry) error {
 }
 
 // ContextValidate validates this integration matcher based on context it is used
-func (m *IntegrationMatcher) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *IntegrationMatcher) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

@@ -63,16 +63,14 @@ DeleteProjectProjectIDRepositoriesRepositoryIDParams contains all the parameters
 */
 type DeleteProjectProjectIDRepositoriesRepositoryIDParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* RepositoryID.
-
-	   repository ID
-	*/
+	// RepositoryID.
+	//
+	// repository ID
 	RepositoryID int64
 
 	HTTPClient *http.Client

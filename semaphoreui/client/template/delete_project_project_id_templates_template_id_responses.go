@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDTemplatesTemplateIDNoContent() *DeleteProjectProje
 	return &DeleteProjectProjectIDTemplatesTemplateIDNoContent{}
 }
 
-/*
-DeleteProjectProjectIDTemplatesTemplateIDNoContent describes a response with status code 204, with default header values.
-
-template removed
-*/
+// DeleteProjectProjectIDTemplatesTemplateIDNoContent describes a response with status code 204, with default header values.
+//
+// template removed
 type DeleteProjectProjectIDTemplatesTemplateIDNoContent struct {
 }
 

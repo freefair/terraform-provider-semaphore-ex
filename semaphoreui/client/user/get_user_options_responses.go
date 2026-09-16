@@ -36,11 +36,9 @@ func NewGetUserOptionsOK() *GetUserOptionsOK {
 	return &GetUserOptionsOK{}
 }
 
-/*
-GetUserOptionsOK describes a response with status code 200, with default header values.
-
-User options
-*/
+// GetUserOptionsOK describes a response with status code 200, with default header values.
+//
+// User options
 type GetUserOptionsOK struct {
 	Payload map[string]string
 }

@@ -3,10 +3,9 @@ package provider
 import (
 	"context"
 	"fmt"
+	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/runner"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
-	apiclient "terraform-provider-semaphoreui/semaphoreui/client"
-	"terraform-provider-semaphoreui/semaphoreui/client/runner"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -88,7 +87,7 @@ func (d *projectRunnerDataSource) Read(ctx context.Context, req datasource.ReadR
 		if item.Name == config.Name.ValueString() {
 			// The list endpoint returns bare Runner objects (no token/private
 			// key); wrap so the shared converter leaves those fields null.
-			model, diags := convertRunnerResponseToProjectRunnerModel(ctx, &models.RunnerWithToken{Runner: *item}, config.ProjectID)
+			model, diags := convertRunnerResponseToProjectRunnerModel(ctx, item, config.ProjectID)
 			resp.Diagnostics.Append(diags...)
 			if resp.Diagnostics.HasError() {
 				return

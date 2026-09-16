@@ -63,10 +63,9 @@ DeleteUsersUserIDParams contains all the parameters to send to the API endpoint
 */
 type DeleteUsersUserIDParams struct {
 
-	/* UserID.
-
-	   User ID
-	*/
+	// UserID.
+	//
+	// User ID
 	UserID int64
 
 	HTTPClient *http.Client

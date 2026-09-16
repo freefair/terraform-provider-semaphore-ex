@@ -63,10 +63,9 @@ GetProjectProjectIDRunnersParams contains all the parameters to send to the API 
 */
 type GetProjectProjectIDRunnersParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

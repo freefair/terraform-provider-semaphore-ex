@@ -33,11 +33,9 @@ func NewPutProjectProjectIDTemplatesTemplateIDNoContent() *PutProjectProjectIDTe
 	return &PutProjectProjectIDTemplatesTemplateIDNoContent{}
 }
 
-/*
-PutProjectProjectIDTemplatesTemplateIDNoContent describes a response with status code 204, with default header values.
-
-template updated
-*/
+// PutProjectProjectIDTemplatesTemplateIDNoContent describes a response with status code 204, with default header values.
+//
+// template updated
 type PutProjectProjectIDTemplatesTemplateIDNoContent struct {
 }
 

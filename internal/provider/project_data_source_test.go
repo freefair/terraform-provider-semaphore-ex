@@ -8,25 +8,25 @@ import (
 
 func testAccProjectDataSourceConfigByID() string {
 	return `
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name       = "Project 1"
   alert      = true
   alert_chat = "slack"
 }
 
-data "semaphoreui_project" "test" {
-  id = semaphoreui_project.test.id
+data "semaphore_ex_project" "test" {
+  id = semaphore_ex_project.test.id
 }`
 }
 
 func testAccProjectDataSourceConfigByName() string {
 	return `
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "Test Project"
 }
 
-data "semaphoreui_project" "test" {
-  name = semaphoreui_project.test.name
+data "semaphore_ex_project" "test" {
+  name = semaphore_ex_project.test.name
 }`
 }
 
@@ -39,12 +39,12 @@ func TestAcc_ProjectDataSource_basicID(t *testing.T) {
 			{
 				Config: testAccProjectDataSourceConfigByID(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_project.test", "name", "Project 1"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project.test", "alert", "true"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project.test", "alert_chat", "slack"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project.test", "max_parallel_tasks", "0"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project.test", "created"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project.test", "id"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project.test", "name", "Project 1"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project.test", "alert", "true"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project.test", "alert_chat", "slack"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project.test", "max_parallel_tasks", "0"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project.test", "created"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project.test", "id"),
 				),
 			},
 		},
@@ -60,11 +60,11 @@ func TestAcc_ProjectDataSource_basicName(t *testing.T) {
 			{
 				Config: testAccProjectDataSourceConfigByName(),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("data.semaphoreui_project.test", "name", "Test Project"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project.test", "alert", "false"),
-					resource.TestCheckResourceAttr("data.semaphoreui_project.test", "max_parallel_tasks", "0"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project.test", "created"),
-					resource.TestCheckResourceAttrSet("data.semaphoreui_project.test", "id"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project.test", "name", "Test Project"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project.test", "alert", "false"),
+					resource.TestCheckResourceAttr("data.semaphore_ex_project.test", "max_parallel_tasks", "0"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project.test", "created"),
+					resource.TestCheckResourceAttrSet("data.semaphore_ex_project.test", "id"),
 				),
 			},
 		},

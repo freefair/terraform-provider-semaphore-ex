@@ -33,11 +33,9 @@ func NewDeleteRunnersRunnerIDCacheNoContent() *DeleteRunnersRunnerIDCacheNoConte
 	return &DeleteRunnersRunnerIDCacheNoContent{}
 }
 
-/*
-DeleteRunnersRunnerIDCacheNoContent describes a response with status code 204, with default header values.
-
-Runner cache cleared
-*/
+// DeleteRunnersRunnerIDCacheNoContent describes a response with status code 204, with default header values.
+//
+// Runner cache cleared
 type DeleteRunnersRunnerIDCacheNoContent struct {
 }
 

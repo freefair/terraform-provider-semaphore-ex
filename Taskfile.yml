@@ -54,18 +54,10 @@ tasks:
       - docker compose -f docker-compose.yml down -v
 
   testacc:
-    desc: Run acceptance tests using docker
-    vars:
-      API_TOKEN:
-        sh: head -c32 /dev/urandom | base64
+    desc: Run acceptance tests against an isolated Semaphore EX binary
+    requires:
+      vars: [SEMAPHORE_EX_TEST_BINARY]
     env:
-      SEMAPHOREUI_API_BASE_URL: http://localhost:13000/api
-      SEMAPHOREUI_API_TOKEN: "{{.API_TOKEN}}"
-      TF_ACC: 1
-    silent: true
+      TF_ACC: '1'
     cmds:
-      - task: docker:start
-      - defer: task docker:stop
-      - scripts/wait_for_test_env_ready.sh
-      - scripts/setup_test_env.sh
-      - go test -v -cover -timeout 120m {{.CLI_ARGS}} ./internal/...
+      - go test -v -count=1 -timeout=20m {{.CLI_ARGS}} ./internal/...

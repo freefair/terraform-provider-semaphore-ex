@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag/conv"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // NewPutProjectProjectIDSchedulesScheduleIDParams creates a new PutProjectProjectIDSchedulesScheduleIDParams object,
@@ -64,19 +64,17 @@ PutProjectProjectIDSchedulesScheduleIDParams contains all the parameters to send
 */
 type PutProjectProjectIDSchedulesScheduleIDParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	// Schedule.
 	Schedule *models.ScheduleRequest
 
-	/* ScheduleID.
-
-	   schedule ID
-	*/
+	// ScheduleID.
+	//
+	// schedule ID
 	ScheduleID int64
 
 	HTTPClient *http.Client

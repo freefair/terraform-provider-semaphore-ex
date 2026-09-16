@@ -49,6 +49,9 @@ type TemplateRequest struct {
 	// environment ids
 	EnvironmentIds []int64 `json:"environment_ids"`
 
+	// executor image
+	ExecutorImage *string `json:"executor_image,omitempty"`
+
 	// git branch
 	// Example: main
 	GitBranch string `json:"git_branch,omitempty"`
@@ -80,8 +83,18 @@ type TemplateRequest struct {
 	// Minimum: 1
 	RepositoryID int64 `json:"repository_id,omitempty"`
 
+	// runner tag match mode
+	// Enum: ["all","any"]
+	RunnerTagMatchMode string `json:"runner_tag_match_mode,omitempty"`
+
+	// runner tags
+	RunnerTags []string `json:"runner_tags"`
+
 	// start version
 	StartVersion string `json:"start_version,omitempty"`
+
+	// suppress error alerts
+	SuppressErrorAlerts bool `json:"suppress_error_alerts,omitempty"`
 
 	// suppress success alerts
 	SuppressSuccessAlerts bool `json:"suppress_success_alerts,omitempty"`
@@ -102,6 +115,9 @@ type TemplateRequest struct {
 	// view id
 	// Minimum: 1
 	ViewID int64 `json:"view_id,omitempty"`
+
+	// working directory
+	WorkingDirectory *string `json:"working_directory,omitempty"`
 }
 
 // Validate validates this template request
@@ -121,6 +137,10 @@ func (m *TemplateRequest) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateRepositoryID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateRunnerTagMatchMode(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -192,6 +212,48 @@ func (m *TemplateRequest) validateRepositoryID(formats strfmt.Registry) error {
 	}
 
 	if err := validate.MinimumInt("repository_id", "body", m.RepositoryID, 1, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var templateRequestTypeRunnerTagMatchModePropEnum []any
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["all","any"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		templateRequestTypeRunnerTagMatchModePropEnum = append(templateRequestTypeRunnerTagMatchModePropEnum, v)
+	}
+}
+
+const (
+
+	// TemplateRequestRunnerTagMatchModeAll captures enum value "all"
+	TemplateRequestRunnerTagMatchModeAll string = "all"
+
+	// TemplateRequestRunnerTagMatchModeAny captures enum value "any"
+	TemplateRequestRunnerTagMatchModeAny string = "any"
+)
+
+// prop value enum
+func (m *TemplateRequest) validateRunnerTagMatchModeEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, templateRequestTypeRunnerTagMatchModePropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *TemplateRequest) validateRunnerTagMatchMode(formats strfmt.Registry) error {
+	if typeutils.IsZero(m.RunnerTagMatchMode) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateRunnerTagMatchModeEnum("runner_tag_match_mode", "body", m.RunnerTagMatchMode); err != nil {
 		return err
 	}
 

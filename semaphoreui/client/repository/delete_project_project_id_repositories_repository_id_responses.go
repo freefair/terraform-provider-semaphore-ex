@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDRepositoriesRepositoryIDNoContent() *DeleteProject
 	return &DeleteProjectProjectIDRepositoriesRepositoryIDNoContent{}
 }
 
-/*
-DeleteProjectProjectIDRepositoriesRepositoryIDNoContent describes a response with status code 204, with default header values.
-
-repository removed
-*/
+// DeleteProjectProjectIDRepositoriesRepositoryIDNoContent describes a response with status code 204, with default header values.
+//
+// repository removed
 type DeleteProjectProjectIDRepositoriesRepositoryIDNoContent struct {
 }
 

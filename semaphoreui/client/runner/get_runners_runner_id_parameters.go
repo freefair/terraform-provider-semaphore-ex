@@ -63,10 +63,9 @@ GetRunnersRunnerIDParams contains all the parameters to send to the API endpoint
 */
 type GetRunnersRunnerIDParams struct {
 
-	/* RunnerID.
-
-	   Global runner ID
-	*/
+	// RunnerID.
+	//
+	// Global runner ID
 	RunnerID int64
 
 	HTTPClient *http.Client

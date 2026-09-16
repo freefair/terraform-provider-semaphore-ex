@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetProjectProjectIDIntegrationsIntegrationIDValuesReader is a Reader for the GetProjectProjectIDIntegrationsIntegrationIDValues structure.
@@ -37,11 +37,9 @@ func NewGetProjectProjectIDIntegrationsIntegrationIDValuesOK() *GetProjectProjec
 	return &GetProjectProjectIDIntegrationsIntegrationIDValuesOK{}
 }
 
-/*
-GetProjectProjectIDIntegrationsIntegrationIDValuesOK describes a response with status code 200, with default header values.
-
-Integration Extracted Value
-*/
+// GetProjectProjectIDIntegrationsIntegrationIDValuesOK describes a response with status code 200, with default header values.
+//
+// Integration Extracted Value
 type GetProjectProjectIDIntegrationsIntegrationIDValuesOK struct {
 	Payload []*models.IntegrationExtractValue
 }

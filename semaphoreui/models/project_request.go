@@ -66,7 +66,7 @@ func (m *ProjectRequest) validateMaxParallelTasks(formats strfmt.Registry) error
 }
 
 // ContextValidate validates this project request based on context it is used
-func (m *ProjectRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *ProjectRequest) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

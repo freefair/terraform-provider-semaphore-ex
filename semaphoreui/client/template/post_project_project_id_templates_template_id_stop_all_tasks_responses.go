@@ -35,11 +35,9 @@ func NewPostProjectProjectIDTemplatesTemplateIDStopAllTasksNoContent() *PostProj
 	return &PostProjectProjectIDTemplatesTemplateIDStopAllTasksNoContent{}
 }
 
-/*
-PostProjectProjectIDTemplatesTemplateIDStopAllTasksNoContent describes a response with status code 204, with default header values.
-
-tasks stopped
-*/
+// PostProjectProjectIDTemplatesTemplateIDStopAllTasksNoContent describes a response with status code 204, with default header values.
+//
+// tasks stopped
 type PostProjectProjectIDTemplatesTemplateIDStopAllTasksNoContent struct {
 }
 
@@ -86,10 +84,9 @@ func (o *PostProjectProjectIDTemplatesTemplateIDStopAllTasksNoContent) readRespo
 	return nil
 }
 
-/*
-PostProjectProjectIDTemplatesTemplateIDStopAllTasksBody post project project ID templates template ID stop all tasks body
-swagger:model PostProjectProjectIDTemplatesTemplateIDStopAllTasksBody
-*/
+// PostProjectProjectIDTemplatesTemplateIDStopAllTasksBody post project project ID templates template ID stop all tasks body
+//
+// swagger:model PostProjectProjectIDTemplatesTemplateIDStopAllTasksBody
 type PostProjectProjectIDTemplatesTemplateIDStopAllTasksBody struct {
 
 	// Force stop (kill) all tasks immediately
@@ -97,12 +94,12 @@ type PostProjectProjectIDTemplatesTemplateIDStopAllTasksBody struct {
 }
 
 // Validate validates this post project project ID templates template ID stop all tasks body
-func (o *PostProjectProjectIDTemplatesTemplateIDStopAllTasksBody) Validate(formats strfmt.Registry) error {
+func (o *PostProjectProjectIDTemplatesTemplateIDStopAllTasksBody) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this post project project ID templates template ID stop all tasks body based on context it is used
-func (o *PostProjectProjectIDTemplatesTemplateIDStopAllTasksBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (o *PostProjectProjectIDTemplatesTemplateIDStopAllTasksBody) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

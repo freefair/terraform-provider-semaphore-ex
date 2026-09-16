@@ -63,10 +63,9 @@ GetProjectProjectIDTasksParams contains all the parameters to send to the API en
 */
 type GetProjectProjectIDTasksParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

@@ -44,9 +44,7 @@ func NewClientWithBearerToken(host, basePath, scheme, bearerToken string) Client
 	return &Client{transport: transport, formats: strfmt.Default}
 }
 
-/*
-Client for task API.
-*/
+// Client for task API.
 type Client struct {
 	transport runtime.ContextualTransport
 	formats   strfmt.Registry
@@ -133,17 +131,15 @@ type ClientService interface {
 	SetTransport(transport runtime.ContextualTransport)
 }
 
-/*
-DeleteProjectProjectIDTasksTaskIDdeletes task including output.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.DeleteProjectProjectIDTasksTaskIDContext] instead.
-*/
+// DeleteProjectProjectIDTasksTaskID deletes task including output.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.DeleteProjectProjectIDTasksTaskIDContext] instead.
 func (a *Client) DeleteProjectProjectIDTasksTaskID(params *DeleteProjectProjectIDTasksTaskIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDTasksTaskIDNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -152,11 +148,9 @@ func (a *Client) DeleteProjectProjectIDTasksTaskID(params *DeleteProjectProjectI
 	return a.DeleteProjectProjectIDTasksTaskIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-DeleteProjectProjectIDTasksTaskIDContextdeletes task including output.
-
-Do not use the deprecated [DeleteProjectProjectIDTasksTaskIDParams.Context] with this method: it would be ignored.
-*/
+// DeleteProjectProjectIDTasksTaskIDContext deletes task including output.
+//
+// Do not use the deprecated [DeleteProjectProjectIDTasksTaskIDParams.Context] with this method: it would be ignored.
 func (a *Client) DeleteProjectProjectIDTasksTaskIDContext(ctx context.Context, params *DeleteProjectProjectIDTasksTaskIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DeleteProjectProjectIDTasksTaskIDNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -200,17 +194,15 @@ func (a *Client) DeleteProjectProjectIDTasksTaskIDContext(ctx context.Context, p
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDTasksgets tasks related to current project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDTasksContext] instead.
-*/
+// GetProjectProjectIDTasks gets tasks related to current project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDTasksContext] instead.
 func (a *Client) GetProjectProjectIDTasks(params *GetProjectProjectIDTasksParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDTasksOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -219,11 +211,9 @@ func (a *Client) GetProjectProjectIDTasks(params *GetProjectProjectIDTasksParams
 	return a.GetProjectProjectIDTasksContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDTasksContextgets tasks related to current project.
-
-Do not use the deprecated [GetProjectProjectIDTasksParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDTasksContext gets tasks related to current project.
+//
+// Do not use the deprecated [GetProjectProjectIDTasksParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDTasksContext(ctx context.Context, params *GetProjectProjectIDTasksParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDTasksOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -267,17 +257,15 @@ func (a *Client) GetProjectProjectIDTasksContext(ctx context.Context, params *Ge
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDTasksLastgets last 200 tasks related to current project.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDTasksLastContext] instead.
-*/
+// GetProjectProjectIDTasksLast gets last 200 tasks related to current project.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDTasksLastContext] instead.
 func (a *Client) GetProjectProjectIDTasksLast(params *GetProjectProjectIDTasksLastParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDTasksLastOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -286,11 +274,9 @@ func (a *Client) GetProjectProjectIDTasksLast(params *GetProjectProjectIDTasksLa
 	return a.GetProjectProjectIDTasksLastContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDTasksLastContextgets last 200 tasks related to current project.
-
-Do not use the deprecated [GetProjectProjectIDTasksLastParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDTasksLastContext gets last 200 tasks related to current project.
+//
+// Do not use the deprecated [GetProjectProjectIDTasksLastParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDTasksLastContext(ctx context.Context, params *GetProjectProjectIDTasksLastParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDTasksLastOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -334,17 +320,15 @@ func (a *Client) GetProjectProjectIDTasksLastContext(ctx context.Context, params
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDTasksTaskIDgets a single task.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDTasksTaskIDContext] instead.
-*/
+// GetProjectProjectIDTasksTaskID gets a single task.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDTasksTaskIDContext] instead.
 func (a *Client) GetProjectProjectIDTasksTaskID(params *GetProjectProjectIDTasksTaskIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDTasksTaskIDOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -353,11 +337,9 @@ func (a *Client) GetProjectProjectIDTasksTaskID(params *GetProjectProjectIDTasks
 	return a.GetProjectProjectIDTasksTaskIDContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDTasksTaskIDContextgets a single task.
-
-Do not use the deprecated [GetProjectProjectIDTasksTaskIDParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDTasksTaskIDContext gets a single task.
+//
+// Do not use the deprecated [GetProjectProjectIDTasksTaskIDParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDTasksTaskIDContext(ctx context.Context, params *GetProjectProjectIDTasksTaskIDParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDTasksTaskIDOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -401,17 +383,15 @@ func (a *Client) GetProjectProjectIDTasksTaskIDContext(ctx context.Context, para
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDTasksTaskIDOutputgets task output.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDTasksTaskIDOutputContext] instead.
-*/
+// GetProjectProjectIDTasksTaskIDOutput gets task output.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDTasksTaskIDOutputContext] instead.
 func (a *Client) GetProjectProjectIDTasksTaskIDOutput(params *GetProjectProjectIDTasksTaskIDOutputParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDTasksTaskIDOutputOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -420,11 +400,9 @@ func (a *Client) GetProjectProjectIDTasksTaskIDOutput(params *GetProjectProjectI
 	return a.GetProjectProjectIDTasksTaskIDOutputContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDTasksTaskIDOutputContextgets task output.
-
-Do not use the deprecated [GetProjectProjectIDTasksTaskIDOutputParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDTasksTaskIDOutputContext gets task output.
+//
+// Do not use the deprecated [GetProjectProjectIDTasksTaskIDOutputParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDTasksTaskIDOutputContext(ctx context.Context, params *GetProjectProjectIDTasksTaskIDOutputParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDTasksTaskIDOutputOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -468,17 +446,15 @@ func (a *Client) GetProjectProjectIDTasksTaskIDOutputContext(ctx context.Context
 	panic(msg)
 }
 
-/*
-GetProjectProjectIDTasksTaskIDRawOutputgets task raw output.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.GetProjectProjectIDTasksTaskIDRawOutputContext] instead.
-*/
+// GetProjectProjectIDTasksTaskIDRawOutput gets task raw output.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.GetProjectProjectIDTasksTaskIDRawOutputContext] instead.
 func (a *Client) GetProjectProjectIDTasksTaskIDRawOutput(params *GetProjectProjectIDTasksTaskIDRawOutputParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDTasksTaskIDRawOutputOK, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -487,11 +463,9 @@ func (a *Client) GetProjectProjectIDTasksTaskIDRawOutput(params *GetProjectProje
 	return a.GetProjectProjectIDTasksTaskIDRawOutputContext(ctx, params, authInfo, opts...)
 }
 
-/*
-GetProjectProjectIDTasksTaskIDRawOutputContextgets task raw output.
-
-Do not use the deprecated [GetProjectProjectIDTasksTaskIDRawOutputParams.Context] with this method: it would be ignored.
-*/
+// GetProjectProjectIDTasksTaskIDRawOutputContext gets task raw output.
+//
+// Do not use the deprecated [GetProjectProjectIDTasksTaskIDRawOutputParams.Context] with this method: it would be ignored.
 func (a *Client) GetProjectProjectIDTasksTaskIDRawOutputContext(ctx context.Context, params *GetProjectProjectIDTasksTaskIDRawOutputParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetProjectProjectIDTasksTaskIDRawOutputOK, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -535,17 +509,15 @@ func (a *Client) GetProjectProjectIDTasksTaskIDRawOutputContext(ctx context.Cont
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDTasksstarts a job.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDTasksContext] instead.
-*/
+// PostProjectProjectIDTasks starts a job.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDTasksContext] instead.
 func (a *Client) PostProjectProjectIDTasks(params *PostProjectProjectIDTasksParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDTasksCreated, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -554,11 +526,9 @@ func (a *Client) PostProjectProjectIDTasks(params *PostProjectProjectIDTasksPara
 	return a.PostProjectProjectIDTasksContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDTasksContextstarts a job.
-
-Do not use the deprecated [PostProjectProjectIDTasksParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDTasksContext starts a job.
+//
+// Do not use the deprecated [PostProjectProjectIDTasksParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDTasksContext(ctx context.Context, params *PostProjectProjectIDTasksParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDTasksCreated, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {
@@ -602,17 +572,15 @@ func (a *Client) PostProjectProjectIDTasksContext(ctx context.Context, params *P
 	panic(msg)
 }
 
-/*
-PostProjectProjectIDTasksTaskIDStopstops a job.
-
-This method does not support injected context.
-However, timeout and opentracing contexts are honored whenever enabled.
-
-If you need to pass a specific context, use [Client.PostProjectProjectIDTasksTaskIDStopContext] instead.
-*/
+// PostProjectProjectIDTasksTaskIDStop stops a job.
+//
+// This method does not support injected context.
+// However, timeout and opentracing contexts are honored whenever enabled.
+//
+// If you need to pass a specific context, use [Client.PostProjectProjectIDTasksTaskIDStopContext] instead.
 func (a *Client) PostProjectProjectIDTasksTaskIDStop(params *PostProjectProjectIDTasksTaskIDStopParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDTasksTaskIDStopNoContent, error) {
 	var ctx context.Context
-	if params.inner.ctx != nil {
+	if params != nil && params.inner.ctx != nil {
 		ctx = params.inner.ctx
 	} else {
 		ctx = context.Background()
@@ -621,11 +589,9 @@ func (a *Client) PostProjectProjectIDTasksTaskIDStop(params *PostProjectProjectI
 	return a.PostProjectProjectIDTasksTaskIDStopContext(ctx, params, authInfo, opts...)
 }
 
-/*
-PostProjectProjectIDTasksTaskIDStopContextstops a job.
-
-Do not use the deprecated [PostProjectProjectIDTasksTaskIDStopParams.Context] with this method: it would be ignored.
-*/
+// PostProjectProjectIDTasksTaskIDStopContext stops a job.
+//
+// Do not use the deprecated [PostProjectProjectIDTasksTaskIDStopParams.Context] with this method: it would be ignored.
 func (a *Client) PostProjectProjectIDTasksTaskIDStopContext(ctx context.Context, params *PostProjectProjectIDTasksTaskIDStopParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostProjectProjectIDTasksTaskIDStopNoContent, error) {
 	// NOTE: parameters are not validated before sending
 	if params == nil {

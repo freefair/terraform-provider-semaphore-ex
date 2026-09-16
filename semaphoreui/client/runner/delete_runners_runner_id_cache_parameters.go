@@ -63,10 +63,9 @@ DeleteRunnersRunnerIDCacheParams contains all the parameters to send to the API 
 */
 type DeleteRunnersRunnerIDCacheParams struct {
 
-	/* RunnerID.
-
-	   Global runner ID
-	*/
+	// RunnerID.
+	//
+	// Global runner ID
 	RunnerID int64
 
 	HTTPClient *http.Client

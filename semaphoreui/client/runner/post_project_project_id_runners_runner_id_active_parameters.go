@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag/conv"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // NewPostProjectProjectIDRunnersRunnerIDActiveParams creates a new PostProjectProjectIDRunnersRunnerIDActiveParams object,
@@ -67,16 +67,14 @@ type PostProjectProjectIDRunnersRunnerIDActiveParams struct {
 	// Active.
 	Active *models.RunnerActive
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* RunnerID.
-
-	   Project runner ID
-	*/
+	// RunnerID.
+	//
+	// Project runner ID
 	RunnerID int64
 
 	HTTPClient *http.Client

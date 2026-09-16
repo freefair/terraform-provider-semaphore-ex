@@ -70,7 +70,7 @@ func (m *User) validateID(formats strfmt.Registry) error {
 }
 
 // ContextValidate validates this user based on context it is used
-func (m *User) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *User) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

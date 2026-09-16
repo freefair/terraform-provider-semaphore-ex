@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // PostProjectProjectIDIntegrationsReader is a Reader for the PostProjectProjectIDIntegrations structure.
@@ -37,11 +37,9 @@ func NewPostProjectProjectIDIntegrationsCreated() *PostProjectProjectIDIntegrati
 	return &PostProjectProjectIDIntegrationsCreated{}
 }
 
-/*
-PostProjectProjectIDIntegrationsCreated describes a response with status code 201, with default header values.
-
-Integration Created
-*/
+// PostProjectProjectIDIntegrationsCreated describes a response with status code 201, with default header values.
+//
+// Integration Created
 type PostProjectProjectIDIntegrationsCreated struct {
 	Payload *models.Integration
 }

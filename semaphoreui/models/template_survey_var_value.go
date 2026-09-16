@@ -22,12 +22,12 @@ type TemplateSurveyVarValue struct {
 }
 
 // Validate validates this template survey var value
-func (m *TemplateSurveyVarValue) Validate(formats strfmt.Registry) error {
+func (m *TemplateSurveyVarValue) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this template survey var value based on context it is used
-func (m *TemplateSurveyVarValue) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *TemplateSurveyVarValue) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

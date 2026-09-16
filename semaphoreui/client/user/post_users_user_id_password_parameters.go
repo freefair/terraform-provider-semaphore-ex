@@ -66,10 +66,9 @@ type PostUsersUserIDPasswordParams struct {
 	// Password.
 	Password PostUsersUserIDPasswordBody
 
-	/* UserID.
-
-	   User ID
-	*/
+	// UserID.
+	//
+	// User ID
 	UserID int64
 
 	HTTPClient *http.Client

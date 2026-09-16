@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDViewsViewIDNoContent() *DeleteProjectProjectIDView
 	return &DeleteProjectProjectIDViewsViewIDNoContent{}
 }
 
-/*
-DeleteProjectProjectIDViewsViewIDNoContent describes a response with status code 204, with default header values.
-
-view removed
-*/
+// DeleteProjectProjectIDViewsViewIDNoContent describes a response with status code 204, with default header values.
+//
+// view removed
 type DeleteProjectProjectIDViewsViewIDNoContent struct {
 }
 

@@ -3,10 +3,10 @@ package provider
 import (
 	"context"
 	"fmt"
+	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/project"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	apiclient "terraform-provider-semaphoreui/semaphoreui/client"
-	"terraform-provider-semaphoreui/semaphoreui/client/project"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -61,6 +61,7 @@ func (r *projectUserResource) getProjectUserModelFromAPI(projectId types.Int64, 
 				ProjectID: projectId,
 				UserID:    userId,
 				Role:      types.StringValue(projectUser.Role),
+				Revision:  types.Int64Value(projectUser.Revision),
 				Username:  types.StringValue(projectUser.Username),
 				Name:      types.StringValue(projectUser.Name),
 			}, nil
@@ -140,9 +141,14 @@ func (r *projectUserResource) Read(ctx context.Context, req resource.ReadRequest
 // Update updates the resource and sets the updated Terraform state on success.
 func (r *projectUserResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	// Retrieve values from plan
-	var plan ProjectUserModel
+	var plan, state ProjectUserModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
+		return
+	}
+	if state.Revision.IsNull() || state.Revision.IsUnknown() || state.Revision.ValueInt64() <= 0 {
+		resp.Diagnostics.AddError("Project User Membership Revision Unavailable", "The current membership revision is missing from state. Refresh the resource and retry; the provider will not overwrite a concurrent membership change.")
 		return
 	}
 
@@ -152,7 +158,8 @@ func (r *projectUserResource) Update(ctx context.Context, req resource.UpdateReq
 			ProjectID: plan.ProjectID.ValueInt64(),
 			UserID:    plan.UserID.ValueInt64(),
 			ProjectUser: project.PutProjectProjectIDUsersUserIDBody{
-				Role: plan.Role.ValueString(),
+				Role:     plan.Role.ValueString(),
+				Revision: state.Revision.ValueInt64(),
 			},
 		}, nil)
 	if err != nil {

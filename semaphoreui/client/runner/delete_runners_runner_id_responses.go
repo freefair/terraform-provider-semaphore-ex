@@ -33,11 +33,9 @@ func NewDeleteRunnersRunnerIDNoContent() *DeleteRunnersRunnerIDNoContent {
 	return &DeleteRunnersRunnerIDNoContent{}
 }
 
-/*
-DeleteRunnersRunnerIDNoContent describes a response with status code 204, with default header values.
-
-Runner deleted
-*/
+// DeleteRunnersRunnerIDNoContent describes a response with status code 204, with default header values.
+//
+// Runner deleted
 type DeleteRunnersRunnerIDNoContent struct {
 }
 

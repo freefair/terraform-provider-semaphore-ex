@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetProjectProjectIDEnvironmentReader is a Reader for the GetProjectProjectIDEnvironment structure.
@@ -37,11 +37,9 @@ func NewGetProjectProjectIDEnvironmentOK() *GetProjectProjectIDEnvironmentOK {
 	return &GetProjectProjectIDEnvironmentOK{}
 }
 
-/*
-GetProjectProjectIDEnvironmentOK describes a response with status code 200, with default header values.
-
-environment
-*/
+// GetProjectProjectIDEnvironmentOK describes a response with status code 200, with default header values.
+//
+// environment
 type GetProjectProjectIDEnvironmentOK struct {
 	Payload []*models.Environment
 }

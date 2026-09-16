@@ -37,12 +37,12 @@ type RepositoryRequest struct {
 }
 
 // Validate validates this repository request
-func (m *RepositoryRequest) Validate(formats strfmt.Registry) error {
+func (m *RepositoryRequest) Validate(_ strfmt.Registry) error {
 	return nil
 }
 
 // ContextValidate validates this repository request based on context it is used
-func (m *RepositoryRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *RepositoryRequest) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

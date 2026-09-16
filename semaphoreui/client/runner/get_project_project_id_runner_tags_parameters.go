@@ -63,10 +63,9 @@ GetProjectProjectIDRunnerTagsParams contains all the parameters to send to the A
 */
 type GetProjectProjectIDRunnerTagsParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

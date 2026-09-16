@@ -108,7 +108,7 @@ func (m *Inventory) validateType(formats strfmt.Registry) error {
 }
 
 // ContextValidate validates this inventory based on context it is used
-func (m *Inventory) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+func (m *Inventory) ContextValidate(_ context.Context, _ strfmt.Registry) error {
 	return nil
 }
 

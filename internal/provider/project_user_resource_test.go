@@ -11,19 +11,19 @@ import (
 
 func testAccProjectUserConfig(nameSuffix string, role string) string {
 	return fmt.Sprintf(`
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "test-%[1]s"
 }
 
-resource "semaphoreui_user" "test" {
+resource "semaphore_ex_user" "test" {
   username = "test"
   name = "test-%[1]s"
   email = "test@example.com"
 }
 
-resource "semaphoreui_project_user" "test_test" {
-  project_id = semaphoreui_project.test.id
-  user_id = semaphoreui_user.test.id
+resource "semaphore_ex_project_user" "test_test" {
+  project_id = semaphore_ex_project.test.id
+  user_id = semaphore_ex_user.test.id
   role = "%[2]s"
 }`, nameSuffix, role)
 }
@@ -49,19 +49,20 @@ func TestAcc_ProjectUserResource(t *testing.T) {
 			{
 				Config: testAccProjectUserConfig(nameSuffix, "guest"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("semaphoreui_project_user.test_test", "name", fmt.Sprintf("test-%s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_user.test_test", "username", "test"),
-					resource.TestCheckResourceAttr("semaphoreui_project_user.test_test", "role", "guest"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_user.test_test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_user.test_test", "user_id"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_user.test_test", "name", fmt.Sprintf("test-%s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_user.test_test", "username", "test"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_user.test_test", "role", "guest"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_user.test_test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_user.test_test", "user_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_user.test_test", "revision"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_user.test_test",
+				ResourceName:      "semaphore_ex_project_user.test_test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectUserImportID("semaphoreui_project_user.test_test"),
+				ImportStateIdFunc: testAccProjectUserImportID("semaphore_ex_project_user.test_test"),
 				// Previous terraform provider SDKs required an ID attribute field, the provider framework does not.
 				// We use a combination of a project_id and user_id to uniquely identify a project user,
 				// but testing framework requires a single field. We picked "user_id", but testing will verify both ids
@@ -71,11 +72,12 @@ func TestAcc_ProjectUserResource(t *testing.T) {
 			{
 				Config: testAccProjectUserConfig(nameSuffix, "manager"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("semaphoreui_project_user.test_test", "name", fmt.Sprintf("test-%s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_user.test_test", "username", "test"),
-					resource.TestCheckResourceAttr("semaphoreui_project_user.test_test", "role", "manager"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_user.test_test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_user.test_test", "user_id"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_user.test_test", "name", fmt.Sprintf("test-%s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_user.test_test", "username", "test"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_user.test_test", "role", "manager"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_user.test_test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_user.test_test", "user_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_user.test_test", "revision"),
 				),
 			},
 		},

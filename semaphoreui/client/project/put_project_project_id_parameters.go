@@ -66,10 +66,9 @@ type PutProjectProjectIDParams struct {
 	// Project.
 	Project PutProjectProjectIDBody
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client

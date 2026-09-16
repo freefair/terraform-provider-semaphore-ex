@@ -33,11 +33,9 @@ func NewDeleteProjectProjectIDRunnersRunnerIDCacheNoContent() *DeleteProjectProj
 	return &DeleteProjectProjectIDRunnersRunnerIDCacheNoContent{}
 }
 
-/*
-DeleteProjectProjectIDRunnersRunnerIDCacheNoContent describes a response with status code 204, with default header values.
-
-Runner cache cleared
-*/
+// DeleteProjectProjectIDRunnersRunnerIDCacheNoContent describes a response with status code 204, with default header values.
+//
+// Runner cache cleared
 type DeleteProjectProjectIDRunnersRunnerIDCacheNoContent struct {
 }
 

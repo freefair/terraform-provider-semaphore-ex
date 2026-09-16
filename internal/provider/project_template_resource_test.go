@@ -2,10 +2,10 @@ package provider
 
 import (
 	"fmt"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/template"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"strconv"
-	"terraform-provider-semaphoreui/semaphoreui/client/template"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -55,41 +55,41 @@ func testAccProjectTemplateExists(resourceName string, templateType string) reso
 
 func testAccProjectTemplateDependencyConfig(nameSuffix string) string {
 	return fmt.Sprintf(`
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "test-%[1]s"
 }
 
-resource "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "None-%[1]s"
   none       = {}
 }
 
-resource "semaphoreui_project_repository" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_repository" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Repo-%[1]s"
   url        = "git@github.com:example/test.git"
   branch     = "main"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
 }
 
-resource "semaphoreui_project_inventory" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_inventory" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Inventory-%[1]s"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
   file = {
     path          = "path/to/inventory"
-    repository_id = semaphoreui_project_repository.test.id
+    repository_id = semaphore_ex_project_repository.test.id
   }
 }
 
-resource "semaphoreui_project_environment" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_environment" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Env-%[1]s"
 }
 
-resource "semaphoreui_project_view" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_view" "test" {
+  project_id = semaphore_ex_project.test.id
   title      = "Test View"
   position   = 0
 }`, nameSuffix)
@@ -98,11 +98,11 @@ resource "semaphoreui_project_view" "test" {
 func testAccProjectTemplateConfig(nameSuffix string, extras string) string {
 	return fmt.Sprintf(`
 %[1]s
-resource "semaphoreui_project_template" "test" {
-  project_id     = semaphoreui_project.test.id
-  environment_id = semaphoreui_project_environment.test.id
-  inventory_id   = semaphoreui_project_inventory.test.id
-  repository_id  = semaphoreui_project_repository.test.id
+resource "semaphore_ex_project_template" "test" {
+  project_id     = semaphore_ex_project.test.id
+  environment_id = semaphore_ex_project_environment.test.id
+  inventory_id   = semaphore_ex_project_inventory.test.id
+  repository_id  = semaphore_ex_project_repository.test.id
   name           = "Test %[2]s"
   playbook	     = "playbook.yml"
   %[3]s
@@ -126,11 +126,11 @@ func testAccProjectTemplateBuildConfig(nameSuffix string, startVersion bool, ext
 func testAccProjectTemplateDeployConfig(nameSuffix string, extras string) string {
 	return fmt.Sprintf(`
 %[1]s
-resource "semaphoreui_project_template" "build" {
-  project_id     = semaphoreui_project.test.id
-  environment_id = semaphoreui_project_environment.test.id
-  inventory_id   = semaphoreui_project_inventory.test.id
-  repository_id  = semaphoreui_project_repository.test.id
+resource "semaphore_ex_project_template" "build" {
+  project_id     = semaphore_ex_project.test.id
+  environment_id = semaphore_ex_project_environment.test.id
+  inventory_id   = semaphore_ex_project_inventory.test.id
+  repository_id  = semaphore_ex_project_repository.test.id
   name           = "Build %[2]s"
   playbook	     = "playbook.yml"
   build = {
@@ -138,15 +138,15 @@ resource "semaphoreui_project_template" "build" {
   }
 }
 
-resource "semaphoreui_project_template" "test" {
-  project_id     = semaphoreui_project.test.id
-  environment_id = semaphoreui_project_environment.test.id
-  inventory_id   = semaphoreui_project_inventory.test.id
-  repository_id  = semaphoreui_project_repository.test.id
+resource "semaphore_ex_project_template" "test" {
+  project_id     = semaphore_ex_project.test.id
+  environment_id = semaphore_ex_project_environment.test.id
+  inventory_id   = semaphore_ex_project_inventory.test.id
+  repository_id  = semaphore_ex_project_repository.test.id
   name           = "Test %[2]s"
   playbook	     = "playbook.yml"
   deploy = {
-    build_template_id = semaphoreui_project_template.build.id
+    build_template_id = semaphore_ex_project_template.build.id
   }
   %[3]s
 }
@@ -174,33 +174,33 @@ func TestAcc_ProjectTemplateResource_basic(t *testing.T) {
 			{
 				Config: testAccProjectTemplateConfig(nameSuffix, ""),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectTemplateExists("semaphoreui_project_template.test", ""),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "playbook", "playbook.yml"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "app", "ansible"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "allow_override_args_in_task", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "suppress_success_alerts", "false"),
+					testAccProjectTemplateExists("semaphore_ex_project_template.test", ""),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "playbook", "playbook.yml"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "app", "ansible"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "allow_override_args_in_task", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "suppress_success_alerts", "false"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "arguments"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "vaults"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "build"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "deploy"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "view_id"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "arguments"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "vaults"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "build"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "deploy"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "view_id"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "inventory_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "environment_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "repository_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "inventory_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "environment_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "repository_id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_template.test",
+				ResourceName:      "semaphore_ex_project_template.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectTemplateImportID("semaphoreui_project_template.test"),
+				ImportStateIdFunc: testAccProjectTemplateImportID("semaphore_ex_project_template.test"),
 			},
 			// Update testing
 			{
@@ -211,39 +211,39 @@ arguments = [
   "--help",
   "--verbose",
 ]
-view_id = semaphoreui_project_view.test.id
+view_id = semaphore_ex_project_view.test.id
 `),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectTemplateExists("semaphoreui_project_template.test", ""),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "playbook", "playbook.yml"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "app", "ansible"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "allow_override_args_in_task", "true"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "suppress_success_alerts", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "git_branch", "staging"),
+					testAccProjectTemplateExists("semaphore_ex_project_template.test", ""),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "playbook", "playbook.yml"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "app", "ansible"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "allow_override_args_in_task", "true"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "suppress_success_alerts", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "git_branch", "staging"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.#", "2"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.0", "--help"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.1", "--verbose"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.#", "2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.0", "--help"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.1", "--verbose"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "vaults"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "build"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "deploy"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "vaults"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "build"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "deploy"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "inventory_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "environment_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "repository_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "view_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "inventory_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "environment_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "repository_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "view_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: testAccProjectTemplateDependencyConfig(nameSuffix),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_template.test"),
+					testAccResourceNotExists("semaphore_ex_project_template.test"),
 				),
 			},
 		},
@@ -260,34 +260,34 @@ func TestAcc_ProjectTemplateResource_basicBuild(t *testing.T) {
 			{
 				Config: testAccProjectTemplateBuildConfig(nameSuffix, false, ""),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectTemplateExists("semaphoreui_project_template.test", "build"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "playbook", "playbook.yml"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "app", "ansible"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "allow_override_args_in_task", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "suppress_success_alerts", "false"),
+					testAccProjectTemplateExists("semaphore_ex_project_template.test", "build"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "playbook", "playbook.yml"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "app", "ansible"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "allow_override_args_in_task", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "suppress_success_alerts", "false"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "build.%", "1"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "build.start_version"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "build.%", "1"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "build.start_version"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "arguments"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "vaults"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "deploy"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "arguments"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "vaults"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "deploy"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "inventory_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "environment_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "repository_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "inventory_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "environment_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "repository_id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_template.test",
+				ResourceName:      "semaphore_ex_project_template.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectTemplateImportID("semaphoreui_project_template.test"),
+				ImportStateIdFunc: testAccProjectTemplateImportID("semaphore_ex_project_template.test"),
 			},
 			// Update testing
 			{
@@ -300,37 +300,37 @@ arguments = [
 ]
 `),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectTemplateExists("semaphoreui_project_template.test", "build"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "playbook", "playbook.yml"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "app", "ansible"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "allow_override_args_in_task", "true"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "suppress_success_alerts", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "git_branch", "staging"),
+					testAccProjectTemplateExists("semaphore_ex_project_template.test", "build"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "playbook", "playbook.yml"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "app", "ansible"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "allow_override_args_in_task", "true"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "suppress_success_alerts", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "git_branch", "staging"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.#", "2"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.0", "--help"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.1", "--verbose"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.#", "2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.0", "--help"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.1", "--verbose"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "build.%", "1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "build.start_version", "1.0.0"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "build.%", "1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "build.start_version", "1.0.0"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "vaults"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "deploy"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "vaults"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "deploy"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "inventory_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "environment_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "repository_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "inventory_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "environment_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "repository_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: testAccProjectTemplateDependencyConfig(nameSuffix),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_template.test"),
+					testAccResourceNotExists("semaphore_ex_project_template.test"),
 				),
 			},
 		},
@@ -347,35 +347,35 @@ func TestAcc_ProjectTemplateResource_basicDeploy(t *testing.T) {
 			{
 				Config: testAccProjectTemplateDeployConfig(nameSuffix, ""),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectTemplateExists("semaphoreui_project_template.test", "deploy"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "playbook", "playbook.yml"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "app", "ansible"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "allow_override_args_in_task", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "suppress_success_alerts", "false"),
+					testAccProjectTemplateExists("semaphore_ex_project_template.test", "deploy"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "playbook", "playbook.yml"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "app", "ansible"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "allow_override_args_in_task", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "suppress_success_alerts", "false"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "deploy.%", "2"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "deploy.build_template_id"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "deploy.autorun", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "deploy.%", "2"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "deploy.build_template_id"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "deploy.autorun", "false"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "arguments"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "vaults"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "build"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "arguments"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "vaults"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "build"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "inventory_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "environment_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "repository_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "inventory_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "environment_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "repository_id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_template.test",
+				ResourceName:      "semaphore_ex_project_template.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectTemplateImportID("semaphoreui_project_template.test"),
+				ImportStateIdFunc: testAccProjectTemplateImportID("semaphore_ex_project_template.test"),
 			},
 			// Update testing
 			{
@@ -388,38 +388,38 @@ arguments = [
 ]
 `),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectTemplateExists("semaphoreui_project_template.test", "deploy"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "playbook", "playbook.yml"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "app", "ansible"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "allow_override_args_in_task", "true"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "suppress_success_alerts", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "git_branch", "staging"),
+					testAccProjectTemplateExists("semaphore_ex_project_template.test", "deploy"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "playbook", "playbook.yml"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "app", "ansible"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "allow_override_args_in_task", "true"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "suppress_success_alerts", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "git_branch", "staging"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.#", "2"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.0", "--help"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.1", "--verbose"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.#", "2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.0", "--help"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.1", "--verbose"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "deploy.%", "2"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "deploy.build_template_id"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "deploy.autorun", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "deploy.%", "2"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "deploy.build_template_id"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "deploy.autorun", "false"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "vaults"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "build"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "vaults"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "build"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "inventory_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "environment_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "repository_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "inventory_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "environment_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "repository_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: testAccProjectTemplateDependencyConfig(nameSuffix),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_template.test"),
+					testAccResourceNotExists("semaphore_ex_project_template.test"),
 				),
 			},
 		},
@@ -452,45 +452,45 @@ survey_vars = [{
 }]
 `),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectTemplateExists("semaphoreui_project_template.test", ""),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "playbook", "playbook.yml"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "app", "ansible"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "allow_override_args_in_task", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "suppress_success_alerts", "false"),
+					testAccProjectTemplateExists("semaphore_ex_project_template.test", ""),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "playbook", "playbook.yml"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "app", "ansible"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "allow_override_args_in_task", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "suppress_success_alerts", "false"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.#", "2"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.0.name", "var1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.0.title", "Variable 1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.0.description", "Description 1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.0.type", "string"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.0.required", "true"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars.0.enum_values"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.1.name", "var2"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.1.title", "Variable 2"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars.1.description"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.1.type", "enum"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.1.required", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.1.enum_values.%", "2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.#", "2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.0.name", "var1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.0.title", "Variable 1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.0.description", "Description 1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.0.type", "string"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.0.required", "true"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars.0.enum_values"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.1.name", "var2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.1.title", "Variable 2"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars.1.description"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.1.type", "enum"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.1.required", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.1.enum_values.%", "2"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "arguments"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "vaults"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "build"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "deploy"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "arguments"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "vaults"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "build"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "deploy"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "inventory_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "environment_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "repository_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "inventory_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "environment_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "repository_id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_template.test",
+				ResourceName:      "semaphore_ex_project_template.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectTemplateImportID("semaphoreui_project_template.test"),
+				ImportStateIdFunc: testAccProjectTemplateImportID("semaphore_ex_project_template.test"),
 			},
 			// Update testing
 			{
@@ -514,48 +514,48 @@ survey_vars = [{
 }]
 `),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectTemplateExists("semaphoreui_project_template.test", ""),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "playbook", "playbook.yml"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "app", "ansible"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "allow_override_args_in_task", "true"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "suppress_success_alerts", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "git_branch", "staging"),
+					testAccProjectTemplateExists("semaphore_ex_project_template.test", ""),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "playbook", "playbook.yml"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "app", "ansible"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "allow_override_args_in_task", "true"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "suppress_success_alerts", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "git_branch", "staging"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.#", "2"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.0", "--help"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.1", "--verbose"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.#", "2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.0", "--help"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.1", "--verbose"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.#", "2"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.0.name", "var1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.0.title", "Variable 1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.0.description", "Description 1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.0.type", "integer"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.0.required", "false"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars.0.enum_values"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.1.name", "var2"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.1.title", "Variable 2"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars.1.description"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.1.type", "secret"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "survey_vars.1.required", "true"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars.1.enum_values"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.#", "2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.0.name", "var1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.0.title", "Variable 1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.0.description", "Description 1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.0.type", "integer"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.0.required", "false"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars.0.enum_values"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.1.name", "var2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.1.title", "Variable 2"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars.1.description"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.1.type", "secret"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "survey_vars.1.required", "true"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars.1.enum_values"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "vaults"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "build"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "deploy"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "vaults"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "build"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "deploy"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "inventory_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "environment_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "repository_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "inventory_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "environment_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "repository_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: testAccProjectTemplateDependencyConfig(nameSuffix),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_template.test"),
+					testAccResourceNotExists("semaphore_ex_project_template.test"),
 				),
 			},
 		},
@@ -574,7 +574,7 @@ func TestAcc_ProjectTemplateResource_vaults(t *testing.T) {
 vaults = [{
   name = ""
   password = {
-    vault_key_id = semaphoreui_project_key.test.id
+    vault_key_id = semaphore_ex_project_key.test.id
   }
 }, {
   name = "database"
@@ -584,41 +584,41 @@ vaults = [{
 }]
 `),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectTemplateExists("semaphoreui_project_template.test", ""),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "playbook", "playbook.yml"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "app", "ansible"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "allow_override_args_in_task", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "suppress_success_alerts", "false"),
+					testAccProjectTemplateExists("semaphore_ex_project_template.test", ""),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "playbook", "playbook.yml"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "app", "ansible"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "allow_override_args_in_task", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "suppress_success_alerts", "false"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "vaults.#", "2"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "vaults.0.name", ""),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "vaults.0.password.%", "1"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "vaults.0.password.vault_key_id"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "vaults.0.client_script"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "vaults.1.name", "database"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "vaults.1.client_script.%", "1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "vaults.1.client_script.script", "path/to/script-client.py"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "vaults.1.password"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "vaults.#", "2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "vaults.0.name", ""),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "vaults.0.password.%", "1"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "vaults.0.password.vault_key_id"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "vaults.0.client_script"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "vaults.1.name", "database"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "vaults.1.client_script.%", "1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "vaults.1.client_script.script", "path/to/script-client.py"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "vaults.1.password"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "arguments"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "build"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "deploy"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "arguments"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "build"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "deploy"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "inventory_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "environment_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "repository_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "inventory_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "environment_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "repository_id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_template.test",
+				ResourceName:      "semaphore_ex_project_template.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectTemplateImportID("semaphoreui_project_template.test"),
+				ImportStateIdFunc: testAccProjectTemplateImportID("semaphore_ex_project_template.test"),
 			},
 			// Update testing
 			{
@@ -632,45 +632,45 @@ arguments = [
 vaults = [{
   name = "testing"
   password = {
-    vault_key_id = semaphoreui_project_key.test.id
+    vault_key_id = semaphore_ex_project_key.test.id
   }
 }]
 `),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectTemplateExists("semaphoreui_project_template.test", ""),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "playbook", "playbook.yml"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "app", "ansible"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "allow_override_args_in_task", "true"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "suppress_success_alerts", "false"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "git_branch", "staging"),
+					testAccProjectTemplateExists("semaphore_ex_project_template.test", ""),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "playbook", "playbook.yml"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "app", "ansible"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "allow_override_args_in_task", "true"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "suppress_success_alerts", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "git_branch", "staging"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.#", "2"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.0", "--help"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "arguments.1", "--verbose"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.#", "2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.0", "--help"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "arguments.1", "--verbose"),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "vaults.#", "1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "vaults.0.name", "testing"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "vaults.0.password.%", "1"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "vaults.0.password.vault_key_id"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "vaults.0.client_script"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "vaults.#", "1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "vaults.0.name", "testing"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "vaults.0.password.%", "1"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "vaults.0.password.vault_key_id"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "vaults.0.client_script"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "survey_vars"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "build"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "deploy"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "survey_vars"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "build"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "deploy"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "inventory_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "environment_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_template.test", "repository_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "inventory_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "environment_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_template.test", "repository_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: testAccProjectTemplateDependencyConfig(nameSuffix),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_template.test"),
+					testAccResourceNotExists("semaphore_ex_project_template.test"),
 				),
 			},
 		},
@@ -696,23 +696,23 @@ func TestAcc_ProjectTemplateResource_taskParams(t *testing.T) {
   }
 `),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectTemplateExists("semaphoreui_project_template.test", ""),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "task_params.arguments", "[\"-v\"]"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "task_params.ansible.tags.#", "2"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "task_params.ansible.tags.0", "deploy"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "task_params.ansible.tags.1", "db"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "task_params.ansible.skip_tags.#", "1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "task_params.ansible.skip_tags.0", "slow"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "task_params.ansible.diff", "true"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "task_params.terraform"),
+					testAccProjectTemplateExists("semaphore_ex_project_template.test", ""),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "task_params.arguments", "[\"-v\"]"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "task_params.ansible.tags.#", "2"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "task_params.ansible.tags.0", "deploy"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "task_params.ansible.tags.1", "db"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "task_params.ansible.skip_tags.#", "1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "task_params.ansible.skip_tags.0", "slow"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "task_params.ansible.diff", "true"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "task_params.terraform"),
 				),
 			},
 			// ImportState
 			{
-				ResourceName:      "semaphoreui_project_template.test",
+				ResourceName:      "semaphore_ex_project_template.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectTemplateImportID("semaphoreui_project_template.test"),
+				ImportStateIdFunc: testAccProjectTemplateImportID("semaphore_ex_project_template.test"),
 			},
 			// Update tags (rotate).
 			{
@@ -724,24 +724,24 @@ func TestAcc_ProjectTemplateResource_taskParams(t *testing.T) {
   }
 `),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "task_params.ansible.tags.#", "1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "task_params.ansible.tags.0", "only-this"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "task_params.ansible.skip_tags"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "task_params.ansible.diff", "false"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "task_params.ansible.tags.#", "1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "task_params.ansible.tags.0", "only-this"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "task_params.ansible.skip_tags"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "task_params.ansible.diff", "false"),
 				),
 			},
 			// Clear task_params entirely.
 			{
 				Config: testAccProjectTemplateConfig(nameSuffix, ""),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "task_params"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "task_params"),
 				),
 			},
 			// Delete
 			{
 				Config: testAccProjectTemplateDependencyConfig(nameSuffix),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_template.test"),
+					testAccResourceNotExists("semaphore_ex_project_template.test"),
 				),
 			},
 		},
@@ -766,18 +766,18 @@ func TestAcc_ProjectTemplateResource_taskParamsTerraform(t *testing.T) {
   }
 `),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectTemplateExists("semaphoreui_project_template.test", ""),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "app", "terraform"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "task_params.terraform.auto_approve", "true"),
-					resource.TestCheckResourceAttr("semaphoreui_project_template.test", "task_params.terraform.upgrade", "true"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_template.test", "task_params.ansible"),
+					testAccProjectTemplateExists("semaphore_ex_project_template.test", ""),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "app", "terraform"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "task_params.terraform.auto_approve", "true"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_template.test", "task_params.terraform.upgrade", "true"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_template.test", "task_params.ansible"),
 				),
 			},
 			// Delete
 			{
 				Config: testAccProjectTemplateDependencyConfig(nameSuffix),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_template.test"),
+					testAccResourceNotExists("semaphore_ex_project_template.test"),
 				),
 			},
 		},

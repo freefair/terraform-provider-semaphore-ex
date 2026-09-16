@@ -25,7 +25,7 @@ func RunnerRegistrationTokenSchema() superschema.Schema {
 		},
 		Resource: superschema.SchemaDetails{
 			Deprecated: superschema.DeprecatedResource{
-				DeprecationMessage: "The semaphoreui_runner_registration_token resource is deprecated and will be removed in a future release.",
+				DeprecationMessage: "The semaphore_ex_runner_registration_token resource is deprecated and will be removed in a future release.",
 			},
 			MarkdownDescription: "**Deprecated:** this resource is deprecated and will be removed in a future release. " +
 				"resource generates a fresh one-time registration token for an existing, unregistered runner. " +

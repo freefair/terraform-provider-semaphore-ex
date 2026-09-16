@@ -63,16 +63,14 @@ GetProjectProjectIDRepositoriesRepositoryIDParams contains all the parameters to
 */
 type GetProjectProjectIDRepositoriesRepositoryIDParams struct {
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
-	/* RepositoryID.
-
-	   repository ID
-	*/
+	// RepositoryID.
+	//
+	// repository ID
 	RepositoryID int64
 
 	HTTPClient *http.Client

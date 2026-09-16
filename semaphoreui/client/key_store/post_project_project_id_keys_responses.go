@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // PostProjectProjectIDKeysReader is a Reader for the PostProjectProjectIDKeys structure.
@@ -43,11 +43,9 @@ func NewPostProjectProjectIDKeysCreated() *PostProjectProjectIDKeysCreated {
 	return &PostProjectProjectIDKeysCreated{}
 }
 
-/*
-PostProjectProjectIDKeysCreated describes a response with status code 201, with default header values.
-
-Access Key created
-*/
+// PostProjectProjectIDKeysCreated describes a response with status code 201, with default header values.
+//
+// Access Key created
 type PostProjectProjectIDKeysCreated struct {
 	Payload *models.AccessKey
 }
@@ -113,11 +111,9 @@ func NewPostProjectProjectIDKeysBadRequest() *PostProjectProjectIDKeysBadRequest
 	return &PostProjectProjectIDKeysBadRequest{}
 }
 
-/*
-PostProjectProjectIDKeysBadRequest describes a response with status code 400, with default header values.
-
-Bad type
-*/
+// PostProjectProjectIDKeysBadRequest describes a response with status code 400, with default header values.
+//
+// Bad type
 type PostProjectProjectIDKeysBadRequest struct {
 }
 

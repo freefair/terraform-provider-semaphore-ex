@@ -33,11 +33,9 @@ func NewPutProjectProjectIDInventoryInventoryIDNoContent() *PutProjectProjectIDI
 	return &PutProjectProjectIDInventoryInventoryIDNoContent{}
 }
 
-/*
-PutProjectProjectIDInventoryInventoryIDNoContent describes a response with status code 204, with default header values.
-
-Inventory updated
-*/
+// PutProjectProjectIDInventoryInventoryIDNoContent describes a response with status code 204, with default header values.
+//
+// Inventory updated
 type PutProjectProjectIDInventoryInventoryIDNoContent struct {
 }
 

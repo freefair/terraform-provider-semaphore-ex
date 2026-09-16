@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetProjectProjectIDKeysReader is a Reader for the GetProjectProjectIDKeys structure.
@@ -37,11 +37,9 @@ func NewGetProjectProjectIDKeysOK() *GetProjectProjectIDKeysOK {
 	return &GetProjectProjectIDKeysOK{}
 }
 
-/*
-GetProjectProjectIDKeysOK describes a response with status code 200, with default header values.
-
-Access Keys
-*/
+// GetProjectProjectIDKeysOK describes a response with status code 200, with default header values.
+//
+// Access Keys
 type GetProjectProjectIDKeysOK struct {
 	Payload []*models.AccessKey
 }

@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"terraform-provider-semaphoreui/semaphoreui/models"
 )
 
 // GetProjectProjectIDBackupReader is a Reader for the GetProjectProjectIDBackup structure.
@@ -37,11 +37,9 @@ func NewGetProjectProjectIDBackupOK() *GetProjectProjectIDBackupOK {
 	return &GetProjectProjectIDBackupOK{}
 }
 
-/*
-GetProjectProjectIDBackupOK describes a response with status code 200, with default header values.
-
-Backup
-*/
+// GetProjectProjectIDBackupOK describes a response with status code 200, with default header values.
+//
+// Backup
 type GetProjectProjectIDBackupOK struct {
 	Payload *models.ProjectBackup
 }

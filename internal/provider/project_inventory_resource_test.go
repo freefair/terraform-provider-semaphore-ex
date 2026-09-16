@@ -2,10 +2,10 @@ package provider
 
 import (
 	"fmt"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/inventory"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-testing/terraform"
 	"strconv"
-	"terraform-provider-semaphoreui/semaphoreui/client/inventory"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -46,11 +46,11 @@ func testAccProjectInventoryExists(resourceName string, inventoryType string) re
 
 func testAccProjectInventoryEmptyConfig(nameSuffix string, extras string) string {
 	return fmt.Sprintf(`
-resource "semaphoreui_project" "test" {
+resource "semaphore_ex_project" "test" {
   name = "test-%[1]s"
 }
-resource "semaphoreui_project_key" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_key" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "test-%[1]s"
   none = {}
 }
@@ -61,10 +61,10 @@ resource "semaphoreui_project_key" "test" {
 func testAccProjectInventoryConfig(nameSuffix string, extras string) string {
 	return fmt.Sprintf(`
 %[1]s
-resource "semaphoreui_project_inventory" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_inventory" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Test %[2]s"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
   %[3]s
 }`, testAccProjectInventoryEmptyConfig(nameSuffix, ""), nameSuffix, extras)
 }
@@ -77,7 +77,7 @@ func testAccProjectProjectInventoryStaticConfig(nameSuffix string, become bool) 
       foo.example.com
       bar.example.com
     EOT
-	become_key_id = %t ? semaphoreui_project_key.test.id : null
+	become_key_id = %t ? semaphore_ex_project_key.test.id : null
   }
 `, become))
 }
@@ -91,7 +91,7 @@ func testAccProjectProjectInventoryStaticYamlConfig(nameSuffix string, become bo
         "bar.example.com": {}
       }
     })
-    become_key_id = %t ? semaphoreui_project_key.test.id : null
+    become_key_id = %t ? semaphore_ex_project_key.test.id : null
   }
 `, become))
 }
@@ -107,21 +107,21 @@ func testAccProjectProjectInventoryFileConfig(nameSuffix string, path string) st
 func testAccProjectProjectInventoryFileWithRepoConfig(nameSuffix string, path string) string {
 	return fmt.Sprintf(`
 %[1]s
-resource "semaphoreui_project_inventory" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_inventory" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "Test %[2]s"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
   file = {
     path          = "%[3]s"
-    repository_id = semaphoreui_project_repository.test.id
+    repository_id = semaphore_ex_project_repository.test.id
   }
 }`, testAccProjectInventoryEmptyConfig(nameSuffix, fmt.Sprintf(`
-resource "semaphoreui_project_repository" "test" {
-  project_id = semaphoreui_project.test.id
+resource "semaphore_ex_project_repository" "test" {
+  project_id = semaphore_ex_project.test.id
   name       = "test-%[1]s"
   url        = "git@github.com:example/test.git"
   branch     = "main"
-  ssh_key_id = semaphoreui_project_key.test.id
+  ssh_key_id = semaphore_ex_project_key.test.id
 }
 `, nameSuffix)), nameSuffix, path)
 }
@@ -155,56 +155,56 @@ func TestAcc_ProjectInventoryResource_basicFile(t *testing.T) {
 			{
 				Config: testAccProjectProjectInventoryFileConfig(nameSuffix, "path/to/inventory"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectInventoryExists("semaphoreui_project_inventory.test", ProjectInventoryFile),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					testAccProjectInventoryExists("semaphore_ex_project_inventory.test", ProjectInventoryFile),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "file.%", "3"),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "file.path", "path/to/inventory"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "file.become_key_id"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "file.repository_id"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "file.%", "3"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "file.path", "path/to/inventory"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "file.become_key_id"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "file.repository_id"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static_yaml"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static_yaml"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "ssh_key_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "ssh_key_id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_inventory.test",
+				ResourceName:      "semaphore_ex_project_inventory.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectInventoryImportID("semaphoreui_project_inventory.test"),
+				ImportStateIdFunc: testAccProjectInventoryImportID("semaphore_ex_project_inventory.test"),
 			},
 			// Update and Read testing
 			{
 				Config: testAccProjectProjectInventoryFileWithRepoConfig(nameSuffix, "path/to/inventory"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectInventoryExists("semaphoreui_project_inventory.test", ProjectInventoryFile),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					testAccProjectInventoryExists("semaphore_ex_project_inventory.test", ProjectInventoryFile),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "file.%", "3"),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "file.path", "path/to/inventory"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "file.become_key_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "file.repository_id"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "file.%", "3"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "file.path", "path/to/inventory"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "file.become_key_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "file.repository_id"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static_yaml"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static_yaml"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "ssh_key_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "ssh_key_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: testAccProjectInventoryEmptyConfig(nameSuffix, ""),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_inventory.test"),
+					testAccResourceNotExists("semaphore_ex_project_inventory.test"),
 				),
 			},
 		},
@@ -221,54 +221,54 @@ func TestAcc_ProjectInventoryResource_basicStatic(t *testing.T) {
 			{
 				Config: testAccProjectProjectInventoryStaticConfig(nameSuffix, false),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectInventoryExists("semaphoreui_project_inventory.test", ProjectInventoryStatic),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					testAccProjectInventoryExists("semaphore_ex_project_inventory.test", ProjectInventoryStatic),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "static.%", "2"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "static.inventory"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static.become_key_id"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "static.%", "2"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "static.inventory"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static.become_key_id"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "file"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static_yaml"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "file"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static_yaml"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "ssh_key_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "ssh_key_id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_inventory.test",
+				ResourceName:      "semaphore_ex_project_inventory.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectInventoryImportID("semaphoreui_project_inventory.test"),
+				ImportStateIdFunc: testAccProjectInventoryImportID("semaphore_ex_project_inventory.test"),
 			},
 			// Update and Read testing
 			{
 				Config: testAccProjectProjectInventoryStaticConfig(nameSuffix, true),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectInventoryExists("semaphoreui_project_inventory.test", ProjectInventoryStatic),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					testAccProjectInventoryExists("semaphore_ex_project_inventory.test", ProjectInventoryStatic),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "static.%", "2"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "static.inventory"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "static.become_key_id"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "static.%", "2"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "static.inventory"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "static.become_key_id"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "file"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static_yaml"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "file"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static_yaml"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "ssh_key_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "ssh_key_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: testAccProjectInventoryEmptyConfig(nameSuffix, ""),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_inventory.test"),
+					testAccResourceNotExists("semaphore_ex_project_inventory.test"),
 				),
 			},
 		},
@@ -285,54 +285,54 @@ func TestAcc_ProjectInventoryResource_basicStaticYaml(t *testing.T) {
 			{
 				Config: testAccProjectProjectInventoryStaticYamlConfig(nameSuffix, false),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectInventoryExists("semaphoreui_project_inventory.test", ProjectInventoryStaticYaml),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					testAccProjectInventoryExists("semaphore_ex_project_inventory.test", ProjectInventoryStaticYaml),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "static_yaml.%", "2"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "static_yaml.inventory"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static_yaml.become_key_id"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "static_yaml.%", "2"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "static_yaml.inventory"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static_yaml.become_key_id"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "file"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "file"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "ssh_key_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "ssh_key_id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_inventory.test",
+				ResourceName:      "semaphore_ex_project_inventory.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectInventoryImportID("semaphoreui_project_inventory.test"),
+				ImportStateIdFunc: testAccProjectInventoryImportID("semaphore_ex_project_inventory.test"),
 			},
 			// Update and Read testing
 			{
 				Config: testAccProjectProjectInventoryStaticYamlConfig(nameSuffix, true),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectInventoryExists("semaphoreui_project_inventory.test", ProjectInventoryStaticYaml),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					testAccProjectInventoryExists("semaphore_ex_project_inventory.test", ProjectInventoryStaticYaml),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "static_yaml.%", "2"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "static_yaml.inventory"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "static_yaml.become_key_id"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "static_yaml.%", "2"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "static_yaml.inventory"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "static_yaml.become_key_id"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "file"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "file"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "ssh_key_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "ssh_key_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: testAccProjectInventoryEmptyConfig(nameSuffix, ""),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_inventory.test"),
+					testAccResourceNotExists("semaphore_ex_project_inventory.test"),
 				),
 			},
 		},
@@ -349,52 +349,52 @@ func TestAcc_ProjectInventoryResource_basicTerraformWorkspace(t *testing.T) {
 			{
 				Config: testAccProjectProjectInventoryTerraformWorkspaceConfig(nameSuffix, "name"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectInventoryExists("semaphoreui_project_inventory.test", ProjectInventoryTerraformWorkspace),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					testAccProjectInventoryExists("semaphore_ex_project_inventory.test", ProjectInventoryTerraformWorkspace),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace.%", "1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace.workspace", "name"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace.%", "1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace.workspace", "name"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static_yaml"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "file"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static_yaml"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "file"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "ssh_key_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "ssh_key_id"),
 				),
 			},
 			// ImportState testing
 			{
-				ResourceName:      "semaphoreui_project_inventory.test",
+				ResourceName:      "semaphore_ex_project_inventory.test",
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccProjectInventoryImportID("semaphoreui_project_inventory.test"),
+				ImportStateIdFunc: testAccProjectInventoryImportID("semaphore_ex_project_inventory.test"),
 			},
 			// Update and Read testing
 			{
 				Config: testAccProjectProjectInventoryTerraformWorkspaceConfig(nameSuffix, "testing"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectInventoryExists("semaphoreui_project_inventory.test", ProjectInventoryTerraformWorkspace),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					testAccProjectInventoryExists("semaphore_ex_project_inventory.test", ProjectInventoryTerraformWorkspace),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace.%", "1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace.workspace", "testing"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace.%", "1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace.workspace", "testing"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static_yaml"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "file"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static_yaml"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "file"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "ssh_key_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "ssh_key_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: testAccProjectInventoryEmptyConfig(nameSuffix, ""),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_inventory.test"),
+					testAccResourceNotExists("semaphore_ex_project_inventory.test"),
 				),
 			},
 		},
@@ -411,47 +411,47 @@ func TestAcc_ProjectInventoryResource_updateType(t *testing.T) {
 			{
 				Config: testAccProjectProjectInventoryFileConfig(nameSuffix, "path/to/inventory"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectInventoryExists("semaphoreui_project_inventory.test", ProjectInventoryFile),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					testAccProjectInventoryExists("semaphore_ex_project_inventory.test", ProjectInventoryFile),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "file.%", "3"),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "file.path", "path/to/inventory"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "file.become_key_id"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "file.repository_id"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "file.%", "3"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "file.path", "path/to/inventory"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "file.become_key_id"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "file.repository_id"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static_yaml"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static_yaml"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "ssh_key_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "ssh_key_id"),
 				),
 			},
 			// Update and Read testing
 			{
 				Config: testAccProjectProjectInventoryTerraformWorkspaceConfig(nameSuffix, "testing"),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccProjectInventoryExists("semaphoreui_project_inventory.test", ProjectInventoryTerraformWorkspace),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
+					testAccProjectInventoryExists("semaphore_ex_project_inventory.test", ProjectInventoryTerraformWorkspace),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "name", fmt.Sprintf("Test %s", nameSuffix)),
 
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace.%", "1"),
-					resource.TestCheckResourceAttr("semaphoreui_project_inventory.test", "terraform_workspace.workspace", "testing"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace.%", "1"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_inventory.test", "terraform_workspace.workspace", "testing"),
 
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "static_yaml"),
-					resource.TestCheckNoResourceAttr("semaphoreui_project_inventory.test", "file"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "static_yaml"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_inventory.test", "file"),
 
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "project_id"),
-					resource.TestCheckResourceAttrSet("semaphoreui_project_inventory.test", "ssh_key_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "project_id"),
+					resource.TestCheckResourceAttrSet("semaphore_ex_project_inventory.test", "ssh_key_id"),
 				),
 			},
 			// Delete testing
 			{
 				Config: testAccProjectInventoryEmptyConfig(nameSuffix, ""),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					testAccResourceNotExists("semaphoreui_project_inventory.test"),
+					testAccResourceNotExists("semaphore_ex_project_inventory.test"),
 				),
 			},
 		},

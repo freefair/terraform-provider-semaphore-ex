@@ -33,11 +33,9 @@ func NewPutProjectProjectIDIntegrationsIntegrationIDNoContent() *PutProjectProje
 	return &PutProjectProjectIDIntegrationsIntegrationIDNoContent{}
 }
 
-/*
-PutProjectProjectIDIntegrationsIntegrationIDNoContent describes a response with status code 204, with default header values.
-
-Integration updated
-*/
+// PutProjectProjectIDIntegrationsIntegrationIDNoContent describes a response with status code 204, with default header values.
+//
+// Integration updated
 type PutProjectProjectIDIntegrationsIntegrationIDNoContent struct {
 }
 

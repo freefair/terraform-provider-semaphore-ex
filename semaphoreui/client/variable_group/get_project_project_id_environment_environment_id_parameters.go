@@ -63,16 +63,14 @@ GetProjectProjectIDEnvironmentEnvironmentIDParams contains all the parameters to
 */
 type GetProjectProjectIDEnvironmentEnvironmentIDParams struct {
 
-	/* EnvironmentID.
-
-	   environment ID
-	*/
+	// EnvironmentID.
+	//
+	// environment ID
 	EnvironmentID int64
 
-	/* ProjectID.
-
-	   Project ID
-	*/
+	// ProjectID.
+	//
+	// Project ID
 	ProjectID int64
 
 	HTTPClient *http.Client
