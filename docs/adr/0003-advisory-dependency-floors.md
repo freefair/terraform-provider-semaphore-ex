@@ -27,6 +27,8 @@ The acceptance job selects the server's declared toolchain for its build and
 then explicitly selects the provider's toolchain before running provider tests.
 This keeps the independently pinned server revision compatible without leaving
 provider tests on an older compiler when automatic toolchain selection is disabled.
+The second setup step switches the compiler without restoring a second cache over
+the already populated module and build cache directories.
 
 ## Consequences
 
