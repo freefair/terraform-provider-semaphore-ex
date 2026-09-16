@@ -17,6 +17,12 @@ Keep direct dependency APIs unchanged and include only transitive version change
 required by Go's module selection. Avoid a blanket dependency upgrade, which would
 mix unrelated compatibility changes into the security fix.
 
+The provider and tooling require Go 1.26.6, and the provider selects gRPC 1.83.2.
+These floors also address reachable findings identified by `govulncheck` beyond
+the original Dependabot alert set. Keep the local toolchain pin and contributor
+instructions aligned with both module directives so release binaries include
+the standard-library fixes.
+
 ## Consequences
 
 Both module manifests and checksum files carry the correction. Provider builds,

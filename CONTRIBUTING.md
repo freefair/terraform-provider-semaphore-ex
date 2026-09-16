@@ -11,7 +11,7 @@ This project pins exact tool versions in `.tool-versions` so local
 development and CI resolve the same binaries from a single source.
 
 ```
-golang        1.26.3
+golang        1.26.6
 terraform     1.15.2
 golangci-lint 2.12.2
 pre-commit    4.2.0
