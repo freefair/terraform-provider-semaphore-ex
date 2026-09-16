@@ -102,8 +102,10 @@ Keep API tokens in the environment or a secret manager, and protect Terraform st
 Existing `SEMAPHOREUI_API_BASE_URL`, `SEMAPHOREUI_API_TOKEN` and `SEMAPHOREUI_TLS_SKIP_VERIFY` environment names remain supported.
 TLS verification is enabled by default.
 
-Conventional Commits drive release-please; GoReleaser produces `terraform-provider-semaphore-ex` archives and signed checksums.
-Registry publication and signing-key registration are separate from renaming the GitHub repository.
+Conventional Commits drive release-please version/changelog PRs.
+Main CI produces signed downloadable bundles; pushed version tags automatically publish verified `terraform-provider-semaphore-ex` ZIPs, a Registry manifest, checksums and a detached GPG signature.
+The workflows use the existing Freefair organization signing secrets.
+See [signed builds and Registry publication](docs/releases.md) for artifact verification, tag releases and initial Registry onboarding.
 This provider is maintained on a best-effort basis with AI assistance; contributions are welcome.
 
 ## License

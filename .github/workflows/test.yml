@@ -3,6 +3,12 @@ name: Tests
 
 # This GitHub action runs your tests for each pull request.
 on:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        required: false
+  workflow_dispatch:
   pull_request:
     branches-ignore:
       - 'release-please*'
@@ -19,6 +25,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || github.sha }}
       - uses: actions/setup-go@v6
         with:
           go-version-file: 'go.mod'
@@ -35,6 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || github.sha }}
       - uses: actions/setup-go@v6
         with:
           go-version-file: 'go.mod'
@@ -60,6 +70,8 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || github.sha }}
       - uses: actions/checkout@v6
         with:
           repository: freefair/semaphore-ex
@@ -94,9 +106,9 @@ jobs:
   all-tests:
     name: Test Matrix
     runs-on: ubuntu-latest
-    needs: test
+    needs: [build, generate, test]
     if: always()
     steps:
       - name: Check matrix status
-        if: ${{ needs.test.result != 'success' }}
+        if: ${{ needs.build.result != 'success' || needs.generate.result != 'success' || needs.test.result != 'success' }}
         run: exit 1

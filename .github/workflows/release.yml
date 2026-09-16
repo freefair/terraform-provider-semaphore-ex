@@ -1,19 +1,39 @@
-name: Release
+name: CI and Release
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
+  checks:
+    uses: ./.github/workflows/test.yml
+
+  ci-artifacts:
+    needs: checks
+    uses: ./.github/workflows/release-build.yml
+    permissions:
+      contents: write
+    with:
+      ref: ${{ github.sha }}
+      snapshot: true
+      publish: false
+      checks_completed: true
+    secrets: inherit
+
   release-please:
+    needs: checks
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
       - uses: googleapis/release-please-action@v5
+        id: release
         with:
           release-type: go
+          skip-github-release: true
           token: ${{ secrets.GITHUB_TOKEN }}

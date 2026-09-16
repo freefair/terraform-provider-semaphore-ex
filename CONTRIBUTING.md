@@ -147,3 +147,9 @@ A new resource requires:
 
 By contributing, you agree that your contributions will be licensed
 under this repo's [LICENSE](LICENSE).
+
+## Signed build and release workflows
+
+Main CI uploads a signed prerelease bundle after checks pass.
+Release Please maintains version/changelog PRs; after merging one, push the chosen `v<version>` tag to build and automatically publish the checked release assets.
+See [Registry releases](docs/releases.md) for signing secret names, artifact verification, and manual recovery for an existing tag.

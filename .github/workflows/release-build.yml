@@ -1,43 +1,157 @@
-# Terraform Provider release workflow.
-name: Terraform Provider
+name: Signed Registry artifacts
 
 on:
-  release:
-    types: [published]
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing version tag to publish; empty builds a signed main snapshot'
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+      snapshot:
+        required: true
+        type: boolean
+      publish:
+        required: true
+        type: boolean
+      checks_completed:
+        default: false
+        type: boolean
+    secrets:
+      FREEFAIR_SIGNING_KEY:
+        required: true
+      FREEFAIR_SIGNING_PASSWORD:
+        required: true
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
 
 jobs:
-  goreleaser:
-    name: Build and Publish
+  checks:
+    if: github.repository == 'freefair/terraform-provider-semaphore-ex' && !inputs.checks_completed
+    uses: ./.github/workflows/test.yml
+    with:
+      ref: ${{ inputs.ref || inputs.tag || github.ref }}
+    permissions:
+      contents: read
+
+  artifacts:
+    name: Build, sign, verify and publish
+    needs: checks
+    if: always() && github.repository == 'freefair/terraform-provider-semaphore-ex' && (needs.checks.result == 'success' || inputs.checks_completed)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    concurrency:
+      group: registry-${{ inputs.ref || inputs.tag || github.ref_name }}
+      cancel-in-progress: false
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
+          ref: ${{ inputs.ref || inputs.tag || github.ref }}
           fetch-depth: 0
-
-      - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version-file: 'go.mod'
-          cache: true
-
-      - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v7
-        id: import_gpg
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.PASSPHRASE }}
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v7
-        with:
-          version: '~> v2'
-          args: release --clean
+      - name: Validate trusted source and release tag
+        id: target
+        shell: bash
         env:
-          # GitHub sets the GITHUB_TOKEN secret automatically.
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+          REQUESTED_REF: ${{ inputs.ref || inputs.tag || github.ref_name }}
+          SNAPSHOT: ${{ inputs.snapshot || (github.event_name == 'workflow_dispatch' && inputs.tag == '') }}
+          PUBLISH: ${{ inputs.publish || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) || (github.event_name == 'workflow_dispatch' && inputs.tag != '') }}
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor HEAD origin/main
+          if [[ "$SNAPSHOT" == true ]]; then
+            { echo 'snapshot=true'; echo 'publish=false'; } >> "$GITHUB_OUTPUT"
+          else
+            tag="${REQUESTED_REF#refs/tags/}"
+            [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]
+            [[ "$(git rev-parse "refs/tags/$tag^{commit}")" == "$(git rev-parse HEAD)" ]]
+            { echo 'snapshot=false'; echo "publish=$PUBLISH"; echo "tag=$tag"; } >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: '1.15.2'
+          terraform_wrapper: false
+      - uses: goreleaser/goreleaser-action@v7
+        with:
+          install-only: true
+          version: v2.18.1
+      - name: Check signing configuration
+        shell: bash
+        env:
+          SIGNING_KEY: ${{ secrets.FREEFAIR_SIGNING_KEY }}
+          SIGNING_PASSWORD: ${{ secrets.FREEFAIR_SIGNING_PASSWORD }}
+        run: |
+          set -euo pipefail
+          [[ -n "$SIGNING_KEY" && -n "$SIGNING_PASSWORD" ]] || {
+            echo 'Freefair signing secrets must be available to this repository.' >&2
+            exit 1
+          }
+      - name: Import Freefair release signing key
+        uses: crazy-max/ghaction-import-gpg@v7
+        id: signing
+        with:
+          gpg_private_key: ${{ secrets.FREEFAIR_SIGNING_KEY }}
+          passphrase: ${{ secrets.FREEFAIR_SIGNING_PASSWORD }}
+      - name: Build and sign Registry packages
+        shell: bash
+        env:
+          GPG_FINGERPRINT: ${{ steps.signing.outputs.fingerprint }}
+          SIGNING_PASSPHRASE: ${{ secrets.FREEFAIR_SIGNING_PASSWORD }}
+          SNAPSHOT: ${{ steps.target.outputs.snapshot }}
+          RELEASE_TAG: ${{ steps.target.outputs.tag }}
+        run: |
+          set -euo pipefail
+          goreleaser check
+          args=(release --skip=publish --parallelism=2)
+          if [[ "$SNAPSHOT" == true ]]; then
+            args+=(--snapshot)
+          else
+            export GORELEASER_CURRENT_TAG="$RELEASE_TAG"
+          fi
+          goreleaser "${args[@]}"
+      - name: Verify signatures, archives and Terraform startup
+        id: bundle
+        shell: bash
+        env:
+          GPG_FINGERPRINT: ${{ steps.signing.outputs.fingerprint }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          sums=(dist/terraform-provider-semaphore-ex_*_SHA256SUMS)
+          [[ ${#sums[@]} -eq 1 ]]
+          prefix="${sums[0]%_SHA256SUMS}"
+          cp terraform-registry-manifest.json "${prefix}_manifest.json"
+          gpg --batch --armor --export "$GPG_FINGERPRINT" > dist/signing-key.asc
+          scripts/verify-registry-artifacts.sh dist
+          echo "name=$(basename "$prefix")" >> "$GITHUB_OUTPUT"
+      - name: Retain verified signed bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.bundle.outputs.name }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            dist/terraform-provider-semaphore-ex_*.zip
+            dist/terraform-provider-semaphore-ex_*_manifest.json
+            dist/terraform-provider-semaphore-ex_*_SHA256SUMS
+            dist/terraform-provider-semaphore-ex_*_SHA256SUMS.sig
+            dist/signing-key.asc
+      - name: Publish verified version-tag assets
+        if: steps.target.outputs.publish == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.target.outputs.tag }}
+        run: scripts/publish-registry-release.sh "$RELEASE_TAG" dist

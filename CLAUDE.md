@@ -118,3 +118,15 @@ The Semaphore API does not honor type changes on secret update operations — on
 - Pre-commit hooks (`.pre-commit-config.yaml`) run golangci-lint, end-of-file-fixer, and `terraform fmt`. **Pre-commit lint runs on every commit** — if the code doesn't compile or lint, the commit is blocked. This means broken-intermediate-state commits aren't possible; bundle dependent changes (e.g. client regen + provider reconciliation) into one commit.
 - Documentation generation is in a separate module (`tools/go.mod`) so tfplugindocs dependencies don't bloat the main module.
 - Dependabot auto-merge (`.github/workflows/dependabot-auto-merge.yml`) auto-approves and squash-merges patch/minor/security PRs but leaves majors for human review. For grouped PRs, `fetch-metadata` reports the highest semver bump — any group containing a major won't qualify.
+
+## Signed Registry builds
+
+`main` CI checks produce signed prerelease bundles; `v*` tags on main-history commits build and publish exact-version assets after verification.
+Release Please prepares version/changelog PRs only, avoiding token-suppressed release workflows and incomplete public releases.
+The artifact workflow is reusable and manually dispatchable for existing tags.
+Use `FREEFAIR_SIGNING_KEY` and `FREEFAIR_SIGNING_PASSWORD` organization secrets without reading their values.
+Signing passes the passphrase via stdin; verification uses a fresh public-key-only keyring and exact fingerprint.
+GoReleaser is pinned to the version in `.tool-versions` and the workflow; keep those pins aligned.
+Verify ZIP names, checksum coverage, manifest protocol, signature and packaged Terraform startup before uploading assets.
+Existing release assets must match on rerun; never overwrite a published version.
+See `docs/releases.md` and `docs/adr/0002-signed-registry-artifacts.md`.
