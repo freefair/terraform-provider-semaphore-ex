@@ -37,7 +37,11 @@ The repository uses these existing Freefair organization secrets:
 - `FREEFAIR_SIGNING_KEY`: ASCII-armored private signing key or its base64 encoding, accepted by the import action.
 - `FREEFAIR_SIGNING_PASSWORD`: passphrase for that key.
 
-The workflow gets the imported key fingerprint from the GPG import action.
+The Registry signing identity is key ID `719010B911115D8E`.
+The workflow checks that the imported primary-key fingerprint matches this ID
+before building, then uses that fingerprint for signing and verification.
+The configured secrets must contain this key; a valid signature from another
+Freefair key is insufficient for Registry publication.
 The passphrase reaches GPG through standard input and is absent from command arguments and configuration files.
 Pull request checks have no signing step; release signing is limited to this repository and checked main-history commits.
 
@@ -63,7 +67,7 @@ CI executes the Linux amd64 archive; local verification can also execute the mac
 ## First publication to the public Registry
 
 1. Push the verified provider/workflow commits and inspect the signed CI bundle.
-2. Register the Freefair public key from `signing-key.asc` in the Terraform Registry's signing-key settings for the `freefair` namespace.
+2. Confirm that `signing-key.asc` belongs to the registered key `719010B911115D8E` in the Terraform Registry's signing-key settings for the `freefair` namespace.
 3. Push the chosen semantic-version tag and wait for **Signed Registry artifacts** to finish.
 4. Confirm the public GitHub Release contains the platform ZIPs, manifest, checksums and binary signature.
 5. In the Terraform Registry, choose **Publish → Provider**, select `freefair/terraform-provider-semaphore-ex`, and finish the onboarding flow.

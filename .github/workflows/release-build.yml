@@ -104,6 +104,17 @@ jobs:
         with:
           gpg_private_key: ${{ secrets.FREEFAIR_SIGNING_KEY }}
           passphrase: ${{ secrets.FREEFAIR_SIGNING_PASSWORD }}
+      - name: Require the Terraform Registry signing identity
+        shell: bash
+        env:
+          IMPORTED_FINGERPRINT: ${{ steps.signing.outputs.fingerprint }}
+        run: |
+          set -euo pipefail
+          fingerprint="${IMPORTED_FINGERPRINT^^}"
+          [[ "$fingerprint" =~ ^[0-9A-F]{40}$ && "${fingerprint: -16}" == 719010B911115D8E ]] || {
+            echo 'Signing key does not match the registered Terraform Registry key 719010B911115D8E.' >&2
+            exit 1
+          }
       - name: Build and sign Registry packages
         shell: bash
         env:
