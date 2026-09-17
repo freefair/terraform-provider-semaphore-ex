@@ -33,6 +33,9 @@ type ProjectUser struct {
 	// Enum: ["owner","manager","task_runner","guest"]
 	Role string `json:"role,omitempty"`
 
+	// Custom project role ID; absent for built-in roles.
+	RoleID string `json:"role_id,omitempty"`
+
 	// username
 	Username string `json:"username,omitempty"`
 }

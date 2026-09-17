@@ -36,11 +36,36 @@ type AccessKeyRequest struct {
 	// Minimum: 1
 	ProjectID int64 `json:"project_id,omitempty"`
 
+	// source storage field
+	SourceStorageField string `json:"source_storage_field,omitempty"`
+
+	// source storage id
+	SourceStorageID *int64 `json:"source_storage_id,omitempty"`
+
+	// source storage key
+	SourceStorageKey *string `json:"source_storage_key,omitempty"`
+
+	// source storage mount
+	SourceStorageMount string `json:"source_storage_mount,omitempty"`
+
+	// source storage type
+	// Enum: ["vault","env","file"]
+	SourceStorageType *string `json:"source_storage_type,omitempty"`
+
+	// source storage version
+	SourceStorageVersion int64 `json:"source_storage_version,omitempty"`
+
 	// ssh
 	SSH *AccessKeyRequestSSH `json:"ssh,omitempty"`
 
+	// string
+	String string `json:"string,omitempty"`
+
+	// synchronized
+	Synchronized bool `json:"synchronized,omitempty"`
+
 	// type
-	// Enum: ["none","ssh","login_password"]
+	// Enum: ["none","ssh","login_password","string"]
 	Type string `json:"type,omitempty"`
 }
 
@@ -53,6 +78,10 @@ func (m *AccessKeyRequest) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateProjectID(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSourceStorageType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -105,6 +134,51 @@ func (m *AccessKeyRequest) validateProjectID(formats strfmt.Registry) error {
 	return nil
 }
 
+var accessKeyRequestTypeSourceStorageTypePropEnum []any
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["vault","env","file"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		accessKeyRequestTypeSourceStorageTypePropEnum = append(accessKeyRequestTypeSourceStorageTypePropEnum, v)
+	}
+}
+
+const (
+
+	// AccessKeyRequestSourceStorageTypeVault captures enum value "vault"
+	AccessKeyRequestSourceStorageTypeVault string = "vault"
+
+	// AccessKeyRequestSourceStorageTypeEnv captures enum value "env"
+	AccessKeyRequestSourceStorageTypeEnv string = "env"
+
+	// AccessKeyRequestSourceStorageTypeFile captures enum value "file"
+	AccessKeyRequestSourceStorageTypeFile string = "file"
+)
+
+// prop value enum
+func (m *AccessKeyRequest) validateSourceStorageTypeEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, accessKeyRequestTypeSourceStorageTypePropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *AccessKeyRequest) validateSourceStorageType(formats strfmt.Registry) error {
+	if typeutils.IsZero(m.SourceStorageType) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateSourceStorageTypeEnum("source_storage_type", "body", *m.SourceStorageType); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *AccessKeyRequest) validateSSH(formats strfmt.Registry) error {
 	if typeutils.IsZero(m.SSH) { // not required
 		return nil
@@ -132,7 +206,7 @@ var accessKeyRequestTypeTypePropEnum []any
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["none","ssh","login_password"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["none","ssh","login_password","string"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -150,6 +224,9 @@ const (
 
 	// AccessKeyRequestTypeLoginPassword captures enum value "login_password"
 	AccessKeyRequestTypeLoginPassword string = "login_password"
+
+	// AccessKeyRequestTypeString captures enum value "string"
+	AccessKeyRequestTypeString string = "string"
 )
 
 // prop value enum

@@ -11,6 +11,7 @@ import (
 
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+	"github.com/hashicorp/terraform-plugin-framework/action"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -22,6 +23,7 @@ import (
 
 var _ provider.Provider = &SemaphoreUIProvider{}
 var _ provider.ProviderWithFunctions = &SemaphoreUIProvider{}
+var _ provider.ProviderWithActions = &SemaphoreUIProvider{}
 
 // SemaphoreUIProvider defines the provider implementation.
 type SemaphoreUIProvider struct {
@@ -189,15 +191,73 @@ func (p *SemaphoreUIProvider) Configure(ctx context.Context, req provider.Config
 	client := apiclient.New(rt, strfmt.Default)
 	resp.DataSourceData = client
 	resp.ResourceData = client
+	resp.ActionData = client
+}
+
+func (p *SemaphoreUIProvider) Actions(context.Context) []func() action.Action {
+	return []func() action.Action{
+		NewLDAPTestAction,
+		NewProjectTemplatePublishAction,
+		NewProjectWorkflowRestoreAction,
+		NewProjectSecretStorageSyncAction,
+		NewProjectSecretStorageConnectionTestAction,
+		NewProjectEnvironmentSyncAction,
+		NewProjectGeneratedSSHKeyRotateAction,
+		NewWorkflowTriggerSigningPromoteAction,
+		NewWorkflowTriggerSigningRevokeAction,
+		NewAuditWebhookSigningPromoteAction,
+		NewAuditWebhookSigningRevokeNextAction,
+		NewOptionSetAction,
+		NewProjectTaskStartAction,
+		NewProjectTaskStopAction,
+		NewProjectWorkflowStartAction,
+		NewProjectWorkflowStopAction,
+		NewProjectWorkflowApprovalAction,
+		NewGlobalPolicyGuardrailDraftSaveAction,
+		NewProjectPolicyGuardrailDraftSaveAction,
+		NewGlobalPolicyGuardrailPublishAction,
+		NewProjectPolicyGuardrailPublishAction,
+		NewGlobalWorkflowArtifactRetentionPublishAction,
+		NewProjectWorkflowArtifactRetentionPublishAction,
+	}
 }
 
 func (p *SemaphoreUIProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewIntegrationAliasResource,
+		NewAppResource,
+		NewUserAPITokenResource,
+		NewWorkflowDefinitionResource,
+		NewWorkflowTriggerResource,
+		NewCrossProjectGrantResource,
+		NewDockerExecutionPolicyResource,
+		NewKubernetesExecutionPolicyResource,
+		NewGlobalNotificationDestinationResource,
+		NewProjectNotificationDestinationResource,
+		NewGlobalNotificationRuleResource,
+		NewProjectNotificationRuleResource,
+		NewAuditWebhookResource,
+		NewProjectDeploymentWindowResource,
+		NewGlobalRoleResource,
+		NewGlobalRoleAssignmentResource,
+		NewGlobalCredentialResource,
+		NewGlobalCredentialGrantResource,
+		NewTemplateACLResource,
+		NewLDAPGroupMappingResource,
+		NewOIDCGroupMappingResource,
+		NewTOTPPolicyResource,
+		NewLDAPConfigurationResource,
+		NewProjectRoleResource,
+		NewProjectSecretStorageResource,
+		NewProjectIntegrationMatcherResource,
+		NewProjectTemplateInventoryResource,
+		NewProjectIntegrationExtractValueResource,
 		NewProjectEnvironmentResource,
 		NewProjectIntegrationResource,
 		NewProjectInventoryResource,
 		NewProjectKeyResource,
+		NewProjectGeneratedSSHKeyResource,
+		NewProjectTerraformBackendAliasResource,
 		NewProjectRepositoryResource,
 		NewProjectResource,
 		NewProjectRunnerResource,
@@ -214,11 +274,47 @@ func (p *SemaphoreUIProvider) Resources(ctx context.Context) []func() resource.R
 func (p *SemaphoreUIProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewExternalUserDataSource,
+		NewAppDataSource,
+		NewUserAPITokenDataSource,
+		NewOptionDataSource,
+		NewWorkflowDefinitionDataSource,
+		NewWorkflowTriggerDataSource,
+		NewCrossProjectGrantDataSource,
+		NewDockerExecutionPolicyDataSource,
+		NewKubernetesExecutionPolicyDataSource,
+		NewGlobalNotificationDestinationDataSource,
+		NewProjectNotificationDestinationDataSource,
+		NewGlobalNotificationRuleDataSource,
+		NewProjectNotificationRuleDataSource,
+		NewAuditWebhookDataSource,
+		NewProjectDeploymentWindowDataSource,
+		NewGlobalWorkflowArtifactRetentionDataSource,
+		NewProjectWorkflowArtifactRetentionDataSource,
+		NewGlobalPolicyGuardrailDataSource,
+		NewProjectPolicyGuardrailDataSource,
+		NewGlobalRoleDataSource,
+		NewGlobalRoleAssignmentDataSource,
+		NewGlobalCredentialDataSource,
+		NewGlobalCredentialGrantDataSource,
+		NewTemplateACLDataSource,
+		NewProjectTemplateVersionDataSource,
+		NewProjectWorkflowVersionDataSource,
+		NewProjectTemplateInventoryDataSource,
+		NewLDAPGroupMappingDataSource,
+		NewOIDCGroupMappingDataSource,
+		NewTOTPPolicyDataSource,
+		NewLDAPConfigurationDataSource,
+		NewProjectRoleDataSource,
+		NewProjectSecretStorageDataSource,
+		NewProjectIntegrationMatcherDataSource,
+		NewProjectIntegrationExtractValueDataSource,
 		NewProjectDataSource,
 		NewProjectEnvironmentDataSource,
 		NewProjectIntegrationDataSource,
 		NewProjectInventoryDataSource,
 		NewProjectKeyDataSource,
+		NewProjectGeneratedSSHKeyDataSource,
+		NewProjectTerraformBackendAliasDataSource,
 		NewProjectRepositoryDataSource,
 		NewProjectRunnerDataSource,
 		NewProjectScheduleDataSource,

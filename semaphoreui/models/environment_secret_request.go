@@ -18,8 +18,14 @@ import (
 // swagger:model EnvironmentSecretRequest
 type EnvironmentSecretRequest struct {
 
+	// field
+	Field string `json:"field,omitempty"`
+
 	// id
 	ID int64 `json:"id,omitempty"`
+
+	// mount
+	Mount string `json:"mount,omitempty"`
 
 	// name
 	// Example: Test
@@ -29,12 +35,21 @@ type EnvironmentSecretRequest struct {
 	// Enum: ["create","update","delete"]
 	Operation string `json:"operation,omitempty"`
 
+	// path
+	Path string `json:"path,omitempty"`
+
 	// secret
 	Secret string `json:"secret,omitempty"`
+
+	// storage id
+	StorageID *int64 `json:"storage_id,omitempty"`
 
 	// type
 	// Enum: ["env","var"]
 	Type string `json:"type,omitempty"`
+
+	// version
+	Version int64 `json:"version,omitempty"`
 }
 
 // Validate validates this environment secret request

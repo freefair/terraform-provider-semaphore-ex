@@ -62,15 +62,21 @@ func (r *projectInventoryResource) ConfigValidators(ctx context.Context) []resou
 			path.MatchRoot("file"),
 			path.MatchRoot("terraform_workspace"),
 			path.MatchRoot("tofu_workspace"),
+			path.MatchRoot("terragrunt_workspace"),
 		),
 	}
 }
 
 func convertProjectInventoryModelToInventoryRequest(inventory ProjectInventoryModel) *models.InventoryRequest {
 	model := models.InventoryRequest{
-		ProjectID: inventory.ProjectID.ValueInt64(),
-		Name:      inventory.Name.ValueString(),
-		SSHKeyID:  inventory.SSHKeyID.ValueInt64(),
+		ProjectID:  inventory.ProjectID.ValueInt64(),
+		RunnerTag:  inventory.RunnerTag.ValueStringPointer(),
+		TemplateID: knownInt64Pointer(inventory.TemplateID),
+		Name:       inventory.Name.ValueString(),
+		SSHKeyID:   inventory.SSHKeyID.ValueInt64(),
+	}
+	if model.RunnerTag != nil && *model.RunnerTag == "" {
+		model.RunnerTag = nil
 	}
 	if !inventory.ID.IsNull() && !inventory.ID.IsUnknown() {
 		model.ID = inventory.ID.ValueInt64()
@@ -96,18 +102,29 @@ func convertProjectInventoryModelToInventoryRequest(inventory ProjectInventoryMo
 		model.Inventory = inventory.TofuWorkspace.Workspace.ValueString()
 	}
 
+	if inventory.TerragruntWorkspace != nil {
+		model.Type = ProjectInventoryTerragruntWorkspace
+		model.Inventory = inventory.TerragruntWorkspace.Workspace.ValueString()
+	}
 	return &model
 }
 
 func convertInventoryResponseToProjectInventoryModel(inventory *models.Inventory) ProjectInventoryModel {
 	model := ProjectInventoryModel{
-		ID:        types.Int64Value(inventory.ID),
-		ProjectID: types.Int64Value(inventory.ProjectID),
-		Name:      types.StringValue(inventory.Name),
-		SSHKeyID:  types.Int64Value(inventory.SSHKeyID),
+		ID:         types.Int64Value(inventory.ID),
+		RunnerTag:  types.StringValue(""),
+		TemplateID: types.Int64PointerValue(inventory.TemplateID),
+		ProjectID:  types.Int64Value(inventory.ProjectID),
+		Name:       types.StringValue(inventory.Name),
+		SSHKeyID:   types.Int64Value(inventory.SSHKeyID),
 	}
 
+	if inventory.RunnerTag != nil {
+		model.RunnerTag = types.StringValue(*inventory.RunnerTag)
+	}
 	switch inventory.Type {
+	case ProjectInventoryTerragruntWorkspace:
+		model.TerragruntWorkspace = &ProjectInventoryTerraformWorkspaceModel{Workspace: types.StringValue(inventory.Inventory)}
 	case ProjectInventoryStatic:
 		model.Static = &ProjectInventoryStaticModel{
 			Inventory: types.StringValue(inventory.Inventory),

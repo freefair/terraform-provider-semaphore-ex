@@ -41,10 +41,13 @@ data "semaphore_ex_project_inventory" "example" {
 ### Read-Only
 
 - `file` (Attributes) Inventory File. (see [below for nested schema](#nestedatt--file))
+- `runner_tag` (String) Runner placement tag. Empty clears the tag; omission preserves imported settings.
 - `ssh_key_id` (Number) The Project Key ID to use for accessing hosts in the inventory. This attribute is required for all inventory types in SemaphoreUI. You should set it to the ID of a Key of type `none` if the inventory doesn't require credentials, or for Workspace type inventories.
 - `static` (Attributes) Static Inventory. (see [below for nested schema](#nestedatt--static))
 - `static_yaml` (Attributes) Static YAML Inventory. (see [below for nested schema](#nestedatt--static_yaml))
+- `template_id` (Number) Owning template for an attached workspace inventory.
 - `terraform_workspace` (Attributes) Terraform Workspace. (see [below for nested schema](#nestedatt--terraform_workspace))
+- `terragrunt_workspace` (Attributes) Terragrunt workspace inventory. (see [below for nested schema](#nestedatt--terragrunt_workspace))
 - `tofu_workspace` (Attributes) OpenTofu Workspace. (see [below for nested schema](#nestedatt--tofu_workspace))
 
 <a id="nestedatt--file"></a>
@@ -81,6 +84,14 @@ Read-Only:
 Read-Only:
 
 - `workspace` (String) The Terraform workspace name.
+
+
+<a id="nestedatt--terragrunt_workspace"></a>
+### Nested Schema for `terragrunt_workspace`
+
+Read-Only:
+
+- `workspace` (String) Workspace name.
 
 
 <a id="nestedatt--tofu_workspace"></a>

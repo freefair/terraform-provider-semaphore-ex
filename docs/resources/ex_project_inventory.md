@@ -105,14 +105,17 @@ resource "semaphore_ex_project_inventory" "tofu" {
 ### Optional
 
 - `file` (Attributes) Inventory File. (see [below for nested schema](#nestedatt--file))
+- `runner_tag` (String) Runner placement tag. Empty clears the tag; omission preserves imported settings.
 - `static` (Attributes) Static Inventory. (see [below for nested schema](#nestedatt--static))
 - `static_yaml` (Attributes) Static YAML Inventory. (see [below for nested schema](#nestedatt--static_yaml))
 - `terraform_workspace` (Attributes) Terraform Workspace. (see [below for nested schema](#nestedatt--terraform_workspace))
+- `terragrunt_workspace` (Attributes) Terragrunt workspace inventory. (see [below for nested schema](#nestedatt--terragrunt_workspace))
 - `tofu_workspace` (Attributes) OpenTofu Workspace. (see [below for nested schema](#nestedatt--tofu_workspace))
 
 ### Read-Only
 
 - `id` (Number) The inventory ID.
+- `template_id` (Number) Owning template for an attached workspace inventory.
 
 <a id="nestedatt--file"></a>
 ### Nested Schema for `file`
@@ -157,6 +160,14 @@ Optional:
 Required:
 
 - `workspace` (String) The Terraform workspace name.
+
+
+<a id="nestedatt--terragrunt_workspace"></a>
+### Nested Schema for `terragrunt_workspace`
+
+Required:
+
+- `workspace` (String) Workspace name.
 
 
 <a id="nestedatt--tofu_workspace"></a>

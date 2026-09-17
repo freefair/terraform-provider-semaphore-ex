@@ -1,13 +1,13 @@
 # Terraform Provider: Semaphore EX
 
-Manage Semaphore EX projects, variable groups, templates, inventories, keys, repositories, schedules, users, integrations, views and runners.
+Manage Semaphore EX projects, templates, variable groups, inventories, credentials, workflows, access policies, notifications, identity settings and executor policies.
 The provider source address is `freefair/semaphore-ex`; resource and data-source names start with `semaphore_ex_`.
 This fork derives from the Semaphore UI provider and targets the EX API contracts.
 
 ## Quick Start
 
 Prerequisites: a running Semaphore EX instance, its API token, Terraform, Go matching `go.mod`, and Git.
-Until an EX release is published to the Terraform Registry, use a local build:
+To try unreleased EX features or develop the provider, use a local build:
 
 ```sh
 git clone https://github.com/freefair/terraform-provider-semaphore-ex.git
@@ -42,7 +42,7 @@ resource "semaphore_ex_project" "example" {
 Run `terraform -chdir=local plan`, inspect the target and changes, then `terraform -chdir=local apply`.
 With a development override, run these commands directly without `terraform init` attempting a Registry installation.
 Verify with `terraform -chdir=local plan -detailed-exitcode`: an unchanged configuration returns 0.
-After Registry publication, remove the development override and pin a published release in `required_providers`.
+For a Registry installation, remove the development override and pin a published release in `required_providers`.
 
 ## Multiple variable groups
 
@@ -75,7 +75,7 @@ Configuration order does not control the server's variable precedence.
 - Runner resources expose durable settings, not nonexistent `private_key` or redacted `token` outputs.
 
 See [migration](docs/migration.md) before changing an existing Terraform configuration.
-The provider does not yet manage EX workflows, policy guardrails, deployment windows, or template versions/grants.
+See [EX feature usage](docs/ex-features.md) for the additional resources, immutable versions, explicit Actions and lifecycle semantics.
 
 ## Development and verification
 

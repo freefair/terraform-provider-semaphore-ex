@@ -42,8 +42,23 @@ type EnvironmentRequest struct {
 	// Minimum: 1
 	ProjectID int64 `json:"project_id,omitempty"`
 
+	// secret storage id
+	SecretStorageID *int64 `json:"secret_storage_id,omitempty"`
+
+	// secret storage key prefix
+	SecretStorageKeyPrefix *string `json:"secret_storage_key_prefix,omitempty"`
+
 	// secrets
 	Secrets []*EnvironmentSecretRequest `json:"secrets"`
+
+	// sync enabled
+	SyncEnabled bool `json:"sync_enabled,omitempty"`
+
+	// sync interval
+	SyncInterval int64 `json:"sync_interval,omitempty"`
+
+	// sync paths
+	SyncPaths []*SecretSyncPath `json:"sync_paths"`
 }
 
 // Validate validates this environment request
@@ -55,6 +70,10 @@ func (m *EnvironmentRequest) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateSecrets(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSyncPaths(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -106,11 +125,45 @@ func (m *EnvironmentRequest) validateSecrets(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *EnvironmentRequest) validateSyncPaths(formats strfmt.Registry) error {
+	if typeutils.IsZero(m.SyncPaths) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.SyncPaths); i++ {
+		if typeutils.IsZero(m.SyncPaths[i]) { // not required
+			continue
+		}
+
+		if m.SyncPaths[i] != nil {
+			if err := m.SyncPaths[i].Validate(formats); err != nil {
+				ve := new(errors.Validation)
+				if stderrors.As(err, &ve) {
+					return ve.ValidateName("sync_paths" + "." + strconv.Itoa(i))
+				}
+				ce := new(errors.CompositeError)
+				if stderrors.As(err, &ce) {
+					return ce.ValidateName("sync_paths" + "." + strconv.Itoa(i))
+				}
+
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 // ContextValidate validate this environment request based on the context it is used
 func (m *EnvironmentRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateSecrets(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateSyncPaths(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -138,6 +191,35 @@ func (m *EnvironmentRequest) contextValidateSecrets(ctx context.Context, formats
 				ce := new(errors.CompositeError)
 				if stderrors.As(err, &ce) {
 					return ce.ValidateName("secrets" + "." + strconv.Itoa(i))
+				}
+
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *EnvironmentRequest) contextValidateSyncPaths(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.SyncPaths); i++ {
+
+		if m.SyncPaths[i] != nil {
+
+			if typeutils.IsZero(m.SyncPaths[i]) { // not required
+				return nil
+			}
+
+			if err := m.SyncPaths[i].ContextValidate(ctx, formats); err != nil {
+				ve := new(errors.Validation)
+				if stderrors.As(err, &ve) {
+					return ve.ValidateName("sync_paths" + "." + strconv.Itoa(i))
+				}
+				ce := new(errors.CompositeError)
+				if stderrors.As(err, &ce) {
+					return ce.ValidateName("sync_paths" + "." + strconv.Itoa(i))
 				}
 
 				return err

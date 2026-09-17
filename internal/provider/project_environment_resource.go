@@ -8,17 +8,22 @@ import (
 	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/variable_group"
 	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"sort"
+	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
 var (
-	_ resource.Resource                = &projectEnvironmentResource{}
-	_ resource.ResourceWithConfigure   = &projectEnvironmentResource{}
-	_ resource.ResourceWithImportState = &projectEnvironmentResource{}
+	_ resource.Resource                   = &projectEnvironmentResource{}
+	_ resource.ResourceWithConfigure      = &projectEnvironmentResource{}
+	_ resource.ResourceWithImportState    = &projectEnvironmentResource{}
+	_ resource.ResourceWithModifyPlan     = &projectEnvironmentResource{}
+	_ resource.ResourceWithValidateConfig = &projectEnvironmentResource{}
 )
 
 func NewProjectEnvironmentResource() resource.Resource {
@@ -90,6 +95,97 @@ func (r *projectEnvironmentResource) Schema(ctx context.Context, _ resource.Sche
 	resp.Schema = ProjectEnvironmentSchema().GetResource(ctx)
 }
 
+func (r *projectEnvironmentResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var config ProjectEnvironmentModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	validateProjectEnvironmentConfig(ctx, config, &resp.Diagnostics)
+}
+
+func (r *projectEnvironmentResource) ModifyPlan(ctx context.Context, req resource.ModifyPlanRequest, resp *resource.ModifyPlanResponse) {
+	if req.Plan.Raw.IsNull() {
+		return
+	}
+	var plan ProjectEnvironmentModel
+	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !plan.SyncPaths.IsNull() && !plan.SyncPaths.IsUnknown() && len(plan.SyncPaths.Elements()) > 0 &&
+		(plan.SecretStorage == nil || plan.SecretStorage.ID.IsNull() || plan.SecretStorage.ID.IsUnknown()) {
+		resp.Diagnostics.AddAttributeError(path.Root("sync_paths"), "Missing secret storage", "sync_paths require secret_storage.id.")
+	}
+}
+
+func configured(value types.String) bool {
+	return !value.IsNull() && !value.IsUnknown()
+}
+
+func validateProjectEnvironmentConfig(ctx context.Context, config ProjectEnvironmentModel, diagnostics *diag.Diagnostics) {
+	if !config.Secrets.IsNull() && !config.Secrets.IsUnknown() {
+		var secrets []ProjectEnvironmentSecretModel
+		diagnostics.Append(config.Secrets.ElementsAs(ctx, &secrets, false)...)
+		for index, secret := range secrets {
+			secretPath := path.Root("secrets").AtListIndex(index)
+			hasStorage := !secret.StorageID.IsNull() && !secret.StorageID.IsUnknown()
+			hasReferencePart := hasStorage || configured(secret.Mount) || configured(secret.Path) || configured(secret.Field) || (!secret.Version.IsNull() && !secret.Version.IsUnknown())
+			hasValue := configured(secret.Value)
+
+			if hasStorage && hasValue {
+				diagnostics.AddAttributeError(secretPath, "Conflicting secret sources", "Set either value for a plaintext secret or storage_id with its remote reference, not both.")
+			}
+			if !hasStorage && hasReferencePart {
+				diagnostics.AddAttributeError(secretPath, "Incomplete remote secret reference", "mount, path, version, and field require storage_id.")
+			}
+			if !hasStorage && !hasValue && !hasReferencePart {
+				diagnostics.AddAttributeError(secretPath, "Missing secret source", "Set value for a plaintext secret or storage_id, path, and field for a remote secret reference.")
+			}
+			if hasStorage && (!configured(secret.Path) || secret.Path.ValueString() == "" || !configured(secret.Field) || secret.Field.ValueString() == "") {
+				diagnostics.AddAttributeError(secretPath, "Incomplete remote secret reference", "Remote secret references require both path and field.")
+			}
+		}
+	}
+	if config.SecretStorage != nil && config.SecretStorage.ID.IsNull() && configured(config.SecretStorage.KeyPrefix) {
+		diagnostics.AddAttributeError(path.Root("secret_storage"), "Incomplete secret storage", "secret_storage.key_prefix requires secret_storage.id.")
+	}
+
+	if config.SyncEnabled.ValueBool() && !config.SyncInterval.IsUnknown() && !config.SyncInterval.IsNull() && config.SyncInterval.ValueInt64() <= 0 {
+		diagnostics.AddAttributeError(path.Root("sync_interval"), "Invalid synchronization interval", "sync_interval must be positive when sync_enabled is true.")
+	}
+	if !config.SyncPaths.IsNull() && !config.SyncPaths.IsUnknown() {
+		var syncPaths []ProjectEnvironmentSyncPathModel
+		diagnostics.Append(config.SyncPaths.ElementsAs(ctx, &syncPaths, false)...)
+		for index, syncPath := range syncPaths {
+			pathValue := path.Root("sync_paths").AtListIndex(index)
+			if syncPath.AccessKeyID.IsNull() || (!syncPath.AccessKeyID.IsUnknown() && syncPath.AccessKeyID.ValueInt64() <= 0) ||
+				(!syncPath.Mount.IsUnknown() && (!configured(syncPath.Mount) || syncPath.Mount.ValueString() == "")) ||
+				(!syncPath.Path.IsUnknown() && (!configured(syncPath.Path) || syncPath.Path.ValueString() == "")) ||
+				(!syncPath.Field.IsUnknown() && (!configured(syncPath.Field) || syncPath.Field.ValueString() == "")) {
+				diagnostics.AddAttributeError(pathValue, "Incomplete synchronization path", "sync_paths entries require access_key_id, mount, path, and field.")
+			}
+		}
+	}
+}
+
+func projectEnvironmentUpdateBody(ctx context.Context, plan, state ProjectEnvironmentModel) (map[string]any, error) {
+	request := convertProjectEnvironmentModelToEnvironmentRequest(ctx, plan, &state)
+	encoded, err := json.Marshal(request)
+	if err != nil {
+		return nil, fmt.Errorf("marshal environment update: %w", err)
+	}
+	var body map[string]any
+	if err := json.Unmarshal(encoded, &body); err != nil {
+		return nil, fmt.Errorf("unmarshal environment update: %w", err)
+	}
+	if plan.SecretStorage != nil && plan.SecretStorage.ID.IsNull() {
+		body["secret_storage_id"] = nil
+		body["secret_storage_key_prefix"] = nil
+	}
+	return body, nil
+}
+
 func convertProjectEnvironmentModelToEnvironmentRequest(ctx context.Context, env ProjectEnvironmentModel, prev *ProjectEnvironmentModel) *models.EnvironmentRequest {
 	model := models.EnvironmentRequest{
 		ProjectID: env.ProjectID.ValueInt64(),
@@ -112,6 +208,39 @@ func convertProjectEnvironmentModelToEnvironmentRequest(ctx context.Context, env
 		bytes, _ := json.Marshal(env.Environment)
 		model.Env = string(bytes)
 	}
+	if env.SecretStorage != nil {
+		if !env.SecretStorage.ID.IsNull() && !env.SecretStorage.ID.IsUnknown() {
+			storageID := env.SecretStorage.ID.ValueInt64()
+			model.SecretStorageID = &storageID
+		}
+		if !env.SecretStorage.KeyPrefix.IsNull() && !env.SecretStorage.KeyPrefix.IsUnknown() {
+			prefix := env.SecretStorage.KeyPrefix.ValueString()
+			model.SecretStorageKeyPrefix = &prefix
+		}
+	}
+	if !env.SyncEnabled.IsNull() && !env.SyncEnabled.IsUnknown() {
+		model.SyncEnabled = env.SyncEnabled.ValueBool()
+	}
+	if !env.SyncInterval.IsNull() && !env.SyncInterval.IsUnknown() {
+		model.SyncInterval = env.SyncInterval.ValueInt64()
+	}
+	if !env.SyncPaths.IsNull() && !env.SyncPaths.IsUnknown() {
+		var syncPaths []ProjectEnvironmentSyncPathModel
+		env.SyncPaths.ElementsAs(ctx, &syncPaths, false)
+		model.SyncPaths = make([]*models.SecretSyncPath, 0, len(syncPaths))
+		for _, syncPath := range syncPaths {
+			model.SyncPaths = append(model.SyncPaths, &models.SecretSyncPath{
+				ID:            syncPath.ID.ValueInt64(),
+				Path:          syncPath.Path.ValueString(),
+				Prefix:        syncPath.Prefix.ValueString(),
+				Separator:     syncPath.Separator.ValueString(),
+				AccessKeyID:   syncPath.AccessKeyID.ValueInt64(),
+				Mount:         syncPath.Mount.ValueString(),
+				Field:         syncPath.Field.ValueString(),
+				RemoteVersion: syncPath.RemoteVersion.ValueInt64(),
+			})
+		}
+	}
 
 	var secrets []*models.EnvironmentSecretRequest
 	var envSecrets, prevSecrets []ProjectEnvironmentSecretModel
@@ -131,10 +260,20 @@ func convertProjectEnvironmentModelToEnvironmentRequest(ctx context.Context, env
 			Name: secret.Name.ValueString(),
 			Type: secret.Type.ValueString(),
 		}
+		if !secret.StorageID.IsNull() && !secret.StorageID.IsUnknown() {
+			storageID := secret.StorageID.ValueInt64()
+			modelSecret.StorageID = &storageID
+			modelSecret.Mount = secret.Mount.ValueString()
+			modelSecret.Path = secret.Path.ValueString()
+			modelSecret.Version = secret.Version.ValueInt64()
+			modelSecret.Field = secret.Field.ValueString()
+		}
 		// Create all secrets from env missing an ID
 		if secret.ID.IsUnknown() || secret.ID.IsNull() {
 			modelSecret.Operation = "create"
-			modelSecret.Secret = secret.Value.ValueString()
+			if modelSecret.StorageID == nil {
+				modelSecret.Secret = secret.Value.ValueString()
+			}
 		} else {
 			modelSecret.ID = secret.ID.ValueInt64()
 			// Find the previous secret
@@ -145,12 +284,12 @@ func convertProjectEnvironmentModelToEnvironmentRequest(ctx context.Context, env
 				// name/secret are persisted. The schema treats `type` as
 				// RequiresReplace on the secret list element to prevent the silent
 				// no-op.
-				if !secret.Name.Equal(prevSecret.Name) || !secret.Value.Equal(prevSecret.Value) || !secret.Type.Equal(prevSecret.Type) {
+				if !secret.Name.Equal(prevSecret.Name) || !secret.Value.Equal(prevSecret.Value) || !secret.Type.Equal(prevSecret.Type) || !secret.StorageID.Equal(prevSecret.StorageID) || !secret.Mount.Equal(prevSecret.Mount) || !secret.Path.Equal(prevSecret.Path) || !secret.Version.Equal(prevSecret.Version) || !secret.Field.Equal(prevSecret.Field) {
 					modelSecret.Operation = "update"
 					if !secret.Name.Equal(prevSecret.Name) {
 						modelSecret.Name = secret.Name.ValueString()
 					}
-					if !secret.Value.Equal(prevSecret.Value) {
+					if modelSecret.StorageID == nil && !secret.Value.Equal(prevSecret.Value) {
 						modelSecret.Secret = secret.Value.ValueString()
 					}
 					if !secret.Type.Equal(prevSecret.Type) {
@@ -194,6 +333,25 @@ func convertEnvironmentResponseToProjectEnvironmentModel(ctx context.Context, en
 		ProjectID: types.Int64Value(environment.ProjectID),
 		Name:      types.StringValue(environment.Name),
 	}
+	if environment.SecretStorageID != nil || environment.SecretStorageKeyPrefix != nil {
+		model.SecretStorage = &ProjectEnvironmentSecretStorageModel{
+			ID:        types.Int64Null(),
+			KeyPrefix: types.StringNull(),
+		}
+		if environment.SecretStorageID != nil {
+			model.SecretStorage.ID = types.Int64Value(*environment.SecretStorageID)
+		}
+		if environment.SecretStorageKeyPrefix != nil {
+			model.SecretStorage.KeyPrefix = types.StringValue(*environment.SecretStorageKeyPrefix)
+		}
+	} else if prev != nil && prev.SecretStorage != nil && prev.SecretStorage.ID.IsNull() {
+		// `secret_storage = {}` is an explicit clear. The API returns no
+		// binding fields afterwards, while Terraform must retain the configured
+		// empty object rather than replacing it with a null object.
+		model.SecretStorage = prev.SecretStorage
+	}
+	model.SyncEnabled = types.BoolValue(environment.SyncEnabled)
+	model.SyncInterval = types.Int64Value(environment.SyncInterval)
 
 	if json.Unmarshal([]byte(environment.JSON), &model.Variables) != nil {
 		model.Variables = &map[string]string{}
@@ -218,12 +376,30 @@ func convertEnvironmentResponseToProjectEnvironmentModel(ctx context.Context, en
 			Type: types.StringValue(secret.Type),
 			Name: types.StringValue(secret.Name),
 		}
-		// Value from previous state since secrets are not returned in the response
-		prevSecret := prev.Secret(ctx, modelSecret.ID)
-		if prevSecret != nil {
-			modelSecret.Value = prevSecret.Value
+		if secret.StorageID != nil {
+			modelSecret.StorageID = types.Int64Value(*secret.StorageID)
+			modelSecret.Mount = types.StringValue(secret.Mount)
+			modelSecret.Path = types.StringValue(secret.Path)
+			modelSecret.Version = types.Int64Value(secret.Version)
+			modelSecret.Field = types.StringValue(secret.Field)
 		} else {
-			modelSecret.Value = prev.SecretValue(ctx, secret.Name, secret.Type)
+			modelSecret.StorageID = types.Int64Null()
+			modelSecret.Mount = types.StringNull()
+			modelSecret.Path = types.StringNull()
+			modelSecret.Version = types.Int64Null()
+			modelSecret.Field = types.StringNull()
+		}
+		// Remote references never return plaintext. Keep their value absent from
+		// state; plaintext secrets retain the configured value as before.
+		if secret.StorageID != nil {
+			modelSecret.Value = types.StringNull()
+		} else {
+			prevSecret := prev.Secret(ctx, modelSecret.ID)
+			if prevSecret != nil {
+				modelSecret.Value = prevSecret.Value
+			} else {
+				modelSecret.Value = prev.SecretValue(ctx, secret.Name, secret.Type)
+			}
 		}
 		secrets = append(secrets, modelSecret)
 	}
@@ -231,18 +407,46 @@ func convertEnvironmentResponseToProjectEnvironmentModel(ctx context.Context, en
 		prev.Secrets.ElementsAs(ctx, &secrets, false)
 	}
 
-	envSecrets, _ := types.ListValueFrom(ctx, types.ObjectType{
-		AttrTypes: map[string]attr.Type{
-			"id":    types.Int64Type,
-			"type":  types.StringType,
-			"name":  types.StringType,
-			"value": types.StringType,
-		},
-	}, secrets)
+	envSecrets, _ := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: projectEnvironmentSecretAttributeTypes()}, secrets)
 
 	model.Secrets = envSecrets
 
+	syncPaths := make([]ProjectEnvironmentSyncPathModel, 0, len(environment.SyncPaths))
+	for _, syncPath := range environment.SyncPaths {
+		syncPaths = append(syncPaths, ProjectEnvironmentSyncPathModel{
+			ID:            types.Int64Value(syncPath.ID),
+			Path:          types.StringValue(syncPath.Path),
+			Prefix:        types.StringValue(syncPath.Prefix),
+			Separator:     types.StringValue(syncPath.Separator),
+			AccessKeyID:   types.Int64Value(syncPath.AccessKeyID),
+			Mount:         types.StringValue(syncPath.Mount),
+			Field:         types.StringValue(syncPath.Field),
+			RemoteVersion: types.Int64Value(syncPath.RemoteVersion),
+		})
+	}
+	if len(syncPaths) == 0 && (prev == nil || prev.SyncPaths.IsNull()) {
+		model.SyncPaths = types.ListNull(types.ObjectType{AttrTypes: projectEnvironmentSyncPathAttributeTypes()})
+	} else {
+		model.SyncPaths, _ = types.ListValueFrom(ctx, types.ObjectType{AttrTypes: projectEnvironmentSyncPathAttributeTypes()}, syncPaths)
+	}
+
 	return model
+}
+
+func projectEnvironmentSyncPathAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"id": types.Int64Type, "path": types.StringType, "prefix": types.StringType,
+		"separator": types.StringType, "access_key_id": types.Int64Type, "mount": types.StringType,
+		"field": types.StringType, "remote_version": types.Int64Type,
+	}
+}
+
+func projectEnvironmentSecretAttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"id": types.Int64Type, "type": types.StringType, "name": types.StringType, "value": types.StringType,
+		"storage_id": types.Int64Type, "mount": types.StringType, "path": types.StringType,
+		"version": types.Int64Type, "field": types.StringType,
+	}
 }
 
 func (r *projectEnvironmentResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -325,11 +529,15 @@ func (r *projectEnvironmentResource) Update(ctx context.Context, req resource.Up
 		return
 	}
 
-	_, err := r.client.VariableGroup.PutProjectProjectIDEnvironmentEnvironmentID(&variable_group.PutProjectProjectIDEnvironmentEnvironmentIDParams{
-		ProjectID:     plan.ProjectID.ValueInt64(),
-		EnvironmentID: plan.ID.ValueInt64(),
-		Environment:   convertProjectEnvironmentModelToEnvironmentRequest(ctx, plan, &state),
-	}, nil)
+	body, err := projectEnvironmentUpdateBody(ctx, plan, state)
+	if err != nil {
+		resp.Diagnostics.AddError("Error Encoding SemaphoreUI Project Environment", err.Error())
+		return
+	}
+	err = exRequest(ctx, r.client, "PUT", "/project/{project_id}/environment/{environment_id}", map[string]string{
+		"project_id":     strconv.FormatInt(plan.ProjectID.ValueInt64(), 10),
+		"environment_id": strconv.FormatInt(plan.ID.ValueInt64(), 10),
+	}, body, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Updating SemaphoreUI Project Key",

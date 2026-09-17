@@ -140,6 +140,8 @@ resource "semaphore_ex_project_environment" "extra" {
 ### Optional
 
 - `allow_override_args_in_task` (Boolean) Allow overriding arguments in the task. Value defaults to `false`.
+- `allow_override_branch_in_task` (Boolean) Allow a task to override the template Git branch. Omitted configuration preserves the server value.
+- `allow_parallel_tasks` (Boolean) Allow parallel executions of this template. Omitted configuration preserves the server value.
 - `app` (String) The application name. Must be a valid SemaphoreUI application name. Default applications include: `ansible`, `terraform`, `tofu`, `bash`, `powershell` and `python`. Value defaults to `ansible`.
 - `arguments` (List of String) Commandline arguments passed to the application.
 - `build` (Attributes) Specifies a build type template used to create artifacts. SemaphoreUI doesn't support artifacts out-of-box, it only provides task versioning. You should implement the artifact creation yourself. Ensure that if an attribute is set, these are not set: "[deploy]". (see [below for nested schema](#nestedatt--build))
@@ -149,6 +151,7 @@ resource "semaphore_ex_project_environment" "extra" {
 - `environment_ids` (Set of Number) Variable group IDs. EX returns these in ascending ID order; use an empty set to remove all groups. Element value must satisfy all validations: value must be at least 1.
 - `executor_image` (String) Runner container image override. Empty uses the runner default. Must not have leading or trailing whitespace.
 - `git_branch` (String) Override the git branch defined in the project repository.
+- `jwt_params` (Attributes) Controls task JWT issuance. JWT material is never stored in Terraform state. Preserve an omitted object from prior state. (see [below for nested schema](#nestedatt--jwt_params))
 - `playbook` (String) The playbook/script filename. Optional when `app` is `terraform` or `tofu`; required otherwise. Value defaults to ``. Must be a relative path (path/to/playbook) or empty.
 - `runner_tag_match_mode` (String) Runner tag matching policy: all or any. Value must be one of : `all`, `any`.
 - `runner_tags` (Set of String) Runner placement tags. Set must contain at most 32 elements. Element value must satisfy all validations: Runner tags must be nonempty, lowercase, trimmed, and at most 255 bytes.
@@ -184,6 +187,16 @@ Optional:
 - `autorun` (Boolean) Automatically run the deploy template after the build template. Value defaults to `false`.
 
 
+<a id="nestedatt--jwt_params"></a>
+### Nested Schema for `jwt_params`
+
+Optional:
+
+- `audience` (List of String) JWT audiences accepted by task consumers.
+- `enabled` (Boolean) Enables JWT issuance for this template.
+- `ttl` (String) Positive Go duration for issued JWTs; server limits remain authoritative.
+
+
 <a id="nestedatt--survey_vars"></a>
 ### Nested Schema for `survey_vars`
 
@@ -191,13 +204,16 @@ Required:
 
 - `name` (String) The name of the survey variable.
 - `title` (String) The title of the survey variable.
-- `type` (String) The type of the survey variable. Valid types are `string`, `integer`, `secret` and `enum`. When `enum` is used, the `enum_values` attribute must be defined. Value must satisfy at least one of the validations: value must be one of: ["string" "integer" "secret"] + Value must satisfy all of the validations: value must be one of: ["enum"] + Ensure that if an attribute is set, also these are set: "[<.enum_values]".
+- `type` (String) The type of the survey variable. Valid types are `string`, `integer`, `secret`, `text`, `enum` and `select`. When `enum` or `select` is used, the `enum_values` attribute must be defined. Value must satisfy at least one of the validations: value must be one of: ["string" "integer" "secret" "text"] + Value must satisfy all of the validations: value must be one of: ["enum" "select"] + Ensure that if an attribute is set, also these are set: "[<.enum_values]".
 
 Optional:
 
+- `default_value` (String, Sensitive) Scalar default. Use default_values for a select survey. Ensure that if an attribute is set, these are not set: "[<.default_values]".
+- `default_values` (List of String, Sensitive) Default selections for a select survey.
 - `description` (String) The description of the survey variable.
 - `enum_values` (Map of String) The enum name/values. Map must contain at least 1 elements. Ensure that if an attribute is set, also these are set: "[<.type]".
 - `required` (Boolean) Whether the survey variable is required. Value defaults to `false`.
+- `target` (String) Empty uses the application's normal parameter channel; env exports an environment variable. Value must be one of : `env`.
 
 
 <a id="nestedatt--task_params"></a>
@@ -209,8 +225,10 @@ Optional:
 - `arguments` (String) JSON-encoded array of extra command-line arguments passed to the task runner (e.g. `"[\"-vvv\"]"`).
 - `environment` (String) JSON-encoded object of environment variables exposed to the task.
 - `git_branch` (String) Override the repository branch checked out for this task.
+- `inventory_id` (Number) Inventory override for the task. Value must be at least 1.
 - `message` (String) Optional commit-style message recorded with each task run.
 - `terraform` (Attributes) Terraform / OpenTofu-specific task parameters. Use this when `app` is `terraform` or `tofu`. (see [below for nested schema](#nestedatt--task_params--terraform))
+- `version` (String) Build version supplied to build tasks.
 
 <a id="nestedatt--task_params--ansible"></a>
 ### Nested Schema for `task_params.ansible`
@@ -218,9 +236,11 @@ Optional:
 Optional:
 
 - `debug` (Boolean) Run Ansible with `-vvvv` debug output. Value defaults to `false`.
+- `debug_level` (Number) Ansible verbosity level. Value defaults to `0`. Value must be at least 0.
 - `diff` (Boolean) Show file diffs for changes Ansible makes (`--diff`). Value defaults to `false`.
 - `dry_run` (Boolean) Run Ansible in check mode (`--check`). Value defaults to `false`.
 - `limit` (List of String) Ansible hosts to limit the run to (`--limit`).
+- `skip_galaxy_install` (Boolean) Skip installation of Ansible Galaxy requirements. Value defaults to `false`.
 - `skip_tags` (List of String) Ansible tags to skip (`--skip-tags`).
 - `tags` (List of String) Ansible tags to run (`--tags`).
 
@@ -233,6 +253,7 @@ Optional:
 - `auto_approve` (Boolean) Run with `-auto-approve`. Value defaults to `false`.
 - `destroy` (Boolean) Run a destroy (`terraform destroy` / `tofu destroy`). Value defaults to `false`.
 - `plan` (Boolean) Run plan-only (no apply). Value defaults to `false`.
+- `reconfigure` (Boolean) Reconfigure the backend during Terraform init. Value defaults to `false`.
 - `upgrade` (Boolean) Pass `-upgrade` to `terraform init` / `tofu init`. Value defaults to `false`.
 
 

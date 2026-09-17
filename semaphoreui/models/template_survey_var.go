@@ -20,6 +20,9 @@ import (
 // swagger:model TemplateSurveyVar
 type TemplateSurveyVar struct {
 
+	// default value
+	DefaultValue any `json:"default_value,omitempty"`
+
 	// description
 	Description string `json:"description,omitempty"`
 
@@ -29,12 +32,16 @@ type TemplateSurveyVar struct {
 	// required
 	Required bool `json:"required,omitempty"`
 
+	// target
+	// Enum: ["","env"]
+	Target string `json:"target,omitempty"`
+
 	// title
 	Title string `json:"title,omitempty"`
 
 	// type
 	// Example: int
-	// Enum: ["","int","enum","secret"]
+	// Enum: ["","int","enum","secret","text","select","string","integer"]
 	Type string `json:"type,omitempty"`
 
 	// values
@@ -44,6 +51,10 @@ type TemplateSurveyVar struct {
 // Validate validates this template survey var
 func (m *TemplateSurveyVar) Validate(formats strfmt.Registry) error {
 	var res []error
+
+	if err := m.validateTarget(formats); err != nil {
+		res = append(res, err)
+	}
 
 	if err := m.validateType(formats); err != nil {
 		res = append(res, err)
@@ -59,11 +70,53 @@ func (m *TemplateSurveyVar) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
+var templateSurveyVarTypeTargetPropEnum []any
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["","env"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		templateSurveyVarTypeTargetPropEnum = append(templateSurveyVarTypeTargetPropEnum, v)
+	}
+}
+
+const (
+
+	// TemplateSurveyVarTargetEmpty captures enum value ""
+	TemplateSurveyVarTargetEmpty string = ""
+
+	// TemplateSurveyVarTargetEnv captures enum value "env"
+	TemplateSurveyVarTargetEnv string = "env"
+)
+
+// prop value enum
+func (m *TemplateSurveyVar) validateTargetEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, templateSurveyVarTypeTargetPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *TemplateSurveyVar) validateTarget(formats strfmt.Registry) error {
+	if typeutils.IsZero(m.Target) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateTargetEnum("target", "body", m.Target); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 var templateSurveyVarTypeTypePropEnum []any
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["","int","enum","secret"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["","int","enum","secret","text","select","string","integer"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -84,6 +137,18 @@ const (
 
 	// TemplateSurveyVarTypeSecret captures enum value "secret"
 	TemplateSurveyVarTypeSecret string = "secret"
+
+	// TemplateSurveyVarTypeText captures enum value "text"
+	TemplateSurveyVarTypeText string = "text"
+
+	// TemplateSurveyVarTypeSelect captures enum value "select"
+	TemplateSurveyVarTypeSelect string = "select"
+
+	// TemplateSurveyVarTypeString captures enum value "string"
+	TemplateSurveyVarTypeString string = "string"
+
+	// TemplateSurveyVarTypeInteger captures enum value "integer"
+	TemplateSurveyVarTypeInteger string = "integer"
 )
 
 // prop value enum

@@ -1,0 +1,1 @@
+terraform import semaphore_ex_global_credential_grant.application credential/42/grant/7

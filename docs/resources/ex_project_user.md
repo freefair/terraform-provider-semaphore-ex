@@ -36,13 +36,14 @@ resource "semaphore_ex_project_user" "project_user" {
 ### Required
 
 - `project_id` (Number) ID of the project.
-- `role` (String) Role of the user in the project. Value must be one of : `owner`, `manager`, `task_runner`, `guest`.
+- `role` (String) Role of the user in the project.
 - `user_id` (Number) The ID of the user.
 
 ### Read-Only
 
 - `name` (String) Display name of the user.
 - `revision` (Number) Current membership revision used for optimistic concurrency control.
+- `role_id` (String) Server-resolved custom role ID; empty for built-in roles.
 - `username` (String) Username of the user.
 
 ## Import

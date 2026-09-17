@@ -25,6 +25,9 @@ type Schedule struct {
 	// cron format
 	CronFormat string `json:"cron_format,omitempty"`
 
+	// delete after run
+	DeleteAfterRun bool `json:"delete_after_run,omitempty"`
+
 	// id
 	ID int64 `json:"id,omitempty"`
 
@@ -33,6 +36,9 @@ type Schedule struct {
 
 	// project id
 	ProjectID int64 `json:"project_id,omitempty"`
+
+	// repository id
+	RepositoryID *int64 `json:"repository_id,omitempty"`
 
 	// run at
 	// Format: date-time

@@ -25,6 +25,9 @@ type TaskPrams struct {
 	// git branch
 	GitBranch string `json:"git_branch,omitempty"`
 
+	// inventory id
+	InventoryID *int64 `json:"inventory_id,omitempty"`
+
 	// message
 	Message string `json:"message,omitempty"`
 
@@ -34,6 +37,9 @@ type TaskPrams struct {
 
 		TerraformTaskParams
 	} `json:"params,omitempty"`
+
+	// version
+	Version string `json:"version,omitempty"`
 }
 
 // Validate validates this task prams

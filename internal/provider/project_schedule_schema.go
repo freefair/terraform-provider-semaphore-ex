@@ -14,13 +14,18 @@ import (
 
 type (
 	ProjectScheduleModel struct {
-		ID         types.Int64  `tfsdk:"id"`
-		ProjectID  types.Int64  `tfsdk:"project_id"`
-		TemplateID types.Int64  `tfsdk:"template_id"`
-		Name       types.String `tfsdk:"name"`
-		CronFormat types.String `tfsdk:"cron_format"`
-		Timezone   types.String `tfsdk:"timezone"`
-		Enabled    types.Bool   `tfsdk:"enabled"`
+		Type           types.String     `tfsdk:"type"`
+		RunAt          types.String     `tfsdk:"run_at"`
+		DeleteAfterRun types.Bool       `tfsdk:"delete_after_run"`
+		RepositoryID   types.Int64      `tfsdk:"repository_id"`
+		TaskParams     *TaskParamsModel `tfsdk:"task_params"`
+		ID             types.Int64      `tfsdk:"id"`
+		ProjectID      types.Int64      `tfsdk:"project_id"`
+		TemplateID     types.Int64      `tfsdk:"template_id"`
+		Name           types.String     `tfsdk:"name"`
+		CronFormat     types.String     `tfsdk:"cron_format"`
+		Timezone       types.String     `tfsdk:"timezone"`
+		Enabled        types.Bool       `tfsdk:"enabled"`
 	}
 )
 
@@ -36,6 +41,13 @@ func ProjectScheduleSchema() superschema.Schema {
 			MarkdownDescription: "data source allows you to read a project schedule",
 		},
 		Attributes: map[string]superschema.Attribute{
+			"type": superschema.StringAttribute{
+				Common: &schemaR.StringAttribute{MarkdownDescription: "Schedule kind: cron or run_at. Inferred from cron_format/run_at when omitted."}, Resource: &schemaR.StringAttribute{Optional: true, Computed: true}, DataSource: &schemaD.StringAttribute{Computed: true},
+			},
+			"run_at":           superschema.StringAttribute{Common: &schemaR.StringAttribute{MarkdownDescription: "One-off execution time in RFC3339 format."}, Resource: &schemaR.StringAttribute{Optional: true}, DataSource: &schemaD.StringAttribute{Computed: true}},
+			"delete_after_run": preservedBoolAttribute("Remove a one-off schedule after it executes. Before the next apply, remove the completed schedule from configuration or choose a new future run_at; the server rejects creating a schedule in the past."),
+			"repository_id":    superschema.Int64Attribute{Common: &schemaR.Int64Attribute{MarkdownDescription: "Optional repository used to detect source changes."}, Resource: &schemaR.Int64Attribute{Optional: true, Computed: true, PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()}}, DataSource: &schemaD.Int64Attribute{Computed: true}},
+			"task_params":      TaskParamsAttribute(),
 			"id": superschema.Int64Attribute{
 				Common: &schemaR.Int64Attribute{
 					MarkdownDescription: "The schedule ID.",
@@ -85,7 +97,7 @@ func ProjectScheduleSchema() superschema.Schema {
 					MarkdownDescription: "The cron format of the schedule.",
 				},
 				Resource: &schemaR.StringAttribute{
-					Required: true,
+					Optional: true,
 					Validators: []validator.String{
 						stringvalidator.CronFormat(),
 					},

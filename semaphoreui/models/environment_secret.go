@@ -18,15 +18,30 @@ import (
 // swagger:model EnvironmentSecret
 type EnvironmentSecret struct {
 
+	// field
+	Field string `json:"field,omitempty"`
+
 	// id
 	ID int64 `json:"id,omitempty"`
+
+	// mount
+	Mount string `json:"mount,omitempty"`
 
 	// name
 	Name string `json:"name,omitempty"`
 
+	// path
+	Path string `json:"path,omitempty"`
+
+	// storage id
+	StorageID *int64 `json:"storage_id,omitempty"`
+
 	// type
 	// Enum: ["env","var"]
 	Type string `json:"type,omitempty"`
+
+	// version
+	Version int64 `json:"version,omitempty"`
 }
 
 // Validate validates this environment secret

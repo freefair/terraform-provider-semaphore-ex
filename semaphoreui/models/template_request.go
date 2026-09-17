@@ -24,6 +24,12 @@ type TemplateRequest struct {
 	// Example: false
 	AllowOverrideArgsInTask bool `json:"allow_override_args_in_task,omitempty"`
 
+	// allow override branch in task
+	AllowOverrideBranchInTask bool `json:"allow_override_branch_in_task,omitempty"`
+
+	// allow parallel tasks
+	AllowParallelTasks bool `json:"allow_parallel_tasks,omitempty"`
+
 	// app
 	// Example: ansible
 	App string `json:"app,omitempty"`
@@ -63,6 +69,9 @@ type TemplateRequest struct {
 	// inventory id
 	// Minimum: 1
 	InventoryID int64 `json:"inventory_id,omitempty"`
+
+	// jwt params
+	JwtParams *TemplateJWTParams `json:"jwt_params,omitempty"`
 
 	// limit
 	Limit string `json:"limit,omitempty"`
@@ -132,6 +141,10 @@ func (m *TemplateRequest) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateJwtParams(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateProjectID(formats); err != nil {
 		res = append(res, err)
 	}
@@ -189,6 +202,29 @@ func (m *TemplateRequest) validateInventoryID(formats strfmt.Registry) error {
 
 	if err := validate.MinimumInt("inventory_id", "body", m.InventoryID, 1, false); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *TemplateRequest) validateJwtParams(formats strfmt.Registry) error {
+	if typeutils.IsZero(m.JwtParams) { // not required
+		return nil
+	}
+
+	if m.JwtParams != nil {
+		if err := m.JwtParams.Validate(formats); err != nil {
+			ve := new(errors.Validation)
+			if stderrors.As(err, &ve) {
+				return ve.ValidateName("jwt_params")
+			}
+			ce := new(errors.CompositeError)
+			if stderrors.As(err, &ce) {
+				return ce.ValidateName("jwt_params")
+			}
+
+			return err
+		}
 	}
 
 	return nil
@@ -404,6 +440,10 @@ func (m *TemplateRequest) validateViewID(formats strfmt.Registry) error {
 func (m *TemplateRequest) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateJwtParams(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateSurveyVars(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -419,6 +459,31 @@ func (m *TemplateRequest) ContextValidate(ctx context.Context, formats strfmt.Re
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *TemplateRequest) contextValidateJwtParams(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.JwtParams != nil {
+
+		if typeutils.IsZero(m.JwtParams) { // not required
+			return nil
+		}
+
+		if err := m.JwtParams.ContextValidate(ctx, formats); err != nil {
+			ve := new(errors.Validation)
+			if stderrors.As(err, &ve) {
+				return ve.ValidateName("jwt_params")
+			}
+			ce := new(errors.CompositeError)
+			if stderrors.As(err, &ce) {
+				return ce.ValidateName("jwt_params")
+			}
+
+			return err
+		}
+	}
+
 	return nil
 }
 

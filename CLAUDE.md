@@ -61,7 +61,7 @@ Resources and data sources are wired up by adding constructors to `Resources()` 
 
 ### Client wiring
 
-`provider.go` `Configure()` builds a `go-openapi/runtime/client` httptransport with bearer-token auth from `SEMAPHOREUI_API_TOKEN` and stashes the generated `*apiclient.SemaphoreUI` on both `resp.DataSourceData` and `resp.ResourceData`. Each resource's `Configure` casts `req.ProviderData` back to `*apiclient.SemaphoreUI`.
+`provider.go` `Configure()` builds a `go-openapi/runtime/client` httptransport with bearer-token auth from `SEMAPHOREUI_API_TOKEN` and supplies the generated `*apiclient.SemaphoreUI` as data-source, resource and Action configuration. Each implementation checks that type in `Configure`.
 
 The OpenAPI-generated client splits endpoints into per-resource sub-clients (driven by `tags` in `api-docs.yml`). The `SemaphoreUI` struct exposes:
 
@@ -76,7 +76,7 @@ The provider supports `tls_skip_verify` for self-signed TLS; if set, `Configure`
 
 ### Import IDs
 
-Nested resources use slash-delimited compound IDs like `project/1/template/2`. `internal/provider/import.go` `parseImportFields` parses these via a `(\w+)/(\d+)` regex into a `map[string]int64`, and resources call it from `ImportState`. Each `examples/resources/<name>/import.sh` documents the format.
+Nested resources use slash-delimited compound IDs like `project/1/template/2`. `internal/provider/import.go` `parseImportFields` parses these via a `(\w+)/(\d+)` regex into a `map[string]int64`, and legacy resources call it from `ImportState`. Native EX records use their explicit import labels and declared attribute types, including opaque string identifiers such as role and backend-alias IDs. Each `examples/resources/<name>/import.sh` documents the format.
 
 ### Nil-handling pattern
 
@@ -101,6 +101,19 @@ Optional/computed EX settings preserve imported values when configuration omits 
 Project-user revision is computed from the server response and prior state is echoed on updates; do not fetch a fresh revision or retry 409 automatically.
 Runner resources expose durable settings and registration policy; the dedicated registration-token resource owns one-time registration credentials.
 See `docs/adr/0001-semaphore-ex-provider.md` and `docs/migration.md`.
+
+Native EX implementations reuse this transport through `exRequest` with fixed routes.
+Resource-specific lifecycle handlers preserve revisions, parent scope and redacted values.
+Ordinary compatible records share `ex_record`; it is not an arbitrary HTTP resource.
+Actions are registered in `Actions()` and execute only through `Invoke`.
+One-time credentials belong in sensitive resource outputs, not Action progress messages.
+See `docs/ex-features.md` and `docs/adr/0003-native-ex-coverage.md`.
+
+Use `TestProviderRegisteredSchemasAreValid` to verify the real protocol schema.
+Dynamic attributes cannot be nested inside collection elements in this framework;
+use static object schemas or typed scalar unions there.
+Mutable computed revision fields must remain unknown during planning, since the
+server increments them on writes; `UseStateForUnknown` would make apply inconsistent.
 
 ### Environment secret update gotcha
 

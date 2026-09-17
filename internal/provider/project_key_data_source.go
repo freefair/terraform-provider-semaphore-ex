@@ -74,6 +74,11 @@ func (d *projectKeyDataSource) GetKeyByName(projectID int64, name string) (*Proj
 				model.SSH = &ProjectKeySSH{
 					PrivateKey: types.StringValue(""),
 				}
+			case ProjectKeyTypeString:
+				model.String = &ProjectKeyString{Value: types.StringValue("")}
+			}
+			if key.SourceStorageType != nil {
+				model.RemoteReference = remoteReferenceFromAccessKey(key)
 			}
 			return &model, nil
 		}
@@ -106,6 +111,11 @@ func (d *projectKeyDataSource) GetKeyByID(projectID int64, ID int64) (*ProjectKe
 				model.SSH = &ProjectKeySSH{
 					PrivateKey: types.StringValue(""),
 				}
+			case ProjectKeyTypeString:
+				model.String = &ProjectKeyString{Value: types.StringValue("")}
+			}
+			if key.SourceStorageType != nil {
+				model.RemoteReference = remoteReferenceFromAccessKey(key)
 			}
 			return &model, nil
 		}

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -33,6 +34,7 @@ type acceptanceServer struct {
 	dir     string
 	command *exec.Cmd
 	log     *os.File
+	oidc    *httptest.Server
 }
 
 func startAcceptanceServer() (*acceptanceServer, error) {
@@ -63,7 +65,19 @@ func startAcceptanceServer() (*acceptanceServer, error) {
 		return fail(err)
 	}
 	_, port, _ := net.SplitHostPort(address)
-	config := fmt.Sprintf("dialect: sqlite\nsqlite:\n  host: %q\ninterface: 127.0.0.1\nport: %q\ntmp_path: %q\n", filepath.Join(dir, "semaphore.db"), ":"+port, filepath.Join(dir, "tmp"))
+	var oidc *httptest.Server
+	oidc = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch r.URL.Path {
+		case "/.well-known/openid-configuration":
+			_, _ = fmt.Fprintf(w, `{"issuer":%q,"authorization_endpoint":%q,"token_endpoint":%q,"jwks_uri":%q,"userinfo_endpoint":%q}`, oidc.URL, oidc.URL+"/authorize", oidc.URL+"/token", oidc.URL+"/jwks", oidc.URL+"/userinfo")
+		case "/jwks":
+			_, _ = w.Write([]byte(`{"keys":[]}`))
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	config := fmt.Sprintf("dialect: sqlite\nsqlite:\n  host: %q\ninterface: 127.0.0.1\nport: %q\ntmp_path: %q\noidc_providers:\n  acceptance-oidc:\n    client_id: acceptance-client\n    client_secret: acceptance-secret\n    display_name: Acceptance OIDC\n    provider_url: %q\n    redirect_url: http://127.0.0.1/callback\n    group_claim_path: groups\n", filepath.Join(dir, "semaphore.db"), ":"+port, filepath.Join(dir, "tmp"), oidc.URL)
 	configPath := filepath.Join(dir, "config.yml")
 	if err := os.WriteFile(configPath, []byte(config), 0o600); err != nil {
 		return fail(err)
@@ -117,7 +131,7 @@ func startAcceptanceServer() (*acceptanceServer, error) {
 				_ = os.Setenv("SEMAPHOREUI_API_BASE_URL", baseURL)
 				_ = os.Setenv("SEMAPHOREUI_API_TOKEN", strings.TrimSpace(string(token)))
 				_ = setupLog.Close()
-				return &acceptanceServer{dir, cmd, log}, nil
+				return &acceptanceServer{dir: dir, command: cmd, log: log, oidc: oidc}, nil
 			}
 		}
 		time.Sleep(100 * time.Millisecond)
@@ -162,6 +176,9 @@ func (s *acceptanceServer) close(retain bool) {
 		}
 	}
 	_ = s.log.Close()
+	if s.oidc != nil {
+		s.oidc.Close()
+	}
 	if !retain {
 		_ = os.RemoveAll(s.dir)
 	}

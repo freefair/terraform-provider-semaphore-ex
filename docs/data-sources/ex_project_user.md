@@ -32,4 +32,5 @@ data "semaphore_ex_project_user" "user" {
 - `name` (String) Display name of the user.
 - `revision` (Number) Current membership revision used for optimistic concurrency control.
 - `role` (String) Role of the user in the project.
+- `role_id` (String) Server-resolved custom role ID; empty for built-in roles.
 - `username` (String) Username of the user.

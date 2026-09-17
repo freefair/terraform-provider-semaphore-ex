@@ -42,7 +42,9 @@ data "semaphore_ex_project_key" "none" {
 
 - `login_password` (Attributes) A login password key. (see [below for nested schema](#nestedatt--login_password))
 - `none` (Attributes) The special None key. (see [below for nested schema](#nestedatt--none))
+- `remote_reference` (Attributes) External secret reference. Set this instead of literal password, SSH private-key, passphrase, or string value. (see [below for nested schema](#nestedatt--remote_reference))
 - `ssh` (Attributes) A SSH key. (see [below for nested schema](#nestedatt--ssh))
+- `string` (Attributes) A string secret key. (see [below for nested schema](#nestedatt--string))
 
 <a id="nestedatt--login_password"></a>
 ### Nested Schema for `login_password`
@@ -59,6 +61,19 @@ Read-Only:
 ### Nested Schema for `none`
 
 
+<a id="nestedatt--remote_reference"></a>
+### Nested Schema for `remote_reference`
+
+Read-Only:
+
+- `field` (String) Field read from the remote secret.
+- `mount` (String) Remote secret mount. Omit to use the storage default; set an empty value to clear an explicit mount.
+- `path` (String) Remote secret path or environment/file key.
+- `storage_id` (Number) Project secret-storage ID. Required for `vault`. Value must be at least 1.
+- `storage_type` (String) External storage type. Value must be one of : `vault`, `env`, `file`.
+- `version` (Number) Remote secret version; zero uses the storage default. Value must be at least 0.
+
+
 <a id="nestedatt--ssh"></a>
 ### Nested Schema for `ssh`
 
@@ -71,3 +86,13 @@ Read-Only:
 - `private_key` (String, Sensitive) The SSH private key. Persisted to Terraform state. Set exactly one of `private_key` or `private_key_wo`.
 - `private_key_wo` (String, Sensitive) .
 - `private_key_wo_version` (Number) .
+
+
+<a id="nestedatt--string"></a>
+### Nested Schema for `string`
+
+Read-Only:
+
+- `value` (String, Sensitive) The string secret. Persisted to Terraform state. Set exactly one of `value` or `value_wo`.
+- `value_wo` (String, Sensitive) .
+- `value_wo_version` (Number) .

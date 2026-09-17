@@ -422,6 +422,60 @@ func TestAcc_ProjectKeyResource_writeOnlyLoginPassword(t *testing.T) {
 	})
 }
 
+func testAccProjectKeyRemoteStringConfig(nameSuffix string) string {
+	return testAccProjectKeyConfig(nameSuffix, `string = {}
+  remote_reference = {
+    storage_type = "env"
+    path         = "SEMAPHORE_EX_TEST_UNSET_REFERENCE"
+  }`)
+}
+
+func testAccProjectKeyStringConfig(nameSuffix string) string {
+	return testAccProjectKeyConfig(nameSuffix, `string = {
+  value = "literal-after-reference-clear"
+}`)
+}
+
+func TestAcc_ProjectKeyResource_remoteStringReference(t *testing.T) {
+	nameSuffix := acctest.RandString(8)
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccProjectKeyRemoteStringConfig(nameSuffix),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccProjectKeyExists("semaphore_ex_project_key.test", ProjectKeyTypeString),
+					resource.TestCheckResourceAttr("semaphore_ex_project_key.test", "remote_reference.storage_type", "env"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_key.test", "remote_reference.path", "SEMAPHORE_EX_TEST_UNSET_REFERENCE"),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_key.test", "string.value"),
+				),
+			},
+			{
+				ResourceName:            "semaphore_ex_project_key.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateIdFunc:       testAccProjectKeyImportID("semaphore_ex_project_key.test"),
+				ImportStateVerifyIgnore: []string{"string"},
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr("semaphore_ex_project_key.test", "remote_reference.storage_type", "env"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_key.test", "remote_reference.path", "SEMAPHORE_EX_TEST_UNSET_REFERENCE"),
+				),
+			},
+			// Removing remote_reference replaces the external source with the
+			// configured literal value; no provider-specific clear sentinel exists.
+			{
+				Config: testAccProjectKeyStringConfig(nameSuffix),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccProjectKeyExists("semaphore_ex_project_key.test", ProjectKeyTypeString),
+					resource.TestCheckNoResourceAttr("semaphore_ex_project_key.test", "remote_reference"),
+					resource.TestCheckResourceAttr("semaphore_ex_project_key.test", "string.value", "literal-after-reference-clear"),
+				),
+			},
+		},
+	})
+}
+
 // Negative test: setting both password and password_wo at the same time
 // must fail the Conflicting validator at plan time.
 func TestAcc_ProjectKeyResource_writeOnlyMutexRejected(t *testing.T) {

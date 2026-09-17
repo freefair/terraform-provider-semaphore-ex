@@ -31,15 +31,48 @@ data "semaphore_ex_project_environment" "environment" {
 
 - `environment` (Map of String) Environment variables.
 - `name` (String) The display name of the environment.
+- `secret_storage` (Attributes) Secret storage used for environment-managed secrets. Omit this block to retain imported settings; configure an empty block to clear the binding. (see [below for nested schema](#nestedatt--secret_storage))
 - `secrets` (Attributes List) Secret variables of either `"var"` or `"env"` type. The `value` is encrypted and will be empty if imported. (see [below for nested schema](#nestedatt--secrets))
+- `sync_enabled` (Boolean) Whether automatic synchronization of managed secrets is enabled.
+- `sync_interval` (Number) Automatic synchronization interval in minutes. Set `0` to disable scheduling.
+- `sync_paths` (Attributes List) Mappings from environment access keys to remote secret-storage targets. Set `[]` to remove all mappings. (see [below for nested schema](#nestedatt--sync_paths))
 - `variables` (Map of String) Extra variables. Passed to Ansible as extra variables (`--extra-vars`) and Terraform/OpenTofu as variables (`-var`).
+
+<a id="nestedatt--secret_storage"></a>
+### Nested Schema for `secret_storage`
+
+Read-Only:
+
+- `id` (Number) Secret storage ID.
+- `key_prefix` (String) Prefix for keys created in the storage.
+
 
 <a id="nestedatt--secrets"></a>
 ### Nested Schema for `secrets`
 
 Read-Only:
 
+- `field` (String) Field to read from the remote secret.
 - `id` (Number) The variable ID.
+- `mount` (String) Remote secret mount; defaults to `secret` when omitted.
 - `name` (String) The variable name.
+- `path` (String) Remote secret path.
+- `storage_id` (Number) Remote secret storage ID. Set this instead of `value` to bind an external runtime secret.
 - `type` (String) The variable type.
 - `value` (String, Sensitive) The variable value.
+- `version` (Number) Remote secret version; `0` selects the storage default.
+
+
+<a id="nestedatt--sync_paths"></a>
+### Nested Schema for `sync_paths`
+
+Read-Only:
+
+- `access_key_id` (Number) .
+- `field` (String) .
+- `id` (Number) .
+- `mount` (String) .
+- `path` (String) .
+- `prefix` (String) .
+- `remote_version` (Number) .
+- `separator` (String) .

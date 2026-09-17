@@ -1,10 +1,8 @@
 package provider
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	schemaD "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	schemaR "github.com/hashicorp/terraform-plugin-framework/resource/schema"
-	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	superschema "github.com/orange-cloudavenue/terraform-plugin-framework-superschema"
 )
@@ -13,6 +11,7 @@ type ProjectUserModel struct {
 	ProjectID types.Int64  `tfsdk:"project_id"`
 	UserID    types.Int64  `tfsdk:"user_id"`
 	Role      types.String `tfsdk:"role"`
+	RoleID    types.String `tfsdk:"role_id"`
 	Revision  types.Int64  `tfsdk:"revision"`
 	Username  types.String `tfsdk:"username"`
 	Name      types.String `tfsdk:"name"`
@@ -48,13 +47,15 @@ func ProjectUserSchema() superschema.Schema {
 				},
 				Resource: &schemaR.StringAttribute{
 					Required: true,
-					Validators: []validator.String{
-						stringvalidator.OneOf("owner", "manager", "task_runner", "guest"),
-					},
 				},
 				DataSource: &schemaD.StringAttribute{
 					Computed: true,
 				},
+			},
+			"role_id": superschema.StringAttribute{
+				Common:     &schemaR.StringAttribute{MarkdownDescription: "Server-resolved custom role ID; empty for built-in roles.", Computed: true},
+				Resource:   &schemaR.StringAttribute{},
+				DataSource: &schemaD.StringAttribute{},
 			},
 			"revision": superschema.Int64Attribute{
 				Common: &schemaR.Int64Attribute{

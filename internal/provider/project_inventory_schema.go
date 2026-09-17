@@ -8,6 +8,7 @@ import (
 	schemaR "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	superschema "github.com/orange-cloudavenue/terraform-plugin-framework-superschema"
@@ -16,15 +17,18 @@ import (
 
 type (
 	ProjectInventoryModel struct {
-		ID                 types.Int64                              `tfsdk:"id"`
-		ProjectID          types.Int64                              `tfsdk:"project_id"`
-		Name               types.String                             `tfsdk:"name"`
-		SSHKeyID           types.Int64                              `tfsdk:"ssh_key_id"`
-		Static             *ProjectInventoryStaticModel             `tfsdk:"static"`
-		StaticYaml         *ProjectInventoryStaticYamlModel         `tfsdk:"static_yaml"`
-		File               *ProjectInventoryFileModel               `tfsdk:"file"`
-		TerraformWorkspace *ProjectInventoryTerraformWorkspaceModel `tfsdk:"terraform_workspace"`
-		TofuWorkspace      *ProjectInventoryTofuWorkspaceModel      `tfsdk:"tofu_workspace"`
+		RunnerTag           types.String                             `tfsdk:"runner_tag"`
+		TemplateID          types.Int64                              `tfsdk:"template_id"`
+		TerragruntWorkspace *ProjectInventoryTerraformWorkspaceModel `tfsdk:"terragrunt_workspace"`
+		ID                  types.Int64                              `tfsdk:"id"`
+		ProjectID           types.Int64                              `tfsdk:"project_id"`
+		Name                types.String                             `tfsdk:"name"`
+		SSHKeyID            types.Int64                              `tfsdk:"ssh_key_id"`
+		Static              *ProjectInventoryStaticModel             `tfsdk:"static"`
+		StaticYaml          *ProjectInventoryStaticYamlModel         `tfsdk:"static_yaml"`
+		File                *ProjectInventoryFileModel               `tfsdk:"file"`
+		TerraformWorkspace  *ProjectInventoryTerraformWorkspaceModel `tfsdk:"terraform_workspace"`
+		TofuWorkspace       *ProjectInventoryTofuWorkspaceModel      `tfsdk:"tofu_workspace"`
 	}
 
 	ProjectInventoryStaticModel struct {
@@ -53,11 +57,12 @@ type (
 )
 
 const (
-	ProjectInventoryStatic             string = "static"
-	ProjectInventoryStaticYaml         string = "static-yaml"
-	ProjectInventoryFile               string = "file"
-	ProjectInventoryTerraformWorkspace string = "terraform-workspace"
-	ProjectInventoryTofuWorkspace      string = "tofu-workspace"
+	ProjectInventoryTerragruntWorkspace string = "terragrunt-workspace"
+	ProjectInventoryStatic              string = "static"
+	ProjectInventoryStaticYaml          string = "static-yaml"
+	ProjectInventoryFile                string = "file"
+	ProjectInventoryTerraformWorkspace  string = "terraform-workspace"
+	ProjectInventoryTofuWorkspace       string = "tofu-workspace"
 )
 
 func ProjectInventorySchema() superschema.Schema {
@@ -72,6 +77,23 @@ func ProjectInventorySchema() superschema.Schema {
 			MarkdownDescription: "data source allows you to read the Ansible inventory or a Terraform/OpenTofu workspace for a project.",
 		},
 		Attributes: map[string]superschema.Attribute{
+			"runner_tag": superschema.StringAttribute{
+				Common:     &schemaR.StringAttribute{MarkdownDescription: "Runner placement tag. Empty clears the tag; omission preserves imported settings."},
+				Resource:   &schemaR.StringAttribute{Optional: true, Computed: true, PlanModifiers: []planmodifier.String{stringplanmodifier.UseStateForUnknown()}},
+				DataSource: &schemaD.StringAttribute{Computed: true},
+			},
+			"template_id": superschema.Int64Attribute{
+				Common:     &schemaR.Int64Attribute{MarkdownDescription: "Owning template for an attached workspace inventory."},
+				Resource:   &schemaR.Int64Attribute{Computed: true, PlanModifiers: []planmodifier.Int64{int64planmodifier.UseStateForUnknown()}},
+				DataSource: &schemaD.Int64Attribute{Computed: true},
+			},
+			"terragrunt_workspace": superschema.SingleNestedAttribute{
+				Common:   &schemaR.SingleNestedAttribute{MarkdownDescription: "Terragrunt workspace inventory."},
+				Resource: &schemaR.SingleNestedAttribute{Optional: true}, DataSource: &schemaD.SingleNestedAttribute{Computed: true},
+				Attributes: map[string]superschema.Attribute{
+					"workspace": superschema.StringAttribute{Common: &schemaR.StringAttribute{MarkdownDescription: "Workspace name."}, Resource: &schemaR.StringAttribute{Required: true}, DataSource: &schemaD.StringAttribute{Computed: true}},
+				},
+			},
 			"id": superschema.Int64Attribute{
 				Common: &schemaR.Int64Attribute{
 					MarkdownDescription: "The inventory ID.",

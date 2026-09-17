@@ -2,11 +2,16 @@ package provider
 
 import (
 	"context"
+	"errors"
 	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
 	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/schedule"
 	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
+	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"net/http"
+	"time"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -51,12 +56,22 @@ func (r *projectScheduleResource) Schema(ctx context.Context, _ resource.SchemaR
 
 func convertProjectScheduleModelToRepositorySchedule(schedule ProjectScheduleModel) *models.ScheduleRequest {
 	model := models.ScheduleRequest{
-		ProjectID:  schedule.ProjectID.ValueInt64(),
-		TemplateID: schedule.TemplateID.ValueInt64(),
-		Name:       schedule.Name.ValueString(),
-		CronFormat: schedule.CronFormat.ValueString(),
-		Active:     schedule.Enabled.ValueBool(),
-		Timezone:   schedule.Timezone.ValueStringPointer(),
+		ProjectID:      schedule.ProjectID.ValueInt64(),
+		DeleteAfterRun: schedule.DeleteAfterRun.ValueBool(),
+		RepositoryID:   knownInt64Pointer(schedule.RepositoryID),
+		TaskParams:     convertTaskParamsModelToTaskPrams(context.Background(), schedule.TaskParams),
+		TemplateID:     schedule.TemplateID.ValueInt64(),
+		Name:           schedule.Name.ValueString(),
+		CronFormat:     schedule.CronFormat.ValueString(),
+		Type:           "",
+		Active:         schedule.Enabled.ValueBool(),
+		Timezone:       schedule.Timezone.ValueStringPointer(),
+	}
+	if !schedule.RunAt.IsNull() && !schedule.RunAt.IsUnknown() {
+		parsed, _ := time.Parse(time.RFC3339Nano, schedule.RunAt.ValueString())
+		model.RunAt = strfmt.DateTime(parsed)
+		model.Type = "run_at"
+		model.CronFormat = ""
 	}
 	if !schedule.ID.IsNull() && !schedule.ID.IsUnknown() {
 		model.ID = schedule.ID.ValueInt64()
@@ -64,17 +79,37 @@ func convertProjectScheduleModelToRepositorySchedule(schedule ProjectScheduleMod
 	return &model
 }
 
-func convertScheduleResponseToProjectScheduleModel(request *models.Schedule) ProjectScheduleModel {
+func convertScheduleResponseToProjectScheduleModel(request *models.Schedule, previous ...ProjectScheduleModel) ProjectScheduleModel {
+	var priorTaskParams *TaskParamsModel
+	if len(previous) > 0 {
+		priorTaskParams = previous[0].TaskParams
+	}
 	timezone := ""
 	if request.Timezone != nil {
 		timezone = *request.Timezone
 	}
+	kind := "cron"
+	runAt := types.StringNull()
+	cron := types.StringValue(request.CronFormat)
+	if request.Type == "run_at" {
+		kind = "run_at"
+		cron = types.StringNull()
+		actual := time.Time(request.RunAt)
+		runAt = types.StringValue(actual.Format(time.RFC3339Nano))
+		if len(previous) > 0 && !previous[0].RunAt.IsNull() && !previous[0].RunAt.IsUnknown() {
+			parsed, err := time.Parse(time.RFC3339Nano, previous[0].RunAt.ValueString())
+			if err == nil && parsed.Equal(actual) {
+				runAt = previous[0].RunAt
+			}
+		}
+	}
 	return ProjectScheduleModel{
+		Type: types.StringValue(kind), RunAt: runAt, DeleteAfterRun: types.BoolValue(request.DeleteAfterRun), RepositoryID: types.Int64PointerValue(request.RepositoryID), TaskParams: convertTaskPramsToTaskParamsModel(context.Background(), request.TaskParams, priorTaskParams),
 		ID:         types.Int64Value(request.ID),
 		ProjectID:  types.Int64Value(request.ProjectID),
 		TemplateID: types.Int64Value(request.TemplateID),
 		Name:       types.StringValue(request.Name),
-		CronFormat: types.StringValue(request.CronFormat),
+		CronFormat: cron,
 		Enabled:    types.BoolValue(request.Active),
 		Timezone:   types.StringValue(timezone),
 	}
@@ -99,7 +134,7 @@ func (r *projectScheduleResource) Create(ctx context.Context, req resource.Creat
 		)
 		return
 	}
-	model := convertScheduleResponseToProjectScheduleModel(response.Payload)
+	model := convertScheduleResponseToProjectScheduleModel(response.Payload, plan)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 	if resp.Diagnostics.HasError() {
@@ -120,6 +155,11 @@ func (r *projectScheduleResource) Read(ctx context.Context, req resource.ReadReq
 		ProjectID:  state.ProjectID.ValueInt64(),
 		ScheduleID: state.ID.ValueInt64(),
 	}, nil)
+	var apiError *runtime.APIError
+	if errors.As(err, &apiError) && apiError.Code == http.StatusNotFound {
+		resp.State.RemoveResource(ctx)
+		return
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading SemaphoreUI Project Schedule",
@@ -127,7 +167,7 @@ func (r *projectScheduleResource) Read(ctx context.Context, req resource.ReadReq
 		)
 		return
 	}
-	model := convertScheduleResponseToProjectScheduleModel(response.Payload)
+	model := convertScheduleResponseToProjectScheduleModel(response.Payload, state)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 	if resp.Diagnostics.HasError() {
@@ -168,7 +208,7 @@ func (r *projectScheduleResource) Update(ctx context.Context, req resource.Updat
 		)
 		return
 	}
-	model := convertScheduleResponseToProjectScheduleModel(response.Payload)
+	model := convertScheduleResponseToProjectScheduleModel(response.Payload, plan)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, model)...)
 	if resp.Diagnostics.HasError() {
@@ -188,6 +228,10 @@ func (r *projectScheduleResource) Delete(ctx context.Context, req resource.Delet
 		ProjectID:  state.ProjectID.ValueInt64(),
 		ScheduleID: state.ID.ValueInt64(),
 	}, nil)
+	var apiError *runtime.APIError
+	if errors.As(err, &apiError) && apiError.Code == http.StatusNotFound {
+		return
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Removing SemaphoreUI Project Schedule",

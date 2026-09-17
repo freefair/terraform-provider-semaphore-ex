@@ -41,6 +41,8 @@ data "semaphore_ex_project_template" "build" {
 ### Read-Only
 
 - `allow_override_args_in_task` (Boolean) Allow overriding arguments in the task.
+- `allow_override_branch_in_task` (Boolean) Allow a task to override the template Git branch. Omitted configuration preserves the server value.
+- `allow_parallel_tasks` (Boolean) Allow parallel executions of this template. Omitted configuration preserves the server value.
 - `app` (String) The application name.
 - `arguments` (List of String) Commandline arguments passed to the application.
 - `build` (Attributes) Specifies a build type template used to create artifacts. (see [below for nested schema](#nestedatt--build))
@@ -51,6 +53,7 @@ data "semaphore_ex_project_template" "build" {
 - `executor_image` (String) Runner container image override. Empty uses the runner default.
 - `git_branch` (String) Override the git branch defined in the project repository.
 - `inventory_id` (Number) The inventory ID that the template uses.
+- `jwt_params` (Attributes) Controls task JWT issuance. JWT material is never stored in Terraform state. (see [below for nested schema](#nestedatt--jwt_params))
 - `playbook` (String) The playbook/script filename. Optional when `app` is `terraform` or `tofu`; required otherwise.
 - `repository_id` (Number) The repository ID that the template uses.
 - `runner_tag_match_mode` (String) Runner tag matching policy: all or any.
@@ -80,15 +83,28 @@ Read-Only:
 - `build_template_id` (Number) The ID of the build template.
 
 
+<a id="nestedatt--jwt_params"></a>
+### Nested Schema for `jwt_params`
+
+Read-Only:
+
+- `audience` (List of String) JWT audiences accepted by task consumers.
+- `enabled` (Boolean) Enables JWT issuance for this template.
+- `ttl` (String) Positive Go duration for issued JWTs; server limits remain authoritative.
+
+
 <a id="nestedatt--survey_vars"></a>
 ### Nested Schema for `survey_vars`
 
 Read-Only:
 
+- `default_value` (String, Sensitive) Scalar default. Use default_values for a select survey.
+- `default_values` (List of String, Sensitive) Default selections for a select survey.
 - `description` (String) The description of the survey variable.
 - `enum_values` (Map of String) The enum name/values.
 - `name` (String) The name of the survey variable.
 - `required` (Boolean) Whether the survey variable is required.
+- `target` (String) Empty uses the application's normal parameter channel; env exports an environment variable.
 - `title` (String) The title of the survey variable.
 - `type` (String) The type of the survey variable.
 
@@ -102,8 +118,10 @@ Read-Only:
 - `arguments` (String) JSON-encoded array of extra command-line arguments passed to the task runner (e.g. `"[\"-vvv\"]"`).
 - `environment` (String) JSON-encoded object of environment variables exposed to the task.
 - `git_branch` (String) Override the repository branch checked out for this task.
+- `inventory_id` (Number) Inventory override for the task.
 - `message` (String) Optional commit-style message recorded with each task run.
 - `terraform` (Attributes) Terraform / OpenTofu-specific task parameters. Use this when `app` is `terraform` or `tofu`. (see [below for nested schema](#nestedatt--task_params--terraform))
+- `version` (String) Build version supplied to build tasks.
 
 <a id="nestedatt--task_params--ansible"></a>
 ### Nested Schema for `task_params.ansible`
@@ -111,9 +129,11 @@ Read-Only:
 Read-Only:
 
 - `debug` (Boolean) Run Ansible with `-vvvv` debug output.
+- `debug_level` (Number) Ansible verbosity level.
 - `diff` (Boolean) Show file diffs for changes Ansible makes (`--diff`).
 - `dry_run` (Boolean) Run Ansible in check mode (`--check`).
 - `limit` (List of String) Ansible hosts to limit the run to (`--limit`).
+- `skip_galaxy_install` (Boolean) Skip installation of Ansible Galaxy requirements.
 - `skip_tags` (List of String) Ansible tags to skip (`--skip-tags`).
 - `tags` (List of String) Ansible tags to run (`--tags`).
 
@@ -126,6 +146,7 @@ Read-Only:
 - `auto_approve` (Boolean) Run with `-auto-approve`.
 - `destroy` (Boolean) Run a destroy (`terraform destroy` / `tofu destroy`).
 - `plan` (Boolean) Run plan-only (no apply).
+- `reconfigure` (Boolean) Reconfigure the backend during Terraform init.
 - `upgrade` (Boolean) Pass `-upgrade` to `terraform init` / `tofu init`.
 
 

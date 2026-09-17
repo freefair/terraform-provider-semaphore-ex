@@ -63,7 +63,11 @@ func convertProjectIntegrationModelToIntegrationRequest(ctx context.Context, mod
 	return &req
 }
 
-func convertIntegrationResponseToProjectIntegrationModel(ctx context.Context, payload *models.Integration) ProjectIntegrationModel {
+func convertIntegrationResponseToProjectIntegrationModel(ctx context.Context, payload *models.Integration, previous ...ProjectIntegrationModel) ProjectIntegrationModel {
+	var priorTaskParams *TaskParamsModel
+	if len(previous) > 0 {
+		priorTaskParams = previous[0].TaskParams
+	}
 	return ProjectIntegrationModel{
 		ID:           types.Int64Value(payload.ID),
 		ProjectID:    types.Int64Value(payload.ProjectID),
@@ -73,7 +77,7 @@ func convertIntegrationResponseToProjectIntegrationModel(ctx context.Context, pa
 		AuthSecretID: types.Int64PointerValue(payload.AuthSecretID),
 		AuthHeader:   types.StringValue(payload.AuthHeader),
 		Searchable:   types.BoolValue(payload.Searchable),
-		TaskParams:   convertTaskPramsToTaskParamsModel(ctx, payload.TaskParams),
+		TaskParams:   convertTaskPramsToTaskParamsModel(ctx, payload.TaskParams, priorTaskParams),
 	}
 }
 
@@ -95,7 +99,7 @@ func (r *projectIntegrationResource) Create(ctx context.Context, req resource.Cr
 		)
 		return
 	}
-	model := convertIntegrationResponseToProjectIntegrationModel(ctx, response.Payload)
+	model := convertIntegrationResponseToProjectIntegrationModel(ctx, response.Payload, plan)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }
 
@@ -117,7 +121,7 @@ func (r *projectIntegrationResource) Read(ctx context.Context, req resource.Read
 		)
 		return
 	}
-	model := convertIntegrationResponseToProjectIntegrationModel(ctx, response.Payload)
+	model := convertIntegrationResponseToProjectIntegrationModel(ctx, response.Payload, state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }
 
@@ -152,7 +156,7 @@ func (r *projectIntegrationResource) Update(ctx context.Context, req resource.Up
 		)
 		return
 	}
-	model := convertIntegrationResponseToProjectIntegrationModel(ctx, response.Payload)
+	model := convertIntegrationResponseToProjectIntegrationModel(ctx, response.Payload, plan)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 }
 

@@ -26,6 +26,33 @@ resource "semaphore_ex_project_key" "none" {
   none       = {}
 }
 
+# A string key can hold an arbitrary secret value for integrations and secret-backed variables.
+resource "semaphore_ex_project_key" "string" {
+  project_id = 1
+  name       = "integration token"
+
+  string = {
+    value = "replace-with-a-sensitive-value"
+  }
+}
+
+# A remote reference stores only the reference metadata in Terraform state.
+# `storage_id` must name a project secret storage when storage_type is "vault".
+resource "semaphore_ex_project_key" "remote_string" {
+  project_id = 1
+  name       = "remote integration token"
+
+  string = {}
+
+  remote_reference = {
+    storage_type = "vault"
+    storage_id   = 1
+    mount        = "secret"
+    path         = "integrations/example"
+    field        = "token"
+  }
+}
+
 # Write-only / ephemeral secrets — for SSH keys or passwords fetched from a
 # secret store like Vault. The `*_wo` values are sent to SemaphoreUI on apply
 # but never persisted to Terraform state. Bump the matching `_wo_version` to

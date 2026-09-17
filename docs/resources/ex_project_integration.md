@@ -105,8 +105,10 @@ Optional:
 - `arguments` (String) JSON-encoded array of extra command-line arguments passed to the task runner (e.g. `"[\"-vvv\"]"`).
 - `environment` (String) JSON-encoded object of environment variables exposed to the task.
 - `git_branch` (String) Override the repository branch checked out for this task.
+- `inventory_id` (Number) Inventory override for the task. Value must be at least 1.
 - `message` (String) Optional commit-style message recorded with each task run.
 - `terraform` (Attributes) Terraform / OpenTofu-specific task parameters. Use this when `app` is `terraform` or `tofu`. (see [below for nested schema](#nestedatt--task_params--terraform))
+- `version` (String) Build version supplied to build tasks.
 
 <a id="nestedatt--task_params--ansible"></a>
 ### Nested Schema for `task_params.ansible`
@@ -114,9 +116,11 @@ Optional:
 Optional:
 
 - `debug` (Boolean) Run Ansible with `-vvvv` debug output. Value defaults to `false`.
+- `debug_level` (Number) Ansible verbosity level. Value defaults to `0`. Value must be at least 0.
 - `diff` (Boolean) Show file diffs for changes Ansible makes (`--diff`). Value defaults to `false`.
 - `dry_run` (Boolean) Run Ansible in check mode (`--check`). Value defaults to `false`.
 - `limit` (List of String) Ansible hosts to limit the run to (`--limit`).
+- `skip_galaxy_install` (Boolean) Skip installation of Ansible Galaxy requirements. Value defaults to `false`.
 - `skip_tags` (List of String) Ansible tags to skip (`--skip-tags`).
 - `tags` (List of String) Ansible tags to run (`--tags`).
 
@@ -129,6 +133,7 @@ Optional:
 - `auto_approve` (Boolean) Run with `-auto-approve`. Value defaults to `false`.
 - `destroy` (Boolean) Run a destroy (`terraform destroy` / `tofu destroy`). Value defaults to `false`.
 - `plan` (Boolean) Run plan-only (no apply). Value defaults to `false`.
+- `reconfigure` (Boolean) Reconfigure the backend during Terraform init. Value defaults to `false`.
 - `upgrade` (Boolean) Pass `-upgrade` to `terraform init` / `tofu init`. Value defaults to `false`.
 
 ## Import

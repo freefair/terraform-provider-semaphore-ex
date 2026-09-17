@@ -23,6 +23,9 @@ type TerraformTaskParams struct {
 	// plan
 	Plan bool `json:"plan,omitempty"`
 
+	// reconfigure
+	Reconfigure bool `json:"reconfigure,omitempty"`
+
 	// upgrade
 	Upgrade bool `json:"upgrade,omitempty"`
 }

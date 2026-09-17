@@ -36,7 +36,6 @@ resource "semaphore_ex_project_schedule" "schedule" {
 
 ### Required
 
-- `cron_format` (String) The cron format of the schedule. Must be valid [Cron Expression](https://github.com/adhocore/gronx?tab=readme-ov-file#cron-expression).
 - `enabled` (Boolean) Whether the schedule is enabled.
 - `name` (String) The display name of the schedule.
 - `project_id` (Number) <i style="color:red;font-weight: bold">(ForceNew)</i> The project ID that the schedule belongs to.
@@ -44,11 +43,57 @@ resource "semaphore_ex_project_schedule" "schedule" {
 
 ### Optional
 
+- `cron_format` (String) The cron format of the schedule. Must be valid [Cron Expression](https://github.com/adhocore/gronx?tab=readme-ov-file#cron-expression).
+- `delete_after_run` (Boolean) Remove a one-off schedule after it executes. Before the next apply, remove the completed schedule from configuration or choose a new future run_at; the server rejects creating a schedule in the past. Omitted configuration preserves the server value.
+- `repository_id` (Number) Optional repository used to detect source changes.
+- `run_at` (String) One-off execution time in RFC3339 format.
+- `task_params` (Attributes) Default task parameters applied when this template or integration runs a task. (see [below for nested schema](#nestedatt--task_params))
 - `timezone` (String) IANA timezone. Empty uses the server default. Existing imported values are preserved when omitted.
+- `type` (String) Schedule kind: cron or run_at. Inferred from cron_format/run_at when omitted.
 
 ### Read-Only
 
 - `id` (Number) The schedule ID.
+
+<a id="nestedatt--task_params"></a>
+### Nested Schema for `task_params`
+
+Optional:
+
+- `ansible` (Attributes) Ansible-specific task parameters. Use this when `app` is `ansible`. (see [below for nested schema](#nestedatt--task_params--ansible))
+- `arguments` (String) JSON-encoded array of extra command-line arguments passed to the task runner (e.g. `"[\"-vvv\"]"`).
+- `environment` (String) JSON-encoded object of environment variables exposed to the task.
+- `git_branch` (String) Override the repository branch checked out for this task.
+- `inventory_id` (Number) Inventory override for the task. Value must be at least 1.
+- `message` (String) Optional commit-style message recorded with each task run.
+- `terraform` (Attributes) Terraform / OpenTofu-specific task parameters. Use this when `app` is `terraform` or `tofu`. (see [below for nested schema](#nestedatt--task_params--terraform))
+- `version` (String) Build version supplied to build tasks.
+
+<a id="nestedatt--task_params--ansible"></a>
+### Nested Schema for `task_params.ansible`
+
+Optional:
+
+- `debug` (Boolean) Run Ansible with `-vvvv` debug output. Value defaults to `false`.
+- `debug_level` (Number) Ansible verbosity level. Value defaults to `0`. Value must be at least 0.
+- `diff` (Boolean) Show file diffs for changes Ansible makes (`--diff`). Value defaults to `false`.
+- `dry_run` (Boolean) Run Ansible in check mode (`--check`). Value defaults to `false`.
+- `limit` (List of String) Ansible hosts to limit the run to (`--limit`).
+- `skip_galaxy_install` (Boolean) Skip installation of Ansible Galaxy requirements. Value defaults to `false`.
+- `skip_tags` (List of String) Ansible tags to skip (`--skip-tags`).
+- `tags` (List of String) Ansible tags to run (`--tags`).
+
+
+<a id="nestedatt--task_params--terraform"></a>
+### Nested Schema for `task_params.terraform`
+
+Optional:
+
+- `auto_approve` (Boolean) Run with `-auto-approve`. Value defaults to `false`.
+- `destroy` (Boolean) Run a destroy (`terraform destroy` / `tofu destroy`). Value defaults to `false`.
+- `plan` (Boolean) Run plan-only (no apply). Value defaults to `false`.
+- `reconfigure` (Boolean) Reconfigure the backend during Terraform init. Value defaults to `false`.
+- `upgrade` (Boolean) Pass `-upgrade` to `terraform init` / `tofu init`. Value defaults to `false`.
 
 ## Import
 

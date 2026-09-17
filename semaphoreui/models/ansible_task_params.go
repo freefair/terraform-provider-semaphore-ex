@@ -17,6 +17,9 @@ type AnsibleTaskParams struct {
 	// debug
 	Debug bool `json:"debug,omitempty"`
 
+	// debug level
+	DebugLevel int64 `json:"debug_level,omitempty"`
+
 	// diff
 	Diff bool `json:"diff,omitempty"`
 
@@ -25,6 +28,9 @@ type AnsibleTaskParams struct {
 
 	// limit
 	Limit []string `json:"limit"`
+
+	// skip galaxy install
+	SkipGalaxyInstall bool `json:"skip_galaxy_install,omitempty"`
 
 	// skip tags
 	SkipTags []string `json:"skip_tags"`

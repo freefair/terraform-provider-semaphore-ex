@@ -37,11 +37,17 @@ type Inventory struct {
 	// repository id
 	RepositoryID int64 `json:"repository_id,omitempty"`
 
+	// runner tag
+	RunnerTag *string `json:"runner_tag,omitempty"`
+
 	// ssh key id
 	SSHKeyID int64 `json:"ssh_key_id,omitempty"`
 
+	// template id
+	TemplateID *int64 `json:"template_id,omitempty"`
+
 	// type
-	// Enum: ["static","static-yaml","file","terraform-workspace"]
+	// Enum: ["static","static-yaml","file","terraform-workspace","tofu-workspace","terragrunt-workspace"]
 	Type string `json:"type,omitempty"`
 }
 
@@ -63,7 +69,7 @@ var inventoryTypeTypePropEnum []any
 
 func init() {
 	var res []string
-	if err := json.Unmarshal([]byte(`["static","static-yaml","file","terraform-workspace"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["static","static-yaml","file","terraform-workspace","tofu-workspace","terragrunt-workspace"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {
@@ -84,6 +90,12 @@ const (
 
 	// InventoryTypeTerraformDashWorkspace captures enum value "terraform-workspace"
 	InventoryTypeTerraformDashWorkspace string = "terraform-workspace"
+
+	// InventoryTypeTofuDashWorkspace captures enum value "tofu-workspace"
+	InventoryTypeTofuDashWorkspace string = "tofu-workspace"
+
+	// InventoryTypeTerragruntDashWorkspace captures enum value "terragrunt-workspace"
+	InventoryTypeTerragruntDashWorkspace string = "terragrunt-workspace"
 )
 
 // prop value enum

@@ -57,10 +57,15 @@ func (r *projectUserResource) getProjectUserModelFromAPI(projectId types.Int64, 
 
 	for _, projectUser := range payload.Payload {
 		if projectUser.ID == userId.ValueInt64() {
+			role := projectUser.Role
+			if projectUser.RoleID != "" {
+				role = projectUser.RoleID
+			}
 			return &ProjectUserModel{
 				ProjectID: projectId,
 				UserID:    userId,
-				Role:      types.StringValue(projectUser.Role),
+				Role:      types.StringValue(role),
+				RoleID:    types.StringValue(projectUser.RoleID),
 				Revision:  types.Int64Value(projectUser.Revision),
 				Username:  types.StringValue(projectUser.Username),
 				Name:      types.StringValue(projectUser.Name),

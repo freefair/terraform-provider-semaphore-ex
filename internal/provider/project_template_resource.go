@@ -127,19 +127,22 @@ func convertProjectTemplateModelToTemplateRequest(ctx context.Context, template 
 	}
 	sort.Slice(envIDs, func(i, j int) bool { return envIDs[i] < envIDs[j] })
 	model := models.TemplateRequest{
-		ProjectID:               template.ProjectID.ValueInt64(),
-		EnvironmentIds:          envIDs,
-		WorkingDirectory:        template.WorkingDirectory.ValueStringPointer(),
-		ExecutorImage:           template.ExecutorImage.ValueStringPointer(),
-		SuppressErrorAlerts:     template.SuppressErrorAlerts.ValueBool(),
-		RunnerTagMatchMode:      template.RunnerTagMatchMode.ValueString(),
-		InventoryID:             template.InventoryID.ValueInt64(),
-		RepositoryID:            template.RepositoryID.ValueInt64(),
-		App:                     template.App.ValueString(),
-		Name:                    template.Name.ValueString(),
-		Playbook:                template.Playbook.ValueString(),
-		AllowOverrideArgsInTask: template.AllowOverrideArgsInTask.ValueBool(),
-		SuppressSuccessAlerts:   template.SuppressSuccessAlerts.ValueBool(),
+		ProjectID:                 template.ProjectID.ValueInt64(),
+		AllowParallelTasks:        template.AllowParallelTasks.ValueBool(),
+		AllowOverrideBranchInTask: template.AllowOverrideBranchInTask.ValueBool(),
+		JwtParams:                 templateJWTToAPI(ctx, template.JWTParams),
+		EnvironmentIds:            envIDs,
+		WorkingDirectory:          template.WorkingDirectory.ValueStringPointer(),
+		ExecutorImage:             template.ExecutorImage.ValueStringPointer(),
+		SuppressErrorAlerts:       template.SuppressErrorAlerts.ValueBool(),
+		RunnerTagMatchMode:        template.RunnerTagMatchMode.ValueString(),
+		InventoryID:               template.InventoryID.ValueInt64(),
+		RepositoryID:              template.RepositoryID.ValueInt64(),
+		App:                       template.App.ValueString(),
+		Name:                      template.Name.ValueString(),
+		Playbook:                  template.Playbook.ValueString(),
+		AllowOverrideArgsInTask:   template.AllowOverrideArgsInTask.ValueBool(),
+		SuppressSuccessAlerts:     template.SuppressSuccessAlerts.ValueBool(),
 	}
 	if !template.RunnerTags.IsNull() && !template.RunnerTags.IsUnknown() {
 		template.RunnerTags.ElementsAs(ctx, &model.RunnerTags, false)
@@ -192,15 +195,17 @@ func convertProjectTemplateModelToTemplateRequest(ctx context.Context, template 
 		template.SurveyVars.ElementsAs(ctx, &surveyVars, false)
 		for _, surveyVar := range surveyVars {
 			surveyVarModel := models.TemplateSurveyVar{
-				Name:     surveyVar.Name.ValueString(),
-				Title:    surveyVar.Title.ValueString(),
-				Required: surveyVar.Required.ValueBool(),
-				Type:     surveyVar.Type.ValueString(),
+				Name:         surveyVar.Name.ValueString(),
+				Title:        surveyVar.Title.ValueString(),
+				Required:     surveyVar.Required.ValueBool(),
+				Type:         surveyTypeToAPI(surveyVar.Type.ValueString()),
+				Target:       surveyVar.Target.ValueString(),
+				DefaultValue: surveyDefaultToAPI(ctx, surveyVar),
 			}
 			if !surveyVar.Description.IsNull() && !surveyVar.Description.IsUnknown() {
 				surveyVarModel.Description = surveyVar.Description.ValueString()
 			}
-			if surveyVar.Type.ValueString() == "enum" {
+			if surveyVar.Type.ValueString() == "enum" || surveyVar.Type.ValueString() == "select" {
 				for name, value := range surveyVar.EnumValues {
 					surveyVarModel.Values = append(surveyVarModel.Values, &models.TemplateSurveyVarValue{
 						Name:  name,
@@ -278,22 +283,25 @@ func convertTemplateResponseToProjectTemplateModel(ctx context.Context, request 
 		matchMode = "all"
 	}
 	model := ProjectTemplateModel{
-		ID:                      types.Int64Value(request.ID),
-		ProjectID:               types.Int64Value(request.ProjectID),
-		EnvironmentID:           legacy,
-		EnvironmentIDs:          groups,
-		WorkingDirectory:        types.StringValue(workingDirectory),
-		ExecutorImage:           types.StringValue(executorImage),
-		SuppressErrorAlerts:     types.BoolValue(request.SuppressErrorAlerts),
-		RunnerTags:              runnerTags,
-		RunnerTagMatchMode:      types.StringValue(matchMode),
-		InventoryID:             types.Int64Value(request.InventoryID),
-		RepositoryID:            types.Int64Value(request.RepositoryID),
-		App:                     types.StringValue(request.App),
-		Name:                    types.StringValue(request.Name),
-		Playbook:                types.StringValue(request.Playbook),
-		AllowOverrideArgsInTask: types.BoolValue(request.AllowOverrideArgsInTask),
-		SuppressSuccessAlerts:   types.BoolValue(request.SuppressSuccessAlerts),
+		ID:                        types.Int64Value(request.ID),
+		ProjectID:                 types.Int64Value(request.ProjectID),
+		AllowParallelTasks:        types.BoolValue(request.AllowParallelTasks),
+		AllowOverrideBranchInTask: types.BoolValue(request.AllowOverrideBranchInTask),
+		JWTParams:                 templateJWTFromAPI(ctx, request.JwtParams),
+		EnvironmentID:             legacy,
+		EnvironmentIDs:            groups,
+		WorkingDirectory:          types.StringValue(workingDirectory),
+		ExecutorImage:             types.StringValue(executorImage),
+		SuppressErrorAlerts:       types.BoolValue(request.SuppressErrorAlerts),
+		RunnerTags:                runnerTags,
+		RunnerTagMatchMode:        types.StringValue(matchMode),
+		InventoryID:               types.Int64Value(request.InventoryID),
+		RepositoryID:              types.Int64Value(request.RepositoryID),
+		App:                       types.StringValue(request.App),
+		Name:                      types.StringValue(request.Name),
+		Playbook:                  types.StringValue(request.Playbook),
+		AllowOverrideArgsInTask:   types.BoolValue(request.AllowOverrideArgsInTask),
+		SuppressSuccessAlerts:     types.BoolValue(request.SuppressSuccessAlerts),
 	}
 
 	if request.Description != "" {
@@ -353,15 +361,19 @@ func convertTemplateResponseToProjectTemplateModel(ctx context.Context, request 
 		var surveyVars []ProjectTemplateSurveyVarModel
 		for _, surveyVar := range request.SurveyVars {
 			surveyVarModel := ProjectTemplateSurveyVarModel{
-				Name:     types.StringValue(surveyVar.Name),
-				Title:    types.StringValue(surveyVar.Title),
-				Required: types.BoolValue(surveyVar.Required),
-				Type:     types.StringValue(surveyVar.Type),
+				Name:          types.StringValue(surveyVar.Name),
+				Title:         types.StringValue(surveyVar.Title),
+				Required:      types.BoolValue(surveyVar.Required),
+				Type:          types.StringValue(surveyTypeFromAPI(surveyVar.Type)),
+				Target:        stringOrNull(surveyVar.Target),
+				DefaultValue:  types.StringNull(),
+				DefaultValues: types.ListNull(types.StringType),
 			}
 			if surveyVar.Description != "" {
 				surveyVarModel.Description = types.StringValue(surveyVar.Description)
 			}
-			if surveyVar.Type == "enum" {
+			readSurveyDefault(ctx, surveyVar.DefaultValue, &surveyVarModel)
+			if surveyVar.Type == "enum" || surveyVar.Type == "select" {
 				enumValuesMap := map[string]string{}
 				for _, value := range surveyVar.Values {
 					enumValuesMap[value.Name] = value.Value
@@ -401,7 +413,11 @@ func convertTemplateResponseToProjectTemplateModel(ctx context.Context, request 
 		model.Vaults = vaultsModel
 	}
 
-	model.TaskParams = convertTaskPramsToTaskParamsModel(ctx, request.TaskParams)
+	var priorTaskParams *TaskParamsModel
+	if prev != nil {
+		priorTaskParams = prev.TaskParams
+	}
+	model.TaskParams = convertTaskPramsToTaskParamsModel(ctx, request.TaskParams, priorTaskParams)
 
 	return model
 }

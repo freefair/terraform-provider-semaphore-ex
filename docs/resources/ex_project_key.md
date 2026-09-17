@@ -41,6 +41,33 @@ resource "semaphore_ex_project_key" "none" {
   none       = {}
 }
 
+# A string key can hold an arbitrary secret value for integrations and secret-backed variables.
+resource "semaphore_ex_project_key" "string" {
+  project_id = 1
+  name       = "integration token"
+
+  string = {
+    value = "replace-with-a-sensitive-value"
+  }
+}
+
+# A remote reference stores only the reference metadata in Terraform state.
+# `storage_id` must name a project secret storage when storage_type is "vault".
+resource "semaphore_ex_project_key" "remote_string" {
+  project_id = 1
+  name       = "remote integration token"
+
+  string = {}
+
+  remote_reference = {
+    storage_type = "vault"
+    storage_id   = 1
+    mount        = "secret"
+    path         = "integrations/example"
+    field        = "token"
+  }
+}
+
 # Write-only / ephemeral secrets — for SSH keys or passwords fetched from a
 # secret store like Vault. The `*_wo` values are sent to SemaphoreUI on apply
 # but never persisted to Terraform state. Bump the matching `_wo_version` to
@@ -73,7 +100,9 @@ resource "semaphore_ex_project_key" "ephemeral_ssh" {
 
 - `login_password` (Attributes) A login password key. (see [below for nested schema](#nestedatt--login_password))
 - `none` (Attributes) The special None key. (see [below for nested schema](#nestedatt--none))
+- `remote_reference` (Attributes) External secret reference. Set this instead of literal password, SSH private-key, passphrase, or string value. (see [below for nested schema](#nestedatt--remote_reference))
 - `ssh` (Attributes) A SSH key. (see [below for nested schema](#nestedatt--ssh))
+- `string` (Attributes) A string secret key. (see [below for nested schema](#nestedatt--string))
 
 ### Read-Only
 
@@ -94,6 +123,22 @@ Optional:
 ### Nested Schema for `none`
 
 
+<a id="nestedatt--remote_reference"></a>
+### Nested Schema for `remote_reference`
+
+Required:
+
+- `path` (String) Remote secret path or environment/file key.
+- `storage_type` (String) External storage type. Value must be one of : `vault`, `env`, `file`.
+
+Optional:
+
+- `field` (String) Field read from the remote secret.
+- `mount` (String) Remote secret mount. Omit to use the storage default; set an empty value to clear an explicit mount.
+- `storage_id` (Number) Project secret-storage ID. Required for `vault`. Value must be at least 1.
+- `version` (Number) Remote secret version; zero uses the storage default. Value must be at least 0.
+
+
 <a id="nestedatt--ssh"></a>
 ### Nested Schema for `ssh`
 
@@ -106,6 +151,16 @@ Optional:
 - `private_key` (String, Sensitive) The SSH private key. Persisted to Terraform state. Set exactly one of `private_key` or `private_key_wo`.
 - `private_key_wo` (String, Sensitive, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) Write-only variant of `private_key` — accepts ephemeral values (e.g. from `vault_kv_secret_v2`) and is never persisted to Terraform state. Mutually exclusive with `private_key`. Bump `private_key_wo_version` to push a new value to SemaphoreUI.
 - `private_key_wo_version` (Number) Version trigger for `private_key_wo`. Increment to instruct the provider to re-read the write-only value and push it to SemaphoreUI. Only meaningful when `private_key_wo` is set.
+
+
+<a id="nestedatt--string"></a>
+### Nested Schema for `string`
+
+Optional:
+
+- `value` (String, Sensitive) The string secret. Persisted to Terraform state. Set exactly one of `value` or `value_wo`.
+- `value_wo` (String, Sensitive, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) Write-only variant of `value`. Bump `value_wo_version` to push a new value.
+- `value_wo_version` (Number) Version trigger for `value_wo`.
 
 ## Import
 

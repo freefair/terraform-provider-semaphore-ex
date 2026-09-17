@@ -31,6 +31,14 @@ type Environment struct {
 	// Example: {}
 	JSON string `json:"json,omitempty"`
 
+	// last sync failed at
+	// Format: date-time
+	LastSyncFailedAt *strfmt.DateTime `json:"last_sync_failed_at,omitempty"`
+
+	// last synced at
+	// Format: date-time
+	LastSyncedAt *strfmt.DateTime `json:"last_synced_at,omitempty"`
+
 	// name
 	// Example: Test
 	Name string `json:"name,omitempty"`
@@ -42,8 +50,23 @@ type Environment struct {
 	// Minimum: 1
 	ProjectID int64 `json:"project_id,omitempty"`
 
+	// secret storage id
+	SecretStorageID *int64 `json:"secret_storage_id,omitempty"`
+
+	// secret storage key prefix
+	SecretStorageKeyPrefix *string `json:"secret_storage_key_prefix,omitempty"`
+
 	// secrets
 	Secrets []*EnvironmentSecret `json:"secrets"`
+
+	// sync enabled
+	SyncEnabled bool `json:"sync_enabled,omitempty"`
+
+	// sync interval
+	SyncInterval int64 `json:"sync_interval,omitempty"`
+
+	// sync paths
+	SyncPaths []*SecretSyncPath `json:"sync_paths"`
 }
 
 // Validate validates this environment
@@ -54,11 +77,23 @@ func (m *Environment) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateLastSyncFailedAt(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateLastSyncedAt(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateProjectID(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.validateSecrets(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSyncPaths(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -74,6 +109,30 @@ func (m *Environment) validateID(formats strfmt.Registry) error {
 	}
 
 	if err := validate.MinimumInt("id", "body", m.ID, 1, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Environment) validateLastSyncFailedAt(formats strfmt.Registry) error {
+	if typeutils.IsZero(m.LastSyncFailedAt) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("last_sync_failed_at", "body", "date-time", m.LastSyncFailedAt.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Environment) validateLastSyncedAt(formats strfmt.Registry) error {
+	if typeutils.IsZero(m.LastSyncedAt) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("last_synced_at", "body", "date-time", m.LastSyncedAt.String(), formats); err != nil {
 		return err
 	}
 
@@ -122,11 +181,45 @@ func (m *Environment) validateSecrets(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *Environment) validateSyncPaths(formats strfmt.Registry) error {
+	if typeutils.IsZero(m.SyncPaths) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.SyncPaths); i++ {
+		if typeutils.IsZero(m.SyncPaths[i]) { // not required
+			continue
+		}
+
+		if m.SyncPaths[i] != nil {
+			if err := m.SyncPaths[i].Validate(formats); err != nil {
+				ve := new(errors.Validation)
+				if stderrors.As(err, &ve) {
+					return ve.ValidateName("sync_paths" + "." + strconv.Itoa(i))
+				}
+				ce := new(errors.CompositeError)
+				if stderrors.As(err, &ce) {
+					return ce.ValidateName("sync_paths" + "." + strconv.Itoa(i))
+				}
+
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
 // ContextValidate validate this environment based on the context it is used
 func (m *Environment) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateSecrets(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateSyncPaths(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -154,6 +247,35 @@ func (m *Environment) contextValidateSecrets(ctx context.Context, formats strfmt
 				ce := new(errors.CompositeError)
 				if stderrors.As(err, &ce) {
 					return ce.ValidateName("secrets" + "." + strconv.Itoa(i))
+				}
+
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *Environment) contextValidateSyncPaths(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.SyncPaths); i++ {
+
+		if m.SyncPaths[i] != nil {
+
+			if typeutils.IsZero(m.SyncPaths[i]) { // not required
+				return nil
+			}
+
+			if err := m.SyncPaths[i].ContextValidate(ctx, formats); err != nil {
+				ve := new(errors.Validation)
+				if stderrors.As(err, &ve) {
+					return ve.ValidateName("sync_paths" + "." + strconv.Itoa(i))
+				}
+				ce := new(errors.CompositeError)
+				if stderrors.As(err, &ce) {
+					return ce.ValidateName("sync_paths" + "." + strconv.Itoa(i))
 				}
 
 				return err

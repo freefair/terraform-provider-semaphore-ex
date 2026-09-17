@@ -7,6 +7,7 @@ import (
 	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/key_store"
 	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/hashicorp/terraform-plugin-framework-validators/resourcevalidator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -18,6 +19,7 @@ var (
 	_ resource.ResourceWithConfigure        = &projectKeyResource{}
 	_ resource.ResourceWithImportState      = &projectKeyResource{}
 	_ resource.ResourceWithConfigValidators = &projectKeyResource{}
+	_ resource.ResourceWithValidateConfig   = &projectKeyResource{}
 )
 
 func NewProjectKeyResource() resource.Resource {
@@ -59,6 +61,7 @@ func (r *projectKeyResource) ConfigValidators(ctx context.Context) []resource.Co
 			path.MatchRoot(ProjectKeyTypeLoginPassword),
 			path.MatchRoot(ProjectKeyTypeSSH),
 			path.MatchRoot(ProjectKeyTypeNone),
+			path.MatchRoot(ProjectKeyTypeString),
 		),
 		// Within each key type, the persisted secret attribute and its
 		// write-only counterpart are mutually exclusive. The user picks one.
@@ -74,6 +77,49 @@ func (r *projectKeyResource) ConfigValidators(ctx context.Context) []resource.Co
 			path.MatchRoot(ProjectKeyTypeSSH).AtName("private_key"),
 			path.MatchRoot(ProjectKeyTypeSSH).AtName("private_key_wo"),
 		),
+		resourcevalidator.Conflicting(path.MatchRoot(ProjectKeyTypeString).AtName("value"), path.MatchRoot(ProjectKeyTypeString).AtName("value_wo")),
+	}
+}
+
+func (r *projectKeyResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var config ProjectKeyModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	validateProjectKeyConfig(ctx, config, &resp.Diagnostics)
+}
+
+func hasProjectKeyValue(value types.String) bool { return !value.IsNull() && !value.IsUnknown() }
+
+func validateProjectKeyConfig(_ context.Context, config ProjectKeyModel, diagnostics *diag.Diagnostics) {
+	if config.RemoteReference == nil {
+		return
+	}
+	ref := config.RemoteReference
+	if !hasProjectKeyValue(ref.Path) || ref.Path.ValueString() == "" {
+		diagnostics.AddAttributeError(path.Root("remote_reference").AtName("path"), "Incomplete remote secret reference", "remote_reference requires path.")
+	}
+	if ref.StorageType.ValueString() == "vault" && (ref.StorageID.IsNull() || ref.StorageID.IsUnknown()) {
+		diagnostics.AddAttributeError(path.Root("remote_reference").AtName("storage_id"), "Incomplete remote secret reference", "vault remote_reference requires storage_id.")
+	}
+	if ref.StorageType.ValueString() == "vault" && (!hasProjectKeyValue(ref.Field) || ref.Field.ValueString() == "") {
+		diagnostics.AddAttributeError(path.Root("remote_reference").AtName("field"), "Incomplete remote secret reference", "vault remote_reference requires field.")
+	}
+	if ref.StorageType.ValueString() != "vault" && !ref.StorageID.IsNull() && !ref.StorageID.IsUnknown() {
+		diagnostics.AddAttributeError(path.Root("remote_reference").AtName("storage_id"), "Invalid remote secret reference", "storage_id is only valid for vault remote_reference.")
+	}
+	if config.LoginPassword != nil && (hasProjectKeyValue(config.LoginPassword.Password) || hasProjectKeyValue(config.LoginPassword.PasswordWO)) {
+		diagnostics.AddAttributeError(path.Root("login_password"), "Conflicting secret sources", "Set either remote_reference or password/password_wo.")
+	}
+	if config.SSH != nil && (hasProjectKeyValue(config.SSH.Passphrase) || hasProjectKeyValue(config.SSH.PassphraseWO) || hasProjectKeyValue(config.SSH.PrivateKey) || hasProjectKeyValue(config.SSH.PrivateKeyWO)) {
+		diagnostics.AddAttributeError(path.Root("ssh"), "Conflicting secret sources", "Set either remote_reference or SSH secret fields.")
+	}
+	if config.String != nil && (hasProjectKeyValue(config.String.Value) || hasProjectKeyValue(config.String.ValueWO)) {
+		diagnostics.AddAttributeError(path.Root("string"), "Conflicting secret sources", "Set either remote_reference or value/value_wo.")
+	}
+	if config.None != nil {
+		diagnostics.AddAttributeError(path.Root("remote_reference"), "Invalid remote secret reference", "none keys cannot use remote_reference.")
 	}
 }
 
@@ -83,9 +129,10 @@ func (r *projectKeyResource) ConfigValidators(ctx context.Context) []resource.Co
 // Resolution happens once and is kept out of the Terraform model so the
 // write-only inputs never leak into state.
 type resolvedSecrets struct {
-	password   string
-	passphrase string
-	privateKey string
+	password    string
+	passphrase  string
+	privateKey  string
+	stringValue string
 }
 
 func resolveSecrets(plan, config *ProjectKeyModel) resolvedSecrets {
@@ -108,6 +155,12 @@ func resolveSecrets(plan, config *ProjectKeyModel) resolvedSecrets {
 			if !config.SSH.PrivateKeyWO.IsNull() && !config.SSH.PrivateKeyWO.IsUnknown() {
 				out.privateKey = config.SSH.PrivateKeyWO.ValueString()
 			}
+		}
+	}
+	if plan.String != nil {
+		out.stringValue = plan.String.Value.ValueString()
+		if config.String != nil && !config.String.ValueWO.IsNull() && !config.String.ValueWO.IsUnknown() {
+			out.stringValue = config.String.ValueWO.ValueString()
 		}
 	}
 	return out
@@ -136,6 +189,22 @@ func convertProjectKeyModelToAccessKeyRequest(key ProjectKeyModel, secrets resol
 			Passphrase: secrets.passphrase,
 			PrivateKey: secrets.privateKey,
 		}
+	} else if key.String != nil {
+		model.Type = ProjectKeyTypeString
+		model.String = secrets.stringValue
+	}
+	if key.RemoteReference != nil {
+		storageType := key.RemoteReference.StorageType.ValueString()
+		model.SourceStorageType = &storageType
+		if !key.RemoteReference.StorageID.IsNull() && !key.RemoteReference.StorageID.IsUnknown() {
+			storageID := key.RemoteReference.StorageID.ValueInt64()
+			model.SourceStorageID = &storageID
+		}
+		pathValue := key.RemoteReference.Path.ValueString()
+		model.SourceStorageKey = &pathValue
+		model.SourceStorageMount = key.RemoteReference.Mount.ValueString()
+		model.SourceStorageVersion = key.RemoteReference.Version.ValueInt64()
+		model.SourceStorageField = key.RemoteReference.Field.ValueString()
 	}
 
 	return &model
@@ -148,7 +217,10 @@ func convertAccessKeyResponseToProjectKeyModel(key *models.AccessKey, prev *Proj
 		Name:      types.StringValue(key.Name),
 	}
 
-	// SemaphoreUI API never returns secret value, so we use the ones from the previous state
+	if key.SourceStorageType != nil {
+		model.RemoteReference = remoteReferenceFromAccessKey(key)
+	}
+	// SemaphoreUI API never returns literal secret values, so retain prior state.
 	switch key.Type {
 	case ProjectKeyTypeNone:
 		model.None = &ProjectKeyNone{}
@@ -156,6 +228,8 @@ func convertAccessKeyResponseToProjectKeyModel(key *models.AccessKey, prev *Proj
 		model.LoginPassword = prev.LoginPassword
 	case ProjectKeyTypeSSH:
 		model.SSH = prev.SSH
+	case ProjectKeyTypeString:
+		model.String = prev.String
 	}
 
 	return model
@@ -183,6 +257,11 @@ func (r *projectKeyResource) getProjectKeyModelFromClient(projectId types.Int64,
 				model.LoginPassword = prev.LoginPassword
 			case ProjectKeyTypeSSH:
 				model.SSH = prev.SSH
+			case ProjectKeyTypeString:
+				model.String = prev.String
+			}
+			if key.SourceStorageType != nil {
+				model.RemoteReference = remoteReferenceFromAccessKey(key)
 			}
 			return &model, nil
 		}
@@ -289,12 +368,21 @@ func (r *projectKeyResource) Update(ctx context.Context, req resource.UpdateRequ
 				// Use empty struct when secrets haven't changed
 				key.SSH = &models.AccessKeyRequestSSH{}
 			}
+		case ProjectKeyTypeString:
+			if !plan.String.Value.Equal(state.String.Value) || !plan.String.ValueWOVersion.Equal(state.String.ValueWOVersion) || !plan.Name.Equal(state.Name) || !remoteReferenceEqual(plan.RemoteReference, state.RemoteReference) {
+				key.OverrideSecret = true
+			} else {
+				key.String = ""
+			}
 		case ProjectKeyTypeNone:
 			// type None has no secrets to update, but if Name change, we need to update it
 			if !plan.Name.Equal(state.Name) {
 				key.OverrideSecret = true
 			}
 		}
+	}
+	if !remoteReferenceEqual(plan.RemoteReference, state.RemoteReference) {
+		key.OverrideSecret = true
 	}
 	if key.OverrideSecret {
 		// For some reason, the API will only update access keys when all the fields are set
@@ -345,6 +433,31 @@ func (r *projectKeyResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 }
 
+func remoteReferenceFromAccessKey(key *models.AccessKey) *ProjectKeyRemoteReference {
+	if key.SourceStorageType == nil {
+		return nil
+	}
+	model := &ProjectKeyRemoteReference{StorageType: types.StringValue(*key.SourceStorageType), Mount: types.StringValue(key.SourceStorageMount), Version: types.Int64Value(key.SourceStorageVersion), Field: types.StringValue(key.SourceStorageField)}
+	if key.SourceStorageID != nil {
+		model.StorageID = types.Int64Value(*key.SourceStorageID)
+	} else {
+		model.StorageID = types.Int64Null()
+	}
+	if key.SourceStorageKey != nil {
+		model.Path = types.StringValue(*key.SourceStorageKey)
+	} else {
+		model.Path = types.StringNull()
+	}
+	return model
+}
+
+func remoteReferenceEqual(left, right *ProjectKeyRemoteReference) bool {
+	if left == nil || right == nil {
+		return left == right
+	}
+	return left.StorageType.Equal(right.StorageType) && left.StorageID.Equal(right.StorageID) && left.Mount.Equal(right.Mount) && left.Path.Equal(right.Path) && left.Version.Equal(right.Version) && left.Field.Equal(right.Field)
+}
+
 func (r *projectKeyResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	// Retrieve values from state
 	var state ProjectKeyModel
@@ -386,7 +499,8 @@ func (r *projectKeyResource) ImportState(ctx context.Context, req resource.Impor
 		SSH: &ProjectKeySSH{
 			PrivateKey: types.StringValue(""),
 		},
-		None: &ProjectKeyNone{},
+		String: &ProjectKeyString{Value: types.StringValue("")},
+		None:   &ProjectKeyNone{},
 	})
 	if err != nil {
 		resp.Diagnostics.AddError(

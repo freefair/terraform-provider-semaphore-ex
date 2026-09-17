@@ -33,6 +33,13 @@ resource "semaphore_ex_project_environment" "environment" {
     KEY2 = "value2"
   }
 
+  # Omit this block after importing an existing environment to retain its
+  # storage binding. An empty block explicitly clears that binding.
+  secret_storage = {
+    id         = 1
+    key_prefix = "terraform-"
+  }
+
   # secrets
   secrets = [{
     # extraVar Secret
@@ -44,6 +51,26 @@ resource "semaphore_ex_project_environment" "environment" {
     name  = "KEY4"
     type  = "env"
     value = "value4"
+    }, {
+    # Remote runtime secret; do not set value when storage_id is present.
+    name       = "REMOTE_TOKEN"
+    type       = "env"
+    storage_id = 1
+    mount      = "secret"
+    path       = "applications/example"
+    version    = 0
+    field      = "token"
+  }]
+
+  sync_enabled  = true
+  sync_interval = 30
+  sync_paths = [{
+    access_key_id = 1
+    mount         = "secret"
+    path          = "applications/example"
+    field         = "token"
+    prefix        = "EXAMPLE_"
+    separator     = "_"
   }]
 }
 ```
@@ -59,12 +86,25 @@ resource "semaphore_ex_project_environment" "environment" {
 ### Optional
 
 - `environment` (Map of String) Environment variables.
+- `secret_storage` (Attributes) Secret storage used for environment-managed secrets. Omit this block to retain imported settings; configure an empty block to clear the binding. Preserve an omitted object from prior state. (see [below for nested schema](#nestedatt--secret_storage))
 - `secrets` (Attributes List) Secret variables of either `"var"` or `"env"` type. The `value` is encrypted and will be empty if imported. (see [below for nested schema](#nestedatt--secrets))
+- `sync_enabled` (Boolean) Whether automatic synchronization of managed secrets is enabled.
+- `sync_interval` (Number) Automatic synchronization interval in minutes. Set `0` to disable scheduling. Value must be at least 0.
+- `sync_paths` (Attributes List) Mappings from environment access keys to remote secret-storage targets. Set `[]` to remove all mappings. (see [below for nested schema](#nestedatt--sync_paths))
 - `variables` (Map of String) Extra variables. Passed to Ansible as extra variables (`--extra-vars`) and Terraform/OpenTofu as variables (`-var`).
 
 ### Read-Only
 
 - `id` (Number) The environment ID.
+
+<a id="nestedatt--secret_storage"></a>
+### Nested Schema for `secret_storage`
+
+Optional:
+
+- `id` (Number) Secret storage ID. Value must be at least 1.
+- `key_prefix` (String) Prefix for keys created in the storage.
+
 
 <a id="nestedatt--secrets"></a>
 ### Nested Schema for `secrets`
@@ -73,11 +113,37 @@ Required:
 
 - `name` (String) The variable name.
 - `type` (String) The variable type. Value must be one of : `env`, `var`.
+
+Optional:
+
+- `field` (String) Field to read from the remote secret.
+- `mount` (String) Remote secret mount; defaults to `secret` when omitted.
+- `path` (String) Remote secret path.
+- `storage_id` (Number) Remote secret storage ID. Set this instead of `value` to bind an external runtime secret. Value must be at least 1.
 - `value` (String, Sensitive) The variable value.
+- `version` (Number) Remote secret version; `0` selects the storage default. Value must be at least 0.
 
 Read-Only:
 
 - `id` (Number) The variable ID.
+
+
+<a id="nestedatt--sync_paths"></a>
+### Nested Schema for `sync_paths`
+
+Optional:
+
+- `access_key_id` (Number) . Value must be at least 1.
+- `field` (String) .
+- `mount` (String) .
+- `path` (String) .
+- `prefix` (String) .
+- `separator` (String) .
+
+Read-Only:
+
+- `id` (Number) .
+- `remote_version` (Number) .
 
 ## Import
 

@@ -38,16 +38,19 @@ type (
 		RepositoryID        types.Int64  `tfsdk:"repository_id"`
 		ViewID              types.Int64  `tfsdk:"view_id"`
 
-		Name                    types.String `tfsdk:"name"`
-		Description             types.String `tfsdk:"description"`
-		App                     types.String `tfsdk:"app"`
-		AllowOverrideArgsInTask types.Bool   `tfsdk:"allow_override_args_in_task"`
-		Arguments               types.List   `tfsdk:"arguments"`
-		GitBranch               types.String `tfsdk:"git_branch"`
-		Playbook                types.String `tfsdk:"playbook"`
-		SuppressSuccessAlerts   types.Bool   `tfsdk:"suppress_success_alerts"`
-		SurveyVars              types.List   `tfsdk:"survey_vars"`
-		Vaults                  types.List   `tfsdk:"vaults"`
+		Name                      types.String             `tfsdk:"name"`
+		Description               types.String             `tfsdk:"description"`
+		App                       types.String             `tfsdk:"app"`
+		AllowOverrideBranchInTask types.Bool               `tfsdk:"allow_override_branch_in_task"`
+		AllowParallelTasks        types.Bool               `tfsdk:"allow_parallel_tasks"`
+		JWTParams                 *ProjectTemplateJWTModel `tfsdk:"jwt_params"`
+		AllowOverrideArgsInTask   types.Bool               `tfsdk:"allow_override_args_in_task"`
+		Arguments                 types.List               `tfsdk:"arguments"`
+		GitBranch                 types.String             `tfsdk:"git_branch"`
+		Playbook                  types.String             `tfsdk:"playbook"`
+		SuppressSuccessAlerts     types.Bool               `tfsdk:"suppress_success_alerts"`
+		SurveyVars                types.List               `tfsdk:"survey_vars"`
+		Vaults                    types.List               `tfsdk:"vaults"`
 
 		Build  *ProjectTemplateTypeBuildModel  `tfsdk:"build"`
 		Deploy *ProjectTemplateTypeDeployModel `tfsdk:"deploy"`
@@ -65,12 +68,15 @@ type (
 	}
 
 	ProjectTemplateSurveyVarModel struct {
-		Name        types.String      `tfsdk:"name"`
-		Title       types.String      `tfsdk:"title"`
-		Description types.String      `tfsdk:"description"`
-		Required    types.Bool        `tfsdk:"required"`
-		Type        types.String      `tfsdk:"type"`
-		EnumValues  map[string]string `tfsdk:"enum_values"`
+		Name          types.String      `tfsdk:"name"`
+		Title         types.String      `tfsdk:"title"`
+		Description   types.String      `tfsdk:"description"`
+		Required      types.Bool        `tfsdk:"required"`
+		Type          types.String      `tfsdk:"type"`
+		EnumValues    map[string]string `tfsdk:"enum_values"`
+		Target        types.String      `tfsdk:"target"`
+		DefaultValue  types.String      `tfsdk:"default_value"`
+		DefaultValues types.List        `tfsdk:"default_values"`
 	}
 
 	ProjectTemplateVaultModel struct {
@@ -92,11 +98,14 @@ type (
 var (
 	ProjectTemplateSurveyVarType = types.ObjectType{
 		AttrTypes: map[string]attr.Type{
-			"name":        types.StringType,
-			"title":       types.StringType,
-			"description": types.StringType,
-			"required":    types.BoolType,
-			"type":        types.StringType,
+			"name":           types.StringType,
+			"title":          types.StringType,
+			"description":    types.StringType,
+			"required":       types.BoolType,
+			"type":           types.StringType,
+			"target":         types.StringType,
+			"default_value":  types.StringType,
+			"default_values": types.ListType{ElemType: types.StringType},
 			"enum_values": types.MapType{
 				ElemType: types.StringType,
 			},
@@ -133,6 +142,9 @@ func ProjectTemplateSchema() superschema.Schema {
 			MarkdownDescription: "data source allows you to read a template.",
 		},
 		Attributes: map[string]superschema.Attribute{
+			"allow_parallel_tasks":          preservedBoolAttribute("Allow parallel executions of this template."),
+			"allow_override_branch_in_task": preservedBoolAttribute("Allow a task to override the template Git branch."),
+			"jwt_params":                    templateJWTAttribute(),
 			"id": superschema.Int64Attribute{
 				Common: &schemaR.Int64Attribute{
 					MarkdownDescription: "The template ID.",
@@ -472,13 +484,13 @@ func ProjectTemplateSchema() superschema.Schema {
 							MarkdownDescription: "The type of the survey variable.",
 						},
 						Resource: &schemaR.StringAttribute{
-							MarkdownDescription: "Valid types are `string`, `integer`, `secret` and `enum`. When `enum` is used, the `enum_values` attribute must be defined.",
+							MarkdownDescription: "Valid types are `string`, `integer`, `secret`, `text`, `enum` and `select`. When `enum` or `select` is used, the `enum_values` attribute must be defined.",
 							Required:            true,
 							Validators: []validator.String{
 								stringvalidator.Any(
-									stringvalidator.OneOf("string", "integer", "secret"),
+									stringvalidator.OneOf("string", "integer", "secret", "text"),
 									stringvalidator.All(
-										stringvalidator.OneOf("enum"),
+										stringvalidator.OneOf("enum", "select"),
 										stringvalidator.AlsoRequires(path.Expressions{
 											path.MatchRelative().AtParent().AtName("enum_values"),
 										}...),
@@ -489,6 +501,21 @@ func ProjectTemplateSchema() superschema.Schema {
 						DataSource: &schemaD.StringAttribute{
 							Computed: true,
 						},
+					},
+					"target": superschema.StringAttribute{
+						Common:     &schemaR.StringAttribute{MarkdownDescription: "Empty uses the application's normal parameter channel; env exports an environment variable."},
+						Resource:   &schemaR.StringAttribute{Optional: true, Validators: []validator.String{stringvalidator.OneOf("", "env")}},
+						DataSource: &schemaD.StringAttribute{Computed: true},
+					},
+					"default_value": superschema.StringAttribute{
+						Common:     &schemaR.StringAttribute{MarkdownDescription: "Scalar default. Use default_values for a select survey.", Sensitive: true},
+						Resource:   &schemaR.StringAttribute{Optional: true, Validators: []validator.String{stringvalidator.ConflictsWith(path.MatchRelative().AtParent().AtName("default_values"))}},
+						DataSource: &schemaD.StringAttribute{Computed: true},
+					},
+					"default_values": superschema.ListAttribute{
+						Common:     &schemaR.ListAttribute{MarkdownDescription: "Default selections for a select survey.", ElementType: types.StringType, Sensitive: true},
+						Resource:   &schemaR.ListAttribute{Optional: true},
+						DataSource: &schemaD.ListAttribute{Computed: true},
 					},
 					"enum_values": superschema.MapAttribute{
 						Common: &schemaR.MapAttribute{

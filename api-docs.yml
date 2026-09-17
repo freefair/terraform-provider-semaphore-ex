@@ -32,6 +32,35 @@ schemes:
 basePath: /api
 
 definitions:
+  TemplateJWTParams:
+    type: object
+    properties:
+      enabled:
+        type: boolean
+      audience:
+        # jwt.Audience encodes one audience as a string and multiple as an array.
+        description: A string or an array of strings, normalized to a list by the provider.
+      ttl:
+        type: string
+  SecretSyncPath:
+    type: object
+    properties:
+      id:
+        type: integer
+      path:
+        type: string
+      mount:
+        type: string
+      field:
+        type: string
+      prefix:
+        type: string
+      separator:
+        type: string
+      access_key_id:
+        type: integer
+      remote_version:
+        type: integer
   App:
     type: object
 
@@ -148,6 +177,9 @@ definitions:
   ProjectUser:
     type: object
     properties:
+      role_id:
+        type: string
+        description: Custom project role ID; absent for built-in roles.
       revision:
         type: integer
         minimum: 1
@@ -430,6 +462,29 @@ definitions:
   AccessKeyRequest:
     type: object
     properties:
+      source_storage_id:
+        type: integer
+        x-nullable: true
+      source_storage_key:
+        type: string
+        x-nullable: true
+      source_storage_type:
+        type: string
+        enum:
+        - vault
+        - env
+        - file
+        x-nullable: true
+      synchronized:
+        type: boolean
+      string:
+        type: string
+      source_storage_mount:
+        type: string
+      source_storage_version:
+        type: integer
+      source_storage_field:
+        type: string
       id:
         type: integer
       name:
@@ -438,7 +493,7 @@ definitions:
         example: None
       type:
         type: string
-        enum: [none, ssh, login_password]
+        enum: [none, ssh, login_password, string]
         x-example: none
       project_id:
         type: integer
@@ -476,6 +531,29 @@ definitions:
   AccessKey:
     type: object
     properties:
+      source_storage_id:
+        type: integer
+        x-nullable: true
+      source_storage_key:
+        type: string
+        x-nullable: true
+      source_storage_type:
+        type: string
+        enum:
+        - vault
+        - env
+        - file
+        x-nullable: true
+      synchronized:
+        type: boolean
+      string:
+        type: string
+      source_storage_mount:
+        type: string
+      source_storage_version:
+        type: integer
+      source_storage_field:
+        type: string
       id:
         type: integer
       name:
@@ -483,13 +561,24 @@ definitions:
         example: Test
       type:
         type: string
-        enum: [none, ssh, login_password]
+        enum: [none, ssh, login_password, string]
       project_id:
         type: integer
 
   EnvironmentSecret:
     type: object
     properties:
+      storage_id:
+        type: integer
+        x-nullable: true
+      mount:
+        type: string
+      path:
+        type: string
+      version:
+        type: integer
+      field:
+        type: string
       id:
         type: integer
       name:
@@ -501,6 +590,17 @@ definitions:
   EnvironmentSecretRequest:
     type: object
     properties:
+      storage_id:
+        type: integer
+        x-nullable: true
+      mount:
+        type: string
+      path:
+        type: string
+      version:
+        type: integer
+      field:
+        type: string
       id:
         type: integer
       name:
@@ -518,6 +618,20 @@ definitions:
   EnvironmentRequest:
     type: object
     properties:
+      secret_storage_id:
+        type: integer
+        x-nullable: true
+      secret_storage_key_prefix:
+        type: string
+        x-nullable: true
+      sync_enabled:
+        type: boolean
+      sync_interval:
+        type: integer
+      sync_paths:
+        type: array
+        items:
+          $ref: '#/definitions/SecretSyncPath'
       id:
         type: integer
         example: 1
@@ -543,6 +657,28 @@ definitions:
   Environment:
     type: object
     properties:
+      secret_storage_id:
+        type: integer
+        x-nullable: true
+      secret_storage_key_prefix:
+        type: string
+        x-nullable: true
+      sync_enabled:
+        type: boolean
+      sync_interval:
+        type: integer
+      last_synced_at:
+        type: string
+        format: date-time
+        x-nullable: true
+      last_sync_failed_at:
+        type: string
+        format: date-time
+        x-nullable: true
+      sync_paths:
+        type: array
+        items:
+          $ref: '#/definitions/SecretSyncPath'
       id:
         type: integer
         minimum: 1
@@ -568,6 +704,12 @@ definitions:
   InventoryRequest:
     type: object
     properties:
+      runner_tag:
+        type: string
+        x-nullable: true
+      template_id:
+        type: integer
+        x-nullable: true
       id:
         type: integer
       name:
@@ -589,11 +731,17 @@ definitions:
         minimum: 1
       type:
         type: string
-        enum: [static, static-yaml, file, terraform-workspace]
+        enum: [static, static-yaml, file, terraform-workspace, tofu-workspace, terragrunt-workspace]
 
   Inventory:
     type: object
     properties:
+      runner_tag:
+        type: string
+        x-nullable: true
+      template_id:
+        type: integer
+        x-nullable: true
       id:
         type: integer
       name:
@@ -611,7 +759,7 @@ definitions:
         type: integer
       type:
         type: string
-        enum: [static, static-yaml, file, terraform-workspace]
+        enum: [static, static-yaml, file, terraform-workspace, tofu-workspace, terragrunt-workspace]
 
   Integration:
     type: object
@@ -843,6 +991,10 @@ definitions:
     properties:
       debug:
         type: boolean
+      debug_level:
+        type: integer
+      skip_galaxy_install:
+        type: boolean
       dry_run:
         type: boolean
       diff:
@@ -871,6 +1023,8 @@ definitions:
         type: boolean
       upgrade:
         type: boolean
+      reconfigure:
+        type: boolean
 
   TaskPrams:
     type: object
@@ -881,9 +1035,11 @@ definitions:
         type: string
       message:
         type: string
-      #      inventory_id:
-      #        type: integer
-      #        x-nullable: true
+      inventory_id:
+        type: integer
+        x-nullable: true
+      version:
+        type: string
       arguments:
         type: string
       params:
@@ -906,6 +1062,12 @@ definitions:
   TemplateRequest:
     type: object
     properties:
+      allow_parallel_tasks:
+        type: boolean
+      allow_override_branch_in_task:
+        type: boolean
+      jwt_params:
+        $ref: '#/definitions/TemplateJWTParams'
       working_directory:
         type: string
         x-nullable: true
@@ -992,6 +1154,12 @@ definitions:
   Template:
     type: object
     properties:
+      allow_parallel_tasks:
+        type: boolean
+      allow_override_branch_in_task:
+        type: boolean
+      jwt_params:
+        $ref: '#/definitions/TemplateJWTParams'
       working_directory:
         type: string
         x-nullable: true
@@ -1073,6 +1241,12 @@ definitions:
   TemplateSurveyVar:
     type: object
     properties:
+      target:
+        type: string
+        enum:
+        - ''
+        - env
+      default_value: {}
       name:
         type: string
       title:
@@ -1081,7 +1255,7 @@ definitions:
         type: string
       type:
         type: string
-        enum: ["", int, enum, secret] # String => "", Integer => "int"
+        enum: ["", int, enum, secret, text, select, string, integer] # String => "", Integer => "int"
         example: int
       required:
         type: boolean
@@ -1119,6 +1293,11 @@ definitions:
   ScheduleRequest:
     type: object
     properties:
+      delete_after_run:
+        type: boolean
+      repository_id:
+        type: integer
+        x-nullable: true
       timezone:
         type: string
         x-nullable: true
@@ -1149,6 +1328,11 @@ definitions:
   Schedule:
     type: object
     properties:
+      delete_after_run:
+        type: boolean
+      repository_id:
+        type: integer
+        x-nullable: true
       timezone:
         type: string
         x-nullable: true

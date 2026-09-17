@@ -1,0 +1,1 @@
+terraform import semaphore_ex_global_credential.deployment_token 42
