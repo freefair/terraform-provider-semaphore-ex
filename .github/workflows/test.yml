@@ -75,7 +75,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: freefair/semaphore-ex
-          ref: 324acfd0c7d008a53c222a3253498de3418f5c81
+          ref: 050c5c201b44d839983d0f08ad27ad9931a13084
           path: .test-semaphore-ex
       - uses: actions/setup-go@v6
         with:
