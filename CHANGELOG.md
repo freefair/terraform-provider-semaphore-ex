@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/freefair/terraform-provider-semaphore-ex/compare/v1.0.1...v1.1.0) (2026-09-18)
+
+
+### Features
+
+* **provider:** complete native Semaphore EX feature coverage ([8d6c78b](https://github.com/freefair/terraform-provider-semaphore-ex/commit/8d6c78be526bcaac9f69f0de42028608c4469030))
+
 ## [0.2.3](https://github.com/CruGlobal/terraform-provider-semaphoreui/compare/v0.2.1...v0.2.3) (2025-12-11)
 
 
