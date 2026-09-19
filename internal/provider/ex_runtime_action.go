@@ -115,6 +115,7 @@ func (a *exRuntimeAction) attributes() map[string]schema.Attribute {
 			"arguments":             schema.DynamicAttribute{Optional: true, MarkdownDescription: "Optional native HCL list or object of command-line arguments. It is JSON-encoded because the Semaphore task API expects an arguments JSON string."},
 			"git_branch":            schema.StringAttribute{Optional: true, MarkdownDescription: "Optional repository branch override."},
 			"inventory_id":          schema.Int64Attribute{Optional: true, MarkdownDescription: "Optional inventory override.", Validators: []validator.Int64{int64validator.AtLeast(1)}},
+			"ssh_keys":              runtimeSSHKeyBindingsAttribute(),
 			"message":               schema.StringAttribute{Optional: true, MarkdownDescription: "Optional task message."},
 			"preflight_fingerprint": schema.StringAttribute{Optional: true, MarkdownDescription: "Exact fingerprint from a separately performed task preflight. The provider never obtains one automatically."},
 			"preflight_token":       schema.StringAttribute{Optional: true, WriteOnly: true, MarkdownDescription: "Write-only review token paired with preflight_fingerprint. Supply it from an ephemeral input; the provider never reads or returns it."},
@@ -145,6 +146,13 @@ func (a *exRuntimeAction) attributes() map[string]schema.Attribute {
 	default:
 		return nil
 	}
+}
+
+func runtimeSSHKeyBindingsAttribute() schema.ListNestedAttribute {
+	return schema.ListNestedAttribute{Optional: true, MarkdownDescription: "Optional explicit SSH key selection. Omit to inherit; use an empty list to select no non-always keys. The server validates key ownership and any required host routing.", NestedObject: schema.NestedAttributeObject{Attributes: map[string]schema.Attribute{
+		"access_key_id": schema.Int64Attribute{Required: true, Validators: []validator.Int64{int64validator.AtLeast(1)}},
+		"hosts":         schema.ListAttribute{Optional: true, ElementType: types.StringType, MarkdownDescription: "Optional exact lowercase DNS or IP host mapping."},
+	}}}
 }
 
 func runtimeNodeOverridesAttribute() schema.MapNestedAttribute {
@@ -182,6 +190,7 @@ type exRuntimeTaskStartModel struct {
 	Arguments            types.Dynamic `tfsdk:"arguments"`
 	GitBranch            types.String  `tfsdk:"git_branch"`
 	InventoryID          types.Int64   `tfsdk:"inventory_id"`
+	SSHKeys              types.List    `tfsdk:"ssh_keys"`
 	Message              types.String  `tfsdk:"message"`
 	PreflightFingerprint types.String  `tfsdk:"preflight_fingerprint"`
 	PreflightToken       types.String  `tfsdk:"preflight_token"`
@@ -218,6 +227,18 @@ func (a *exRuntimeAction) invokeTaskStart(ctx context.Context, req action.Invoke
 			return
 		}
 		body["inventory_id"] = config.InventoryID.ValueInt64()
+	}
+	if !config.SSHKeys.IsNull() {
+		if config.SSHKeys.IsUnknown() {
+			resp.Diagnostics.AddError("Unknown Task SSH Key Selection", "ssh_keys must be known before invocation.")
+			return
+		}
+		sshKeys, err := exWireValue(ctx, config.SSHKeys)
+		if err != nil {
+			resp.Diagnostics.AddError("Invalid Task SSH Key Selection", err.Error())
+			return
+		}
+		body["ssh_keys"] = sshKeys
 	}
 	for key, value := range map[string]types.Dynamic{"environment": config.Environment, "arguments": config.Arguments} {
 		encoded, ok := runtimeJSONString(ctx, resp, key, value)

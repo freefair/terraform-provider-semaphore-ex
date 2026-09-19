@@ -58,6 +58,7 @@ data "semaphore_ex_project_template" "build" {
 - `repository_id` (Number) The repository ID that the template uses.
 - `runner_tag_match_mode` (String) Runner tag matching policy: all or any.
 - `runner_tags` (Set of String) Runner placement tags.
+- `ssh_keys` (Attributes) SSH key selection. Set inherit=true to use the project default, or inherit=false with bindings (including an empty list) for an explicit selection. (see [below for nested schema](#nestedatt--ssh_keys))
 - `suppress_error_alerts` (Boolean) Suppress error alerts.
 - `suppress_success_alerts` (Boolean) Suppress success alerts.
 - `survey_vars` (Attributes List) Survey variables. (see [below for nested schema](#nestedatt--survey_vars))
@@ -91,6 +92,24 @@ Read-Only:
 - `audience` (List of String) JWT audiences accepted by task consumers.
 - `enabled` (Boolean) Enables JWT issuance for this template.
 - `ttl` (String) Positive Go duration for issued JWTs; server limits remain authoritative.
+
+
+<a id="nestedatt--ssh_keys"></a>
+### Nested Schema for `ssh_keys`
+
+Read-Only:
+
+- `bindings` (Attributes List) . (see [below for nested schema](#nestedatt--ssh_keys--bindings))
+- `inherit` (Boolean) .
+
+<a id="nestedatt--ssh_keys--bindings"></a>
+### Nested Schema for `ssh_keys.bindings`
+
+Read-Only:
+
+- `access_key_id` (Number) .
+- `hosts` (List of String) .
+
 
 
 <a id="nestedatt--survey_vars"></a>

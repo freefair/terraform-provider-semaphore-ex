@@ -75,7 +75,8 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: freefair/semaphore-ex
-          ref: 050c5c201b44d839983d0f08ad27ad9931a13084
+          # Semaphore EX v2.20.0-ex.2: task SSH bindings and provider API contracts.
+          ref: f6e216f7eec730a1fa4fe381e189c9a973ecfa0d
           path: .test-semaphore-ex
       - uses: actions/setup-go@v6
         with:

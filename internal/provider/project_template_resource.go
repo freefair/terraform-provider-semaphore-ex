@@ -10,7 +10,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"net/http"
 	"sort"
+	"strconv"
 )
 
 // Ensure the implementation satisfies the expected interfaces.
@@ -103,7 +105,38 @@ func (v playbookRequiredValidator) ValidateResource(ctx context.Context, req res
 }
 
 func (r *projectTemplateResource) ConfigValidators(_ context.Context) []resource.ConfigValidator {
-	return []resource.ConfigValidator{playbookRequiredValidator{}, resourcevalidator.ExactlyOneOf(path.MatchRoot("environment_id"), path.MatchRoot("environment_ids"))}
+	return []resource.ConfigValidator{playbookRequiredValidator{}, templateSSHKeysValidator{}, resourcevalidator.ExactlyOneOf(path.MatchRoot("environment_id"), path.MatchRoot("environment_ids"))}
+}
+
+type templateSSHKeysValidator struct{}
+
+func (templateSSHKeysValidator) Description(_ context.Context) string {
+	return "ssh_keys inherits without bindings, or selects an explicit bindings list"
+}
+func (v templateSSHKeysValidator) MarkdownDescription(ctx context.Context) string {
+	return v.Description(ctx)
+}
+func (templateSSHKeysValidator) ValidateResource(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var data ProjectTemplateModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() || data.SSHKeys.IsNull() || data.SSHKeys.IsUnknown() {
+		return
+	}
+	values := data.SSHKeys.Attributes()
+	inherit, ok := values["inherit"].(types.Bool)
+	if !ok || inherit.IsNull() || inherit.IsUnknown() {
+		return
+	}
+	bindings, hasBindings := values["bindings"].(types.List)
+	if inherit.ValueBool() {
+		if hasBindings && !bindings.IsNull() {
+			resp.Diagnostics.AddAttributeError(path.Root("ssh_keys"), "Invalid SSH Key Selection", "inherit=true must omit bindings.")
+		}
+		return
+	}
+	if !hasBindings || bindings.IsNull() {
+		resp.Diagnostics.AddAttributeError(path.Root("ssh_keys"), "Invalid SSH Key Selection", "inherit=false requires bindings, including an explicit empty list.")
+	}
 }
 
 func convertProjectTemplateModelToTemplateRequest(ctx context.Context, template ProjectTemplateModel) *models.TemplateRequest {
@@ -422,6 +455,39 @@ func convertTemplateResponseToProjectTemplateModel(ctx context.Context, request 
 	return model
 }
 
+func templateRequestWithSSHKeys(ctx context.Context, plan ProjectTemplateModel) (map[string]any, error) {
+	encoded, err := json.Marshal(convertProjectTemplateModelToTemplateRequest(ctx, plan))
+	if err != nil {
+		return nil, err
+	}
+	var body map[string]any
+	if err = json.Unmarshal(encoded, &body); err != nil {
+		return nil, err
+	}
+	if plan.SSHKeys.IsNull() || plan.SSHKeys.IsUnknown() {
+		return body, nil
+	}
+	value, err := sshKeyPolicySelectionToAPI(ctx, plan.SSHKeys)
+	if err != nil {
+		return nil, err
+	}
+	body["ssh_keys"] = value
+	return body, nil
+}
+
+func readTemplateSSHKeys(ctx context.Context, client *apiclient.SemaphoreUI, model *ProjectTemplateModel) error {
+	var raw map[string]any
+	if err := exRequest(ctx, client, http.MethodGet, "/project/{project_id}/templates/{template_id}", map[string]string{"project_id": strconv.FormatInt(model.ProjectID.ValueInt64(), 10), "template_id": strconv.FormatInt(model.ID.ValueInt64(), 10)}, nil, &raw); err != nil {
+		return err
+	}
+	selection, err := sshKeyPolicySelectionFromAPI(raw["ssh_keys"])
+	if err != nil {
+		return err
+	}
+	model.SSHKeys = selection
+	return nil
+}
+
 func (r *projectTemplateResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// Retrieve values from plan
 	var plan ProjectTemplateModel
@@ -430,10 +496,15 @@ func (r *projectTemplateResource) Create(ctx context.Context, req resource.Creat
 		return
 	}
 
-	create, err := r.client.Template.PostProjectProjectIDTemplates(&template.PostProjectProjectIDTemplatesParams{
-		ProjectID: plan.ProjectID.ValueInt64(),
-		Template:  convertProjectTemplateModelToTemplateRequest(ctx, plan),
-	}, nil)
+	body, err := templateRequestWithSSHKeys(ctx, plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Template SSH Keys", err.Error())
+		return
+	}
+	var create struct {
+		ID json.Number `json:"id"`
+	}
+	err = exRequest(ctx, r.client, http.MethodPost, "/project/{project_id}/templates", map[string]string{"project_id": strconv.FormatInt(plan.ProjectID.ValueInt64(), 10)}, body, &create)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Creating SemaphoreUI Project Template",
@@ -441,11 +512,16 @@ func (r *projectTemplateResource) Create(ctx context.Context, req resource.Creat
 		)
 		return
 	}
+	createdID, parseErr := create.ID.Int64()
+	if parseErr != nil || createdID < 1 {
+		resp.Diagnostics.AddError("Missing Created Template Identity", "The template create request succeeded but did not return a valid ID; inspect the server before retrying.")
+		return
+	}
 
 	// Create response doesn't fully capture the model, so we need to read it back
 	response, err := r.client.Template.GetProjectProjectIDTemplatesTemplateID(&template.GetProjectProjectIDTemplatesTemplateIDParams{
 		ProjectID:  plan.ProjectID.ValueInt64(),
-		TemplateID: create.Payload.ID,
+		TemplateID: createdID,
 	}, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -455,6 +531,10 @@ func (r *projectTemplateResource) Create(ctx context.Context, req resource.Creat
 		return
 	}
 	model := convertTemplateResponseToProjectTemplateModel(ctx, response.Payload, &plan)
+	if err = readTemplateSSHKeys(ctx, r.client, &model); err != nil {
+		resp.Diagnostics.AddError("Error Reading Template SSH Keys", err.Error())
+		return
+	}
 
 	// Set state to fully populated data
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
@@ -484,6 +564,10 @@ func (r *projectTemplateResource) Read(ctx context.Context, req resource.ReadReq
 		return
 	}
 	model := convertTemplateResponseToProjectTemplateModel(ctx, response.Payload, &state)
+	if err = readTemplateSSHKeys(ctx, r.client, &model); err != nil {
+		resp.Diagnostics.AddError("Error Reading Template SSH Keys", err.Error())
+		return
+	}
 
 	// Set refreshed state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
@@ -512,11 +596,12 @@ func (r *projectTemplateResource) Update(ctx context.Context, req resource.Updat
 		plan.EnvironmentIDs = state.EnvironmentIDs
 	}
 
-	_, err := r.client.Template.PutProjectProjectIDTemplatesTemplateID(&template.PutProjectProjectIDTemplatesTemplateIDParams{
-		ProjectID:  plan.ProjectID.ValueInt64(),
-		TemplateID: plan.ID.ValueInt64(),
-		Template:   convertProjectTemplateModelToTemplateRequest(ctx, plan),
-	}, nil)
+	body, err := templateRequestWithSSHKeys(ctx, plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Template SSH Keys", err.Error())
+		return
+	}
+	err = exRequest(ctx, r.client, http.MethodPut, "/project/{project_id}/templates/{template_id}", map[string]string{"project_id": strconv.FormatInt(plan.ProjectID.ValueInt64(), 10), "template_id": strconv.FormatInt(plan.ID.ValueInt64(), 10)}, body, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Updating SemaphoreUI Project Template",
@@ -537,6 +622,10 @@ func (r *projectTemplateResource) Update(ctx context.Context, req resource.Updat
 		return
 	}
 	model := convertTemplateResponseToProjectTemplateModel(ctx, response.Payload, &plan)
+	if err = readTemplateSSHKeys(ctx, r.client, &model); err != nil {
+		resp.Diagnostics.AddError("Error Reading Template SSH Keys", err.Error())
+		return
+	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, model)...)
 	if resp.Diagnostics.HasError() {
@@ -590,6 +679,10 @@ func (r *projectTemplateResource) ImportState(ctx context.Context, req resource.
 		SurveyVars: types.ListNull(ProjectTemplateSurveyVarType),
 		Vaults:     types.ListNull(ProjectTemplateVaultType),
 	})
+	if err = readTemplateSSHKeys(ctx, r.client, &model); err != nil {
+		resp.Diagnostics.AddError("Error Reading Template SSH Keys", err.Error())
+		return
+	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, model)...)
 	if resp.Diagnostics.HasError() {

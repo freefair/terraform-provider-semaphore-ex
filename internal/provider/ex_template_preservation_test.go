@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -21,4 +22,18 @@ func TestTemplatePreservesUnconfiguredEXSettings(t *testing.T) {
 	require.Equal(t, true, output["allow_parallel_tasks"])
 	require.Equal(t, true, output["allow_override_branch_in_task"])
 	require.Equal(t, map[string]any{"enabled": true, "audience": []any{"service"}, "ttl": "10m"}, output["jwt_params"])
+}
+
+func TestTemplateRequestIncludesSSHKeysInSinglePayload(t *testing.T) {
+	selection, diagnostics := types.ObjectValue(map[string]attr.Type{"inherit": types.BoolType, "bindings": types.ListType{ElemType: sshKeyBindingType}}, map[string]attr.Value{
+		"inherit": types.BoolValue(false), "bindings": types.ListValueMust(sshKeyBindingType, []attr.Value{}),
+	})
+	require.False(t, diagnostics.HasError())
+	var input models.Template
+	require.NoError(t, json.Unmarshal([]byte(`{"id":1,"project_id":1,"repository_id":1,"inventory_id":1,"environment_ids":[],"name":"test","app":"bash","playbook":"run.sh"}`), &input))
+	model := convertTemplateResponseToProjectTemplateModel(context.Background(), &input, &ProjectTemplateModel{SurveyVars: types.ListNull(ProjectTemplateSurveyVarType), Vaults: types.ListNull(ProjectTemplateVaultType)})
+	model.SSHKeys = selection
+	body, err := templateRequestWithSSHKeys(context.Background(), model)
+	require.NoError(t, err)
+	require.Equal(t, []any{}, body["ssh_keys"])
 }

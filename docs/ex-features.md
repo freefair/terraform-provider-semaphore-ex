@@ -7,6 +7,7 @@ Use the generated reference pages in `resources/`, `data-sources/` and `actions/
 ## Contents
 
 - [Configuration coverage](#configuration-coverage)
+- [SSH keys for private dependencies](#ssh-keys-for-private-dependencies)
 - [Versions and operations](#versions-and-operations)
 - [Credentials and imports](#credentials-and-imports)
 - [Concurrency and destroy](#concurrency-and-destroy)
@@ -22,6 +23,7 @@ All type names below have the `semaphore_ex_` prefix.
 | Project access | `project_role`, `template_acl`, custom role references on `project_user` |
 | Global access | `global_role`, `global_role_assignment` |
 | Credentials | `project_secret_storage`, `global_credential`, `global_credential_grant`, `project_generated_ssh_key`, external references on project keys and environments |
+| Task SSH keys | `project_ssh_key_policy`, `ssh_keys` on templates and the task-start Action |
 | Notifications | Global/project notification destinations and rules, `audit_webhook` |
 | Governance | `project_deployment_window`; guardrail and artifact-retention policy data sources with separate mutation Actions |
 | Identity | `ldap_configuration`, `ldap_group_mapping`, `oidc_group_mapping`, `totp_policy`, read-only `external_user` |
@@ -43,6 +45,45 @@ Workflow resources use unique persisted node display names as their HCL `key` va
 An optional `display_name` must equal `key`. This lets import recover edge and artifact references.
 Empty or duplicate persisted names must be corrected before resource import; data sources can still inspect those graphs with server-ID keys.
 Node IDs survive reorder and ordinary updates. Optional/computed access policy retains the actual imported policy; explicit empty role lists clear it.
+
+## SSH keys for private dependencies
+
+Semaphore EX makes the selected SSH keys available during task execution, including Terraform module downloads and Ansible dependencies. The repository credential remains usable beyond the initial clone.
+Use Semaphore EX `v2.20.0-ex.2` or a compatible newer server; the acceptance fixture pins that release.
+
+Create project-owned SSH keys first, then manage project defaults and always-added keys through `semaphore_ex_project_ssh_key_policy`. Keeping this singleton separate from `semaphore_ex_project` avoids a project/key dependency cycle and allows one apply to create the project, keys and policy.
+Only one policy resource should manage a project. Import uses the numeric project ID.
+When omitting previously configured bindings while keeping their keys managed by Terraform, retain the dependency with explicit `depends_on` entries for those key resources. Terraform cannot derive dependency edges from server-retained numeric IDs; the keys must be destroyed after their policies and templates.
+Omitted policy collections preserve existing values; explicit `[]` clears a collection. Destroy clears both SSH collections without deleting the project or keys.
+
+Each binding contains `access_key_id` and an optional `hosts` list:
+
+```hcl
+resource "semaphore_ex_project_ssh_key_policy" "dependencies" {
+  project_id = semaphore_ex_project.example.id
+  default_ssh_keys = [{
+    access_key_id = semaphore_ex_project_generated_ssh_key.dependencies.id
+    hosts         = ["github.com", "gitlab.com"]
+  }]
+  always_ssh_keys = []
+}
+```
+
+Authorize the generated public key on the Git hosts before executing a task. The private key remains on Semaphore EX.
+Bindings accept project-owned SSH credentials. Foreign-project, global and non-SSH credentials are rejected by the server.
+
+| Template configuration | Behavior |
+| --- | --- |
+| Omit `ssh_keys` | Preserve the existing setting on refresh/import; new templates inherit by default |
+| `ssh_keys = { inherit = true }` | Explicitly restore inheritance from project defaults |
+| `ssh_keys = { inherit = false, bindings = [] }` | Select no non-always keys |
+| `ssh_keys = { inherit = false, bindings = [{ access_key_id = 7, hosts = ["github.com"] }] }` | Select these keys instead of project defaults |
+
+For `semaphore_ex_project_task_start`, `ssh_keys` is a list directly: omit it to inherit the template selection, use `[]` for no non-always keys, or supply bindings to override it for that run. The caller needs the server's resource-management permission to override task keys.
+Project `always_ssh_keys` are added to every effective selection, including explicit empty template or task selections.
+
+Host mappings use exact lowercase DNS names or IP addresses. Wildcards, URLs, ports and usernames are invalid. Below five distinct effective SSH public-key identities, routing is optional; at five or more it is required. The server counts the effective selection, including repository and inventory credentials, and validates routing at runtime. The provider cannot infer those public identities from key IDs during planning.
+Host mappings select keys for supported SSH clients; they do not prevent arbitrary task-controlled code from using credentials available to that task.
 
 ## Versions and operations
 

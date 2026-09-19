@@ -37,6 +37,8 @@ func runtimeActionConfig(t *testing.T, value action.Action, configured map[strin
 }
 
 func TestRuntimeActionsUseOnlyBoundedServerRoutes(t *testing.T) {
+	sshBindingType := sshKeyBindingType.TerraformType(context.Background())
+	sshBindingsType := tftypes.List{ElementType: sshBindingType}
 	requests := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requests++
@@ -49,6 +51,7 @@ func TestRuntimeActionsUseOnlyBoundedServerRoutes(t *testing.T) {
 			var body map[string]any
 			require.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 			assert.Equal(t, float64(3), body["template_id"])
+			assert.Equal(t, []any{map[string]any{"access_key_id": float64(9), "hosts": []any{"git.example.test"}}}, body["ssh_keys"])
 			_, err := w.Write([]byte(`{"id":11}`))
 			require.NoError(t, err)
 		case "/api/project/7/tasks/11/stop":
@@ -92,6 +95,7 @@ func TestRuntimeActionsUseOnlyBoundedServerRoutes(t *testing.T) {
 	}
 	invoke(NewProjectTaskStartAction(), map[string]tftypes.Value{
 		"project_id": tftypes.NewValue(tftypes.Number, int64(7)), "template_id": tftypes.NewValue(tftypes.Number, int64(3)),
+		"ssh_keys":              tftypes.NewValue(sshBindingsType, []tftypes.Value{tftypes.NewValue(sshBindingType, map[string]tftypes.Value{"access_key_id": tftypes.NewValue(tftypes.Number, int64(9)), "hosts": tftypes.NewValue(tftypes.List{ElementType: tftypes.String}, []tftypes.Value{tftypes.NewValue(tftypes.String, "git.example.test")})})}),
 		"preflight_fingerprint": tftypes.NewValue(tftypes.String, "fingerprint"), "preflight_token": tftypes.NewValue(tftypes.String, "token"),
 	})
 	invoke(NewProjectTaskStopAction(), map[string]tftypes.Value{

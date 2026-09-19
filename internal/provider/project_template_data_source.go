@@ -96,6 +96,10 @@ func (d *projectTemplateDataSource) Read(ctx context.Context, req datasource.Rea
 		}
 		model = convertTemplateResponseToProjectTemplateModel(ctx, template, &config)
 	}
+	if err := readTemplateSSHKeys(ctx, d.client, &model); err != nil {
+		resp.Diagnostics.AddError("Error Reading Template SSH Keys", err.Error())
+		return
+	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 	if resp.Diagnostics.HasError() {

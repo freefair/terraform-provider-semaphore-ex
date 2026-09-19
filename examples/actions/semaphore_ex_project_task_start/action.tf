@@ -6,8 +6,10 @@ variable "preflight_token" {
 
 action "semaphore_ex_project_task_start" "deploy" {
   config {
-    project_id            = 1
-    template_id           = 2
+    project_id  = 1
+    template_id = 2
+    # Select no non-always keys for this run; omit to inherit.
+    ssh_keys              = []
     environment           = { release = "2026.09.16", maintenance = false }
     arguments             = ["--limit", "web"]
     preflight_fingerprint = "reviewed-fingerprint"

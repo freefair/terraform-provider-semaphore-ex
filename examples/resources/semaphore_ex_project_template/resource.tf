@@ -51,6 +51,9 @@ resource "semaphore_ex_project_template" "task" {
   ]
   allow_override_args_in_task = true
 
+  # Inherit project defaults; always keys are added by the server.
+  ssh_keys = { inherit = true }
+
   survey_vars = [{
     name     = "age"
     title    = "What is your age?"

@@ -6,43 +6,34 @@ This fork derives from the Semaphore UI provider and targets the EX API contract
 
 ## Quick Start
 
-Prerequisites: a running Semaphore EX instance, its API token, Terraform, Go matching `go.mod`, and Git.
-To try unreleased EX features or develop the provider, use a local build:
+Prerequisites: Semaphore EX `v2.20.0-ex.2` or a compatible newer server, its API token, and Terraform `1.15.2` or newer.
+Provider `v1.0.2` includes the native EX resources and task SSH-key selection.
 
-```sh
-git clone https://github.com/freefair/terraform-provider-semaphore-ex.git
-cd terraform-provider-semaphore-ex
-mkdir -p bin local
-go build -o "$PWD/bin/terraform-provider-semaphore-ex" .
-cat > local/terraform.rc <<EOF
-provider_installation {
-  dev_overrides { "freefair/semaphore-ex" = "$PWD/bin" }
-  direct {}
-}
-EOF
-export TF_CLI_CONFIG_FILE="$PWD/local/terraform.rc"
-# Supply SEMAPHOREUI_API_TOKEN through your secret manager/environment.
-export SEMAPHOREUI_API_BASE_URL="http://localhost:3000/api"
-```
-
-Create `local/main.tf`:
+Create `main.tf`:
 
 ```hcl
 terraform {
+  required_version = ">= 1.15.2"
   required_providers {
-    semaphore = { source = "freefair/semaphore-ex" }
+    semaphore = {
+      source  = "freefair/semaphore-ex"
+      version = "= 1.0.2"
+    }
   }
 }
+
 provider "semaphore" {}
+
 resource "semaphore_ex_project" "example" {
   name = "Terraform example"
 }
 ```
 
-Run `terraform -chdir=local plan`, inspect the target and changes, then `terraform -chdir=local apply`.
-With a development override, run these commands directly without `terraform init` attempting a Registry installation.
-Verify with `terraform -chdir=local plan -detailed-exitcode`: an unchanged configuration returns 0.
-For a Registry installation, remove the development override and pin a published release in `required_providers`.
+Supply `SEMAPHOREUI_API_BASE_URL` with the intended server's API address and
+`SEMAPHOREUI_API_TOKEN` through your environment or secret manager.
+Run `terraform init`, inspect `terraform plan`, then run `terraform apply`.
+Verify with `terraform plan -detailed-exitcode`: an unchanged configuration returns 0.
+For local provider development, see [Using a local build](#using-a-local-build).
 
 ## Multiple variable groups
 
@@ -95,6 +86,31 @@ CI builds the exact EX revision recorded in `.github/workflows/test.yml` and run
 `api-docs.yml` is the source of the generated client under `semaphoreui/`.
 Regenerate with go-swagger `v0.36.6` and `task client`; generated Go files are not edited by hand.
 The implementation uses Terraform Plugin Framework (versions in `go.mod`); see [the design decision](docs/adr/0001-semaphore-ex-provider.md).
+
+### Using a local build
+
+Build with the Go version in `go.mod` and keep the development override local to
+this checkout:
+
+```sh
+git clone https://github.com/freefair/terraform-provider-semaphore-ex.git
+cd terraform-provider-semaphore-ex
+mkdir -p bin local
+go build -o "$PWD/bin/terraform-provider-semaphore-ex" .
+cat > local/terraform.rc <<EOF
+provider_installation {
+  dev_overrides { "freefair/semaphore-ex" = "$PWD/bin" }
+  direct {}
+}
+EOF
+export TF_CLI_CONFIG_FILE="$PWD/local/terraform.rc"
+```
+
+Put a disposable Terraform configuration under `local/` and supply the intended
+API endpoint and token. With a development override, run
+`terraform -chdir=local plan` and `terraform -chdir=local apply` directly without
+attempting a Registry installation. Remove the override to return to the pinned
+Registry release.
 
 ## Security and release
 

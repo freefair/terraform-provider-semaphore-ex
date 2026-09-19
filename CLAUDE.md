@@ -32,7 +32,7 @@ For acceptance tests, `TF_ACC=1` plus the `SEMAPHOREUI_*` env vars must be set â
 
 `SEMAPHORE_EX_TEST_BINARY=/absolute/path/to/semaphore task testacc` starts a temporary loopback-only EX server with its own SQLite database and generated credentials.
 The test fixture owns and cleans up that process and database; failure logs are retained.
-CI builds the exact EX source revision pinned in `.github/workflows/test.yml`.
+CI builds Semaphore EX `v2.20.0-ex.2` at the exact revision pinned in `.github/workflows/test.yml`.
 For an existing explicitly authorized test instance, set `TF_ACC=1`, `SEMAPHOREUI_API_BASE_URL`, and `SEMAPHOREUI_API_TOKEN` and run `go test` directly.
 Do not infer API compatibility from `task test`: acceptance tests are skipped without `TF_ACC`.
 
@@ -114,6 +114,12 @@ Dynamic attributes cannot be nested inside collection elements in this framework
 use static object schemas or typed scalar unions there.
 Mutable computed revision fields must remain unknown during planning, since the
 server increments them on writes; `UseStateForUnknown` would make apply inconsistent.
+
+### Task SSH bindings
+
+The project SSH policy is a separate singleton so a project, its generated keys and the policy form an acyclic Terraform graph. It owns default/always selections and imports by numeric project ID.
+Template `ssh_keys` uses an explicit `inherit` discriminator: true has null bindings, false requires a list including empty. Omission preserves state; unknown key IDs must remain valid in planning. Send the selection in the same template mutation as all other fields.
+Task-start Action `ssh_keys` is a direct optional list. The server owns permission, key-scope and host-routing validation. See `docs/adr/0005-task-ssh-key-bindings.md` and `docs/ex-features.md`.
 
 ### Environment secret update gotcha
 

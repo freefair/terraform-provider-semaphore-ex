@@ -21,8 +21,10 @@ variable "preflight_token" {
 
 action "semaphore_ex_project_task_start" "deploy" {
   config {
-    project_id            = 1
-    template_id           = 2
+    project_id  = 1
+    template_id = 2
+    # Select no non-always keys for this run; omit to inherit.
+    ssh_keys              = []
     environment           = { release = "2026.09.16", maintenance = false }
     arguments             = ["--limit", "web"]
     preflight_fingerprint = "reviewed-fingerprint"
@@ -52,5 +54,17 @@ action "semaphore_ex_project_task_start" "deploy" {
 - `playbook` (String) Optional playbook override.
 - `preflight_fingerprint` (String) Exact fingerprint from a separately performed task preflight. The provider never obtains one automatically.
 - `preflight_token` (String, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) Write-only review token paired with preflight_fingerprint. Supply it from an ephemeral input; the provider never reads or returns it.
+- `ssh_keys` (Attributes List) Optional explicit SSH key selection. Omit to inherit; use an empty list to select no non-always keys. The server validates key ownership and any required host routing. (see [below for nested schema](#nestedatt--ssh_keys))
 - `template_id` (Number) Template to run. Set template_id or template_name.
 - `template_name` (String) Template name to run when template_id is omitted.
+
+<a id="nestedatt--ssh_keys"></a>
+### Nested Schema for `ssh_keys`
+
+Required:
+
+- `access_key_id` (Number)
+
+Optional:
+
+- `hosts` (List of String) Optional exact lowercase DNS or IP host mapping.

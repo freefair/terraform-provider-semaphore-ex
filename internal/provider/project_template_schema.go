@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
@@ -56,6 +57,7 @@ type (
 		Deploy *ProjectTemplateTypeDeployModel `tfsdk:"deploy"`
 
 		TaskParams *TaskParamsModel `tfsdk:"task_params"`
+		SSHKeys    types.Object     `tfsdk:"ssh_keys"`
 	}
 
 	ProjectTemplateTypeBuildModel struct {
@@ -626,6 +628,22 @@ func ProjectTemplateSchema() superschema.Schema {
 				},
 			},
 			"task_params": TaskParamsAttribute(),
+			"ssh_keys":    templateSSHKeySelectionAttribute(),
+		},
+	}
+}
+
+func templateSSHKeySelectionAttribute() superschema.SingleNestedAttribute {
+	return superschema.SingleNestedAttribute{
+		Common:     &schemaR.SingleNestedAttribute{MarkdownDescription: "SSH key selection. Set inherit=true to use the project default, or inherit=false with bindings (including an empty list) for an explicit selection."},
+		Resource:   &schemaR.SingleNestedAttribute{Optional: true, Computed: true, PlanModifiers: []planmodifier.Object{objectplanmodifier.UseStateForUnknown()}},
+		DataSource: &schemaD.SingleNestedAttribute{Computed: true},
+		Attributes: map[string]superschema.Attribute{
+			"inherit": superschema.BoolAttribute{Common: &schemaR.BoolAttribute{}, Resource: &schemaR.BoolAttribute{Required: true}, DataSource: &schemaD.BoolAttribute{Computed: true}},
+			"bindings": superschema.ListNestedAttribute{Common: &schemaR.ListNestedAttribute{}, Resource: &schemaR.ListNestedAttribute{Optional: true}, DataSource: &schemaD.ListNestedAttribute{Computed: true}, Attributes: map[string]superschema.Attribute{
+				"access_key_id": superschema.Int64Attribute{Common: &schemaR.Int64Attribute{}, Resource: &schemaR.Int64Attribute{Required: true}, DataSource: &schemaD.Int64Attribute{Computed: true}},
+				"hosts":         superschema.ListAttribute{Common: &schemaR.ListAttribute{ElementType: types.StringType}, Resource: &schemaR.ListAttribute{Optional: true}, DataSource: &schemaD.ListAttribute{Computed: true}},
+			}},
 		},
 	}
 }
