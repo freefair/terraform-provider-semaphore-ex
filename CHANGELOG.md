@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2](https://github.com/freefair/terraform-provider-semaphore-ex/compare/v1.0.1...v1.0.2) (2026-09-19)
+
+
+### Features
+
+* **provider:** complete native Semaphore EX feature coverage ([8d6c78b](https://github.com/freefair/terraform-provider-semaphore-ex/commit/8d6c78be526bcaac9f69f0de42028608c4469030))
+* **provider:** manage task SSH key selection and policies ([4ce59b3](https://github.com/freefair/terraform-provider-semaphore-ex/commit/4ce59b396a3d6d2a1d3911abaa9a388380a9bb78))
+
 ## [0.2.3](https://github.com/CruGlobal/terraform-provider-semaphoreui/compare/v0.2.1...v0.2.3) (2025-12-11)
 
 
