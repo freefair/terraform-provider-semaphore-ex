@@ -68,7 +68,7 @@ The token will be printed in the console. This token will grant the same level o
 				Optional:            true,
 			},
 			"api_base_url": schema.StringAttribute{
-				MarkdownDescription: "SemaphoreUI API base URL. This can also be defined by the `SEMAPHOREUI_API_BASE_URL` environment variable. Default: `http://localhost:3000/api`.",
+				MarkdownDescription: "SemaphoreUI API base URL. This can also be defined by the `SEMAPHOREUI_API_BASE_URL` environment variable. An explicit URL is required in configuration or the environment; there is no implicit localhost target.",
 				Optional:            true,
 			},
 			"tls_skip_verify": schema.BoolAttribute{
@@ -86,6 +86,10 @@ func (p *SemaphoreUIProvider) Configure(ctx context.Context, req provider.Config
 
 	if resp.Diagnostics.HasError() {
 		return
+	}
+
+	if config.ApiBaseUrl.IsUnknown() {
+		resp.Diagnostics.AddAttributeError(path.Root("api_base_url"), "Unknown SemaphoreUI API base URL", "The API endpoint must be known before configuring the provider. Supply an explicit URL in api_base_url or SEMAPHOREUI_API_BASE_URL.")
 	}
 
 	if config.ApiToken.IsUnknown() {
@@ -132,7 +136,7 @@ func (p *SemaphoreUIProvider) Configure(ctx context.Context, req provider.Config
 		resp.Diagnostics.AddAttributeError(
 			path.Root("api_base_url"),
 			"Missing SemaphoreUI API base URL",
-			"Set the host value in the configuration or use the SEMAPHOREUI_API_BASE_URL environment variable. "+
+			"Set api_base_url in the configuration or use the SEMAPHOREUI_API_BASE_URL environment variable. "+
 				"If either is already set, ensure the value is not empty.",
 		)
 	}
@@ -146,10 +150,6 @@ func (p *SemaphoreUIProvider) Configure(ctx context.Context, req provider.Config
 		)
 	}
 
-	if apiBaseUrl == "" {
-		apiBaseUrl = "http://localhost:3000/api" // Default
-	}
-
 	if tlsSkipVerify == "" {
 		tlsSkipVerify = "false" // Default
 	}
@@ -159,11 +159,11 @@ func (p *SemaphoreUIProvider) Configure(ctx context.Context, req provider.Config
 	}
 
 	u, err := url.Parse(apiBaseUrl)
-	if err != nil {
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Hostname() == "" {
 		resp.Diagnostics.AddAttributeError(
 			path.Root("api_base_url"),
 			"Invalid SemaphoreUI API base URL",
-			"The provider cannot create the SemaphoreUI API client as the API base URL is invalid. "+
+			"The provider cannot create the SemaphoreUI API client as the API base URL must be an absolute HTTP(S) URL with a host. "+
 				"Either target apply the source of the value first, set the value statically in the configuration, or use the SEMAPHOREUI_API_BASE_URL environment variable.",
 		)
 		return

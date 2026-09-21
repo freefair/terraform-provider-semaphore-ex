@@ -53,6 +53,6 @@ provider "semaphore" {
 
 ### Optional
 
-- `api_base_url` (String) SemaphoreUI API base URL. This can also be defined by the `SEMAPHOREUI_API_BASE_URL` environment variable. Default: `http://localhost:3000/api`.
+- `api_base_url` (String) SemaphoreUI API base URL. This can also be defined by the `SEMAPHOREUI_API_BASE_URL` environment variable. An explicit URL is required in configuration or the environment; there is no implicit localhost target.
 - `api_token` (String, Sensitive) SemaphoreUI API token. This can also be defined by the `SEMAPHOREUI_API_TOKEN` environment variable.
 - `tls_skip_verify` (Boolean) Skip TLS verification for the SemaphoreUI API when using https. This can also be defined by the `SEMAPHOREUI_TLS_SKIP_VERIFY` environment variable.  Default: `false`.
