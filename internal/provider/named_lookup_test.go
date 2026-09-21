@@ -135,3 +135,45 @@ func TestAcc_NamedEnvironmentLookup(t *testing.T) {
  `
 	resource.Test(t, resource.TestCase{PreCheck: func() { testAccPreCheck(t) }, ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Steps: []resource.TestStep{{Config: config, Check: resource.ComposeAggregateTestCheckFunc(resource.TestCheckResourceAttrPair("data.semaphore_ex_project_environment.named", "id", "semaphore_ex_project_environment.test", "id"), resource.TestCheckResourceAttrPair("data.semaphore_ex_project_template.named", "id", "semaphore_ex_project_template.test", "id"))}}})
 }
+
+func TestGeneratedKeyLookupIgnoresOrdinaryNames(t *testing.T) {
+	for _, ordinaryOnly := range []bool{false, true} {
+		t.Run(map[bool]string{false: "mixed", true: "ordinary_only"}[ordinaryOnly], func(t *testing.T) {
+			detail := 0
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, http.MethodGet, r.Method)
+				w.Header().Set("Content-Type", "application/json")
+				if r.URL.Path == "/api/project/1/keys" {
+					records := []map[string]any{{"id": 1, "name": "shared", "type": "ssh"}}
+					if !ordinaryOnly {
+						records = append(records, map[string]any{"id": 2, "name": "shared", "type": "ssh", "generated_ssh_key": map[string]any{"algorithm": "ed25519"}})
+					}
+					require.NoError(t, json.NewEncoder(w).Encode(records))
+					return
+				}
+				detail++
+				assert.Equal(t, "/api/project/1/keys/2", r.URL.Path)
+				_, _ = w.Write([]byte(`{"id":2,"project_id":1,"name":"shared","type":"ssh","generated_ssh_key":{"algorithm":"ed25519","public_key":"synthetic-public-key","fingerprint":"SHA256:synthetic"}}`))
+			}))
+			defer server.Close()
+			source := NewProjectGeneratedSSHKeyDataSource()
+			ctx := context.Background()
+			var schema datasource.SchemaResponse
+			source.Schema(ctx, datasource.SchemaRequest{}, &schema)
+			var configured datasource.ConfigureResponse
+			source.(datasource.DataSourceWithConfigure).Configure(ctx, datasource.ConfigureRequest{ProviderData: newEXTestClient(t, server.URL)}, &configured)
+			response := datasource.ReadResponse{State: tfsdk.State{Schema: schema.Schema}}
+			source.Read(ctx, datasource.ReadRequest{Config: tfsdk.Config{Schema: schema.Schema, Raw: unknownConfigObject(schema.Schema.Type().TerraformType(ctx), map[string]any{"project_id": int64(1), "name": "shared"})}}, &response)
+			require.Equal(t, ordinaryOnly, response.Diagnostics.HasError(), "%v", response.Diagnostics)
+			if ordinaryOnly {
+				assert.Zero(t, detail)
+				assert.Contains(t, response.Diagnostics[0].Summary(), "Name Not Found")
+			} else {
+				assert.Equal(t, 1, detail)
+				var state types.Object
+				require.False(t, response.State.Get(ctx, &state).HasError())
+				assert.Equal(t, types.Int64Value(2), state.Attributes()["id"])
+			}
+		})
+	}
+}

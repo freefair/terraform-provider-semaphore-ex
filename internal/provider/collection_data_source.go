@@ -185,7 +185,12 @@ func (d *collectionDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	}
 	for _, name := range []string{"name_filter", "type_filter"} {
 		if value, ok := values[name]; ok && !value.IsNull() {
-			identity = append(identity, name, value.String())
+			filter, ok := value.(types.String)
+			if !ok || filter.IsUnknown() {
+				resp.Diagnostics.AddError("Unknown Collection Filter", "Filters must be known strings when the data source is read.")
+				return
+			}
+			identity = append(identity, name, filter.ValueString())
 		}
 	}
 	for i, part := range identity {

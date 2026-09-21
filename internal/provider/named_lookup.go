@@ -29,6 +29,7 @@ type namedLookupDataSource struct {
 type collectionSpec struct {
 	queryScopes                       []string
 	opaqueID                          bool
+	generatedOnly                     bool
 	name, route, nameField, typeField string
 	scopes                            []string
 	paged                             bool
@@ -43,7 +44,7 @@ func lookupSpecs() map[string]collectionSpec {
 		"project_inventory":                {name: "project_inventories", route: "/project/{project_id}/inventory", nameField: "name", typeField: "type", scopes: project},
 		"project_repository":               {name: "project_repositories", route: "/project/{project_id}/repositories", nameField: "name", scopes: project},
 		"project_key":                      {name: "project_keys", route: "/project/{project_id}/keys", nameField: "name", typeField: "type", scopes: project},
-		"project_generated_ssh_key":        {route: "/project/{project_id}/keys", nameField: "name", typeField: "type", scopes: project},
+		"project_generated_ssh_key":        {generatedOnly: true, route: "/project/{project_id}/keys", nameField: "name", typeField: "type", scopes: project},
 		"project_integration":              {name: "project_integrations", route: "/project/{project_id}/integrations", nameField: "name", typeField: "auth_method", scopes: project},
 		"project_schedule":                 {name: "project_schedules", route: "/project/{project_id}/schedules", nameField: "name", scopes: project},
 		"project_runner":                   {name: "project_runners", route: "/project/{project_id}/runners", nameField: "name", scopes: project},
@@ -127,6 +128,11 @@ func (d *namedLookupDataSource) Read(ctx context.Context, req datasource.ReadReq
 		for _, record := range records {
 			if record[d.spec.nameField] != name.ValueString() {
 				continue
+			}
+			if d.spec.generatedOnly {
+				if _, generated := record["generated_ssh_key"].(map[string]any); !generated {
+					continue
+				}
 			}
 			if match != nil {
 				resp.Diagnostics.AddError("Ambiguous Name", "Multiple records have the requested name in this scope; use an explicit id.")
