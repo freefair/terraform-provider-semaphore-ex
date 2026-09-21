@@ -35,9 +35,30 @@ data "semaphore_ex_runner" "by_name" {
 ### Read-Only
 
 - `active` (Boolean) Indicates whether the runner is allowed to pick up tasks.
+- `cleaning_requested` (String) Read-only server metadata; null when unavailable.
+- `current_load` (Number) Read-only server metadata; null when unavailable.
+- `docker_policy_hash` (String) Read-only server metadata; null when unavailable.
+- `docker_policy_revision` (Number) Read-only server metadata; null when unavailable.
+- `executor_type` (String) Read-only server metadata; null when unavailable.
 - `is_default` (Boolean) Indicates whether this is the default runner.
+- `k8s_cluster_alias` (String) Read-only server metadata; null when unavailable.
+- `k8s_namespace` (String) Read-only server metadata; null when unavailable.
+- `k8s_policy_hash` (String) Read-only server metadata; null when unavailable.
+- `k8s_policy_revision` (Number) Read-only server metadata; null when unavailable.
 - `max_parallel_tasks` (Number) The maximum number of tasks the runner may execute in parallel.
+- `platform` (String) Read-only server metadata; null when unavailable.
 - `registered` (Boolean) Whether the runner is registered (has an auth token). A runner created up front with no credentials stays unregistered until a registration token is generated (see `semaphore_ex_runner_registration_token`) and used to register it.
+- `registration_kind` (String) Read-only server metadata; null when unavailable.
 - `registration_policy` (String) Registration security policy. Omit on import to retain the server policy.
+- `security_checked_at` (String) Read-only server metadata; null when unavailable.
+- `security_compliant` (Boolean)
+- `security_protocol_version` (Number) Read-only server metadata; null when unavailable.
+- `security_reason` (String) Read-only server metadata; null when unavailable.
+- `security_remediation` (String) Read-only server metadata; null when unavailable.
+- `started_at` (String) Read-only server metadata; null when unavailable.
+- `status` (String) Read-only server metadata; null when unavailable.
 - `tags` (Set of String) Tags used to route tasks to specific runners.
+- `touched` (String) Read-only server metadata; null when unavailable.
+- `transport_trust` (String) Read-only server metadata; null when unavailable.
+- `version` (String) Read-only server metadata; null when unavailable.
 - `webhook` (String) URL called by the runner to report task events.

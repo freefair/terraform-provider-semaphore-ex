@@ -33,6 +33,7 @@ data "semaphore_ex_workflow_definition" "release" {
 ### Read-Only
 
 - `access_policy` (Object) (see [below for nested schema](#nestedatt--access_policy))
+- `current_version_id` (Number) Read-only server metadata; null when unavailable.
 - `definition_version` (Number)
 - `description` (String)
 - `edges` (List of Object) (see [below for nested schema](#nestedatt--edges))

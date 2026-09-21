@@ -46,10 +46,13 @@ data "semaphore_ex_project_environment" "by_name" {
 
 - `environment` (Map of String) String-valued environment variables. Omission preserves existing values; configure {} to clear them. Use environment_json to retain other scalar JSON types.
 - `environment_json` (String) Lossless JSON representation of environment. Use jsonencode() for typed values; mutually exclusive with environment. Omission preserves existing values; configure jsonencode({}) to clear them.
+- `last_sync_failed_at` (String) Read-only server metadata; null when unavailable.
+- `last_synced_at` (String) Read-only server metadata; null when unavailable.
 - `secret_storage` (Attributes) Secret storage used for environment-managed secrets. Omit this block to retain imported settings; configure an empty block to clear the binding. (see [below for nested schema](#nestedatt--secret_storage))
 - `secrets` (Attributes List) Secret variables of either `"var"` or `"env"` type. The `value` is encrypted and will be empty if imported. (see [below for nested schema](#nestedatt--secrets))
 - `sync_enabled` (Boolean) Whether automatic synchronization of managed secrets is enabled.
 - `sync_interval` (Number) Automatic synchronization interval in minutes. Set `0` to disable scheduling.
+- `sync_path_status` (Attributes List) Read-only path synchronization identity and fingerprint; no secret contents. (see [below for nested schema](#nestedatt--sync_path_status))
 - `sync_paths` (Attributes List) Mappings from environment access keys to remote secret-storage targets. Set `[]` to remove all mappings. (see [below for nested schema](#nestedatt--sync_paths))
 - `variables` (Map of String) String-valued extra variables. Omission preserves existing values; configure {} to clear them. Use variables_json for typed or nested values. Passed to Ansible as extra variables (`--extra-vars`) and Terraform/OpenTofu as variables (`-var`).
 - `variables_json` (String) Lossless JSON representation of variables. Use jsonencode() for typed values; mutually exclusive with variables. Omission preserves existing values; configure jsonencode({}) to clear them.
@@ -77,6 +80,17 @@ Read-Only:
 - `type` (String) The variable type.
 - `value` (String, Sensitive) The variable value.
 - `version` (Number) Remote secret version; `0` selects the storage default.
+
+
+<a id="nestedatt--sync_path_status"></a>
+### Nested Schema for `sync_path_status`
+
+Read-Only:
+
+- `content_fingerprint` (String)
+- `id` (Number)
+- `path` (String)
+- `remote_version` (Number)
 
 
 <a id="nestedatt--sync_paths"></a>

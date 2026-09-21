@@ -36,7 +36,9 @@ data "semaphore_ex_project_schedule" "schedule" {
 
 - `cron_format` (String) The cron format of the schedule.
 - `delete_after_run` (Boolean) Remove a one-off schedule after it executes. Before the next apply, remove the completed schedule from configuration or choose a new future run_at; the server rejects creating a schedule in the past. Omitted configuration preserves the server value.
+- `effective_timezone` (String) Read-only server metadata; null when unavailable.
 - `enabled` (Boolean) Whether the schedule is enabled.
+- `next_run` (String) Read-only server metadata; null when unavailable.
 - `repository_id` (Number) Optional repository used to detect source changes.
 - `run_at` (String) One-off execution time in RFC3339 format.
 - `task_params` (Attributes) Default task parameters applied when this template or integration runs a task. (see [below for nested schema](#nestedatt--task_params))

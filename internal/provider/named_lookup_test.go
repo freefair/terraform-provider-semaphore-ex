@@ -55,7 +55,7 @@ func TestNamedEnvironmentLookup(t *testing.T) {
 				assert.Zero(t, detailReads)
 				return
 			}
-			assert.Equal(t, 1, detailReads)
+			assert.Equal(t, 2, detailReads)
 			var actual types.String
 			require.False(t, response.State.GetAttribute(ctx, path.Root("variables_json"), &actual).HasError())
 			assert.JSONEq(t, `{"detail":"available"}`, actual.ValueString())

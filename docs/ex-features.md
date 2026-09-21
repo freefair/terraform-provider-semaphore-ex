@@ -227,3 +227,16 @@ require `provider_id`.
 When resources and their collections are created in the same apply, express the
 appropriate dependency with `depends_on` so Terraform reads the list after creation.
 A reference to only the parent project's ID does not depend on its child resources.
+
+## Operational metadata
+
+Data sources expose current runner status, version, platform, load, executor policy
+identity, and registration/security diagnostics. Schedule data sources expose
+`effective_timezone` and `next_run`. Environment and secret-storage data sources
+expose synchronization timestamps and `sync_path_status` fingerprints. Workflow
+and trigger data sources expose `current_version_id` and `owner_user_id`; LDAP
+configuration exposes readiness, eligible users, and recovery-administrator identity.
+
+These are read-only snapshots. They are deliberately absent from managed resource
+schemas so changing runtime observations do not create configuration changes. An
+unavailable or omitted API field remains null instead of receiving an invented value.

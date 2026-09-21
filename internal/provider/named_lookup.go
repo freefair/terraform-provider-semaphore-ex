@@ -61,7 +61,7 @@ func lookupSpecs() map[string]collectionSpec {
 }
 
 func withNamedLookup(source datasource.DataSource, name string) datasource.DataSource {
-	return &namedLookupDataSource{DataSource: source, spec: lookupSpecs()[name]}
+	return &namedLookupDataSource{DataSource: withReadMetadata(source, name), spec: lookupSpecs()[name]}
 }
 
 func (d *namedLookupDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {

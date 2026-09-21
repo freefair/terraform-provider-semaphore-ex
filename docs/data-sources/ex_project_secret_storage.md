@@ -26,6 +26,8 @@ Manages project secret storage and synchronization metadata without returning st
 
 ### Read-Only
 
+- `last_sync_failed_at` (String) Read-only server metadata; null when unavailable.
+- `last_synced_at` (String) Read-only server metadata; null when unavailable.
 - `params` (Dynamic)
 - `read_only` (Boolean) .
 - `secret` (String, Sensitive) .
@@ -36,9 +38,21 @@ Manages project secret storage and synchronization metadata without returning st
 - `sync_direction` (String) . Value must be one of : `read_only`, `outbound`.
 - `sync_enabled` (Boolean) .
 - `sync_interval` (Number) . Value must be at least 0.
+- `sync_path_status` (Attributes List) Read-only path synchronization identity and fingerprint; no secret contents. (see [below for nested schema](#nestedatt--sync_path_status))
 - `sync_paths` (Attributes List) . (see [below for nested schema](#nestedatt--sync_paths))
 - `sync_revision` (Number) .
 - `type` (String) . Value must be one of : `local`, `vault`, `openbao`, `dvls`, `aws_sm`, `azure_kv`.
+
+<a id="nestedatt--sync_path_status"></a>
+### Nested Schema for `sync_path_status`
+
+Read-Only:
+
+- `content_fingerprint` (String)
+- `id` (Number)
+- `path` (String)
+- `remote_version` (Number)
+
 
 <a id="nestedatt--sync_paths"></a>
 ### Nested Schema for `sync_paths`

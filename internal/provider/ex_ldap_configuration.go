@@ -74,8 +74,10 @@ func (v canonicalLDAPProviderIDValidator) ValidateString(ctx context.Context, re
 	}
 }
 
-func NewLDAPConfigurationResource() resource.Resource       { return &ldapConfigurationResource{} }
-func NewLDAPConfigurationDataSource() datasource.DataSource { return &ldapConfigurationDataSource{} }
+func NewLDAPConfigurationResource() resource.Resource { return &ldapConfigurationResource{} }
+func NewLDAPConfigurationDataSource() datasource.DataSource {
+	return withReadMetadata(&ldapConfigurationDataSource{}, "ldap_configuration")
+}
 func (r *ldapConfigurationResource) Metadata(_ context.Context, q resource.MetadataRequest, p *resource.MetadataResponse) {
 	p.TypeName = q.ProviderTypeName + "_ldap_configuration"
 }

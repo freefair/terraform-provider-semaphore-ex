@@ -20,7 +20,9 @@ Reads an LDAP identity provider configuration without its bind password.
 - `bind_dn` (String)
 - `bind_password_configured` (Boolean)
 - `ca_pem` (String)
+- `created` (String) Read-only server metadata; null when unavailable.
 - `display_name` (String)
+- `eligible_user_ids` (List of Number)
 - `email_attribute` (String)
 - `group_filter` (String)
 - `group_identity_attribute` (String)
@@ -31,11 +33,27 @@ Reads an LDAP identity provider configuration without its bind password.
 - `id` (String) The ID of this resource.
 - `identity_attribute` (String)
 - `name_attribute` (String)
+- `readiness` (Attributes) (see [below for nested schema](#nestedatt--readiness))
+- `recovery_admin_user_id` (Number) Read-only server metadata; null when unavailable.
 - `search_base_dn` (String)
 - `selected_user_ids` (List of Number)
 - `server_url` (String)
 - `state` (String)
 - `tls_mode` (String)
 - `trust_mode` (String)
+- `updated` (String) Read-only server metadata; null when unavailable.
 - `user_filter` (String)
 - `username_attribute` (String)
+
+<a id="nestedatt--readiness"></a>
+### Nested Schema for `readiness`
+
+Read-Only:
+
+- `bind` (Boolean)
+- `checked_at` (String)
+- `code` (String)
+- `connection` (Boolean)
+- `recovery` (Boolean)
+- `search` (Boolean)
+- `status` (String)

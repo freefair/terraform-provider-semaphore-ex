@@ -37,6 +37,7 @@ Reads a Semaphore EX workflow trigger without any credential or signing secret.
 - `last_result` (String)
 - `next_signing_generation` (Number)
 - `next_signing_key_id` (String)
+- `owner_user_id` (Number) Read-only server metadata; null when unavailable.
 - `revision` (Number)
 - `type` (String)
 
