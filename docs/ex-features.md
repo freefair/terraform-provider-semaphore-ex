@@ -240,3 +240,21 @@ configuration exposes readiness, eligible users, and recovery-administrator iden
 These are read-only snapshots. They are deliberately absent from managed resource
 schemas so changing runtime observations do not create configuration changes. An
 unavailable or omitted API field remains null instead of receiving an invented value.
+
+## Runtime-secrets configuration
+
+The `semaphore_ex_runtime_secrets` resource and data source expose the configured
+`state` (`active`, `disabled`, or `read_only`) and optional `expires_at`. An expired
+configuration keeps its original state and timestamp on refresh/import; the resolved
+capability state is a different API concept.
+
+This feature requires `GET /api/capabilities/runtime-secrets`, added to the server in
+commit `5abb42991dc72f8d7673ac042d5f784907238719`. The previously supported
+`v2.20.0-ex.2` server does not provide that configured-state read. The resource checks
+read support before writing and produces an upgrade diagnostic on older servers.
+No newer server release version is implied by this source-level requirement.
+
+The singleton import ID is `runtime_secrets`. Destroy removes Terraform ownership
+and leaves the global server setting intact. To change the setting, configure the
+intended state explicitly and apply before removing ownership. Omitting `expires_at`
+clears the configured expiry. Administrator authorization is enforced by the server.

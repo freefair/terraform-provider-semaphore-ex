@@ -212,6 +212,7 @@ func (p *SemaphoreUIProvider) Actions(context.Context) []func() action.Action {
 
 func (p *SemaphoreUIProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		NewRuntimeSecretsResource,
 		NewIntegrationAliasResource,
 		NewAppResource,
 		NewUserAPITokenResource,
@@ -262,6 +263,7 @@ func (p *SemaphoreUIProvider) Resources(ctx context.Context) []func() resource.R
 
 func (p *SemaphoreUIProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	sources := []func() datasource.DataSource{
+		NewRuntimeSecretsDataSource,
 		NewIntegrationAliasDataSource,
 		NewExternalUserDataSource,
 		NewAppDataSource,
