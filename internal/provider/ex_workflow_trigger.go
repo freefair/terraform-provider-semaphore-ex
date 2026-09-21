@@ -75,8 +75,10 @@ type exWorkflowTriggerDataSource struct{ client *apiclient.SemaphoreUI }
 
 var _ resource.ResourceWithImportState = &exWorkflowTriggerResource{}
 
-func NewWorkflowTriggerResource() resource.Resource       { return &exWorkflowTriggerResource{} }
-func NewWorkflowTriggerDataSource() datasource.DataSource { return &exWorkflowTriggerDataSource{} }
+func NewWorkflowTriggerResource() resource.Resource { return &exWorkflowTriggerResource{} }
+func NewWorkflowTriggerDataSource() datasource.DataSource {
+	return withNamedLookup(&exWorkflowTriggerDataSource{}, "workflow_trigger")
+}
 
 func exWorkflowTriggerFixedSecretAttributes(computed bool) map[string]rs.Attribute {
 	return map[string]rs.Attribute{

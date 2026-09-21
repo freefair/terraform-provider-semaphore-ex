@@ -28,10 +28,13 @@ data "semaphore_ex_project_generated_ssh_key" "deploy" {
 
 - `project_id` (Number)
 
+### Optional
+
+- `name` (String) Exact name within the selected scope. Configure either this attribute or id. Zero or multiple matches are errors.
+
 ### Read-Only
 
 - `algorithm` (String)
 - `fingerprint` (String)
 - `id` (Number) The ID of this resource.
-- `name` (String)
 - `public_key` (String)

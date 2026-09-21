@@ -14,7 +14,7 @@ var (
 )
 
 func NewRunnerDataSource() datasource.DataSource {
-	return &runnerDataSource{}
+	return withNamedLookup(&runnerDataSource{}, "runner")
 }
 
 type runnerDataSource struct {

@@ -19,6 +19,10 @@ Reads a Semaphore EX notification destination without credential material.
 
 - `project_id` (Number)
 
+### Optional
+
+- `name` (String) Exact name within the selected scope. Configure either this attribute or id. Zero or multiple matches are errors.
+
 ### Read-Only
 
 - `credential_configured` (Boolean)
@@ -26,7 +30,6 @@ Reads a Semaphore EX notification destination without credential material.
 - `enabled` (Boolean)
 - `environment` (String)
 - `id` (Number) The ID of this resource.
-- `name` (String)
 - `opsgenie` (Attributes) (see [below for nested schema](#nestedatt--opsgenie))
 - `paused` (Boolean)
 - `region` (String)

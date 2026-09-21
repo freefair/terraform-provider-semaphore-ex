@@ -15,7 +15,7 @@ var (
 )
 
 func NewProjectDataSource() datasource.DataSource {
-	return &projectDataSource{}
+	return withNamedLookup(&projectDataSource{}, "project")
 }
 
 type projectDataSource struct {

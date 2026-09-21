@@ -91,10 +91,10 @@ func NewProjectNotificationDestinationResource() resource.Resource {
 	return &exNotificationDestinationResource{project: true}
 }
 func NewGlobalNotificationDestinationDataSource() datasource.DataSource {
-	return &exNotificationDestinationDataSource{}
+	return withNamedLookup(&exNotificationDestinationDataSource{}, "global_notification_destination")
 }
 func NewProjectNotificationDestinationDataSource() datasource.DataSource {
-	return &exNotificationDestinationDataSource{project: true}
+	return withNamedLookup(&exNotificationDestinationDataSource{project: true}, "project_notification_destination")
 }
 func NewGlobalNotificationRuleResource() resource.Resource { return &exNotificationRuleResource{} }
 func NewProjectNotificationRuleResource() resource.Resource {

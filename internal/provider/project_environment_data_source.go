@@ -15,7 +15,7 @@ var (
 )
 
 func NewProjectEnvironmentDataSource() datasource.DataSource {
-	return &projectEnvironmentDataSource{}
+	return withNamedLookup(&projectEnvironmentDataSource{}, "project_environment")
 }
 
 type projectEnvironmentDataSource struct {

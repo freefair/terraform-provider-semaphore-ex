@@ -26,10 +26,13 @@ data "semaphore_ex_project_role" "viewer" {
 
 - `project_id` (Number)
 
+### Optional
+
+- `name` (String) Exact name within the selected scope. Configure either this attribute or id. Zero or multiple matches are errors.
+
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `name` (String)
 - `project_permissions` (Set of String)
 - `revision` (Number)
 - `slug` (String)

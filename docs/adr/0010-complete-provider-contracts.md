@@ -57,3 +57,12 @@ migration; additive JSON inputs retain compatibility. Removing unmapped fields o
 update loses settings managed through other clients. Mapping previews with stored
 review tokens into ordinary data-source reads introduces hidden operations during
 planning.
+
+## Lookup implementation
+
+A shared data-source adapter changes only selection: it resolves an exact scoped
+name, then delegates to the existing reader using the resolved ID. This keeps detail
+conversion and secret redaction in one place. Collection schemas deliberately list
+allowed summary fields instead of copying arbitrary API response objects into state.
+Only routes with documented count/offset pagination receive those parameters;
+unpaginated APIs are read once. Ordering follows stable server IDs.

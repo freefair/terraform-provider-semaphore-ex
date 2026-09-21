@@ -65,8 +65,10 @@ type exGlobalCredentialDataSource struct{ client *apiclient.SemaphoreUI }
 
 var _ resource.ResourceWithImportState = &exGlobalCredentialResource{}
 
-func NewGlobalCredentialResource() resource.Resource       { return &exGlobalCredentialResource{} }
-func NewGlobalCredentialDataSource() datasource.DataSource { return &exGlobalCredentialDataSource{} }
+func NewGlobalCredentialResource() resource.Resource { return &exGlobalCredentialResource{} }
+func NewGlobalCredentialDataSource() datasource.DataSource {
+	return withNamedLookup(&exGlobalCredentialDataSource{}, "global_credential")
+}
 
 func (r *exGlobalCredentialResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_global_credential"

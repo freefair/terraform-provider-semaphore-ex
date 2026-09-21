@@ -197,3 +197,33 @@ External backends remain unchanged when override is disabled.
 
 Vault/OpenBao `params` may omit the server's default `auth_method = "token"`.
 Imports expose canonical server parameters, including that default; other parameter changes remain visible as drift.
+
+## Exact lookups and collections
+
+Named data sources accept exactly one of `id` and their existing name attribute
+(`name`, `title`, or `display_name`). Matching is exact and scoped by the required
+project or workflow identity. Missing names and duplicate matches fail explicitly.
+The provider resolves the identity from the list, then reads the detail endpoint;
+list responses do not substitute for complete resource metadata. Results are limited
+to records the authenticated caller can access.
+
+Plural data sources expose ordered `ids` and non-secret `items` summaries, with
+`name_filter` and, where meaningful, `type_filter`. For example:
+
+```hcl
+data "semaphore_ex_project_environments" "deployment" {
+  project_id  = semaphore_ex_project.example.id
+  name_filter = "deployment"
+}
+```
+
+Global credentials and notification destinations are paginated. The provider reads
+all pages before filtering or deciding name uniqueness. A failed page, repeated
+identity, or pagination bound produces an error instead of a partial result.
+Collections intentionally expose summary fields; use the singular data source for
+complete details. Missing summary metadata stays null. LDAP/OIDC mapping collections
+require `provider_id`.
+
+When resources and their collections are created in the same apply, express the
+appropriate dependency with `depends_on` so Terraform reads the list after creation.
+A reference to only the parent project's ID does not depend on its child resources.

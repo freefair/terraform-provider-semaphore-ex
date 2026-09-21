@@ -36,7 +36,7 @@ data "semaphore_ex_project_repository" "semaphore" {
 ### Optional
 
 - `id` (Number) The repository ID. Ensure that one and only one attribute from this collection is set : `id`, `name`.
-- `name` (String) The display name of the repository. Ensure that one and only one attribute from this collection is set : `id`, `name`.
+- `name` (String) Exact name within the selected scope. Configure either this attribute or id. Zero or multiple matches are errors.
 
 ### Read-Only
 

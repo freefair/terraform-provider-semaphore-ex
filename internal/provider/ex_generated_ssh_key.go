@@ -53,8 +53,10 @@ var _ resource.ResourceWithConfigure = &generatedSSHKeyResource{}
 var _ resource.ResourceWithImportState = &generatedSSHKeyResource{}
 var _ datasource.DataSourceWithConfigure = &generatedSSHKeyDataSource{}
 
-func NewProjectGeneratedSSHKeyResource() resource.Resource       { return &generatedSSHKeyResource{} }
-func NewProjectGeneratedSSHKeyDataSource() datasource.DataSource { return &generatedSSHKeyDataSource{} }
+func NewProjectGeneratedSSHKeyResource() resource.Resource { return &generatedSSHKeyResource{} }
+func NewProjectGeneratedSSHKeyDataSource() datasource.DataSource {
+	return withNamedLookup(&generatedSSHKeyDataSource{}, "project_generated_ssh_key")
+}
 
 func (r *generatedSSHKeyResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	resp.TypeName = req.ProviderTypeName + "_project_generated_ssh_key"

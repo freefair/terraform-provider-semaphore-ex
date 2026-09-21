@@ -10,7 +10,7 @@ import (
 type projectSecretStorageDataSource struct{ client *apiclient.SemaphoreUI }
 
 func NewProjectSecretStorageDataSource() datasource.DataSource {
-	return &projectSecretStorageDataSource{}
+	return withNamedLookup(&projectSecretStorageDataSource{}, "project_secret_storage")
 }
 func (d *projectSecretStorageDataSource) Metadata(_ context.Context, q datasource.MetadataRequest, p *datasource.MetadataResponse) {
 	p.TypeName = q.ProviderTypeName + "_project_secret_storage"

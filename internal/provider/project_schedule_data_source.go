@@ -14,7 +14,7 @@ var (
 )
 
 func NewProjectScheduleDataSource() datasource.DataSource {
-	return &projectScheduleDataSource{}
+	return withNamedLookup(&projectScheduleDataSource{}, "project_schedule")
 }
 
 type projectScheduleDataSource struct {

@@ -58,7 +58,7 @@ type exWorkflowDefinitionDataSource struct{ client *apiclient.SemaphoreUI }
 
 func NewWorkflowDefinitionResource() resource.Resource { return &exWorkflowDefinitionResource{} }
 func NewWorkflowDefinitionDataSource() datasource.DataSource {
-	return &exWorkflowDefinitionDataSource{}
+	return withNamedLookup(&exWorkflowDefinitionDataSource{}, "workflow_definition")
 }
 func (r *exWorkflowDefinitionResource) Metadata(_ context.Context, q resource.MetadataRequest, p *resource.MetadataResponse) {
 	p.TypeName = q.ProviderTypeName + "_workflow_definition"

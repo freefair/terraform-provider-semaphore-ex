@@ -79,10 +79,14 @@ type exRoleDataSource struct {
 	project bool
 }
 
-func NewGlobalRoleResource() resource.Resource        { return &exRoleResource{} }
-func NewProjectRoleResource() resource.Resource       { return &exRoleResource{project: true} }
-func NewGlobalRoleDataSource() datasource.DataSource  { return &exRoleDataSource{} }
-func NewProjectRoleDataSource() datasource.DataSource { return &exRoleDataSource{project: true} }
+func NewGlobalRoleResource() resource.Resource  { return &exRoleResource{} }
+func NewProjectRoleResource() resource.Resource { return &exRoleResource{project: true} }
+func NewGlobalRoleDataSource() datasource.DataSource {
+	return withNamedLookup(&exRoleDataSource{}, "global_role")
+}
+func NewProjectRoleDataSource() datasource.DataSource {
+	return withNamedLookup(&exRoleDataSource{project: true}, "project_role")
+}
 
 func (r *exRoleResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
 	if r.project {

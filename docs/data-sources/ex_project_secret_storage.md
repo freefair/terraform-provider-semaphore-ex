@@ -17,12 +17,15 @@ Manages project secret storage and synchronization metadata without returning st
 
 ### Required
 
-- `id` (Number) .
 - `project_id` (Number) .
+
+### Optional
+
+- `id` (Number) .
+- `name` (String) Exact name within the selected scope. Configure either this attribute or id. Zero or multiple matches are errors.
 
 ### Read-Only
 
-- `name` (String) .
 - `params` (Dynamic)
 - `read_only` (Boolean) .
 - `secret` (String, Sensitive) .

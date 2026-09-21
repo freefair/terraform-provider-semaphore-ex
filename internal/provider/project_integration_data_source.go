@@ -14,7 +14,7 @@ var (
 )
 
 func NewProjectIntegrationDataSource() datasource.DataSource {
-	return &projectIntegrationDataSource{}
+	return withNamedLookup(&projectIntegrationDataSource{}, "project_integration")
 }
 
 type projectIntegrationDataSource struct {

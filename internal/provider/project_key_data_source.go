@@ -16,7 +16,7 @@ var (
 )
 
 func NewProjectKeyDataSource() datasource.DataSource {
-	return &projectKeyDataSource{}
+	return withNamedLookup(&projectKeyDataSource{}, "project_key")
 }
 
 type projectKeyDataSource struct {

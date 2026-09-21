@@ -22,7 +22,7 @@ The project view data source allows you to read a Views details.
 ### Optional
 
 - `id` (Number) The view ID. Ensure that one and only one attribute from this collection is set : `id`, `title`.
-- `title` (String) Title of the view. Ensure that one and only one attribute from this collection is set : `id`, `title`.
+- `title` (String) Exact name within the selected scope. Configure either this attribute or id. Zero or multiple matches are errors.
 
 ### Read-Only
 

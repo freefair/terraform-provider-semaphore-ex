@@ -26,6 +26,10 @@ data "semaphore_ex_workflow_definition" "release" {
 
 - `project_id` (Number)
 
+### Optional
+
+- `name` (String) Exact name within the selected scope. Configure either this attribute or id. Zero or multiple matches are errors.
+
 ### Read-Only
 
 - `access_policy` (Object) (see [below for nested schema](#nestedatt--access_policy))
@@ -34,7 +38,6 @@ data "semaphore_ex_workflow_definition" "release" {
 - `edges` (List of Object) (see [below for nested schema](#nestedatt--edges))
 - `id` (Number) The ID of this resource.
 - `max_parallel_tasks` (Number)
-- `name` (String)
 - `nodes` (List of Object) (see [below for nested schema](#nestedatt--nodes))
 - `parameters` (List of Object) (see [below for nested schema](#nestedatt--parameters))
 - `revision` (Number)

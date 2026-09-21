@@ -20,6 +20,10 @@ Reads a Semaphore EX workflow trigger without any credential or signing secret.
 - `project_id` (Number)
 - `workflow_id` (Number)
 
+### Optional
+
+- `name` (String) Exact name within the selected scope. Configure either this attribute or id. Zero or multiple matches are errors.
+
 ### Read-Only
 
 - `credential_generation` (Number)
@@ -31,7 +35,6 @@ Reads a Semaphore EX workflow trigger without any credential or signing secret.
 - `input_mappings` (Attributes List) (see [below for nested schema](#nestedatt--input_mappings))
 - `last_fired` (String)
 - `last_result` (String)
-- `name` (String)
 - `next_signing_generation` (Number)
 - `next_signing_key_id` (String)
 - `revision` (Number)

@@ -15,7 +15,7 @@ var (
 )
 
 func NewProjectInventoryDataSource() datasource.DataSource {
-	return &projectInventoryDataSource{}
+	return withNamedLookup(&projectInventoryDataSource{}, "project_inventory")
 }
 
 type projectInventoryDataSource struct {

@@ -25,15 +25,18 @@ data "semaphore_ex_project_schedule" "schedule" {
 
 ### Required
 
-- `id` (Number) The schedule ID.
 - `project_id` (Number) The project ID that the schedule belongs to.
+
+### Optional
+
+- `id` (Number) The schedule ID.
+- `name` (String) Exact name within the selected scope. Configure either this attribute or id. Zero or multiple matches are errors.
 
 ### Read-Only
 
 - `cron_format` (String) The cron format of the schedule.
 - `delete_after_run` (Boolean) Remove a one-off schedule after it executes. Before the next apply, remove the completed schedule from configuration or choose a new future run_at; the server rejects creating a schedule in the past. Omitted configuration preserves the server value.
 - `enabled` (Boolean) Whether the schedule is enabled.
-- `name` (String) The display name of the schedule.
 - `repository_id` (Number) Optional repository used to detect source changes.
 - `run_at` (String) One-off execution time in RFC3339 format.
 - `task_params` (Attributes) Default task parameters applied when this template or integration runs a task. (see [below for nested schema](#nestedatt--task_params))
