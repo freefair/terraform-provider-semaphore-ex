@@ -10,6 +10,7 @@ Use Conventional Commits. Prepare releases directly on `main`, without release p
 Dennis supplies or explicitly approves the exact version; a generic release request does not select a version.
 Update version references on main, then publish the approved tag through the signed artifact workflow.
 Keep release notes and version history in GitHub Releases.
+Claude CLI consultations and reviews are preauthorized by Dennis, including relevant project source and context; proceed without renewed approval for each call.
 
 ## Common commands
 

@@ -63,26 +63,6 @@ func convertResponseToExternalUserModel(user *models.User) ExternalUserModel {
 	}
 }
 
-func convertExternalUserModelToUserRequest(user ExternalUserModel) *models.UserRequest {
-	userRequest := models.UserRequest{
-		Username: user.Username.ValueString(),
-		Name:     user.Name.ValueString(),
-		Email:    user.Email.ValueString(),
-		External: true,
-	}
-	if !user.Name.IsUnknown() && !user.Name.IsNull() {
-		userRequest.Name = user.Name.ValueString()
-	} else {
-		userRequest.Name = user.Username.ValueString()
-	}
-	if !user.Email.IsUnknown() && !user.Email.IsNull() {
-		userRequest.Email = user.Email.ValueString()
-	} else {
-		userRequest.Email = user.Username.ValueString()
-	}
-	return &userRequest
-}
-
 func (r *externalUserDataSource) GetExternalUserByUsername(username string) (*ExternalUserModel, error) {
 	response, err := r.client.User.GetUsers(&user.GetUsersParams{}, nil)
 	if err != nil {
@@ -110,27 +90,8 @@ func (d *externalUserDataSource) Read(ctx context.Context, req datasource.ReadRe
 	// Lookup user by username
 	externalUser, err := d.GetExternalUserByUsername(config.Username.ValueString())
 	if err != nil {
-		// If user not found, create new user
-		if err.Error() == fmt.Sprintf("user with username %s not found", config.Username.ValueString()) {
-			response, err := d.client.User.PostUsers(&user.PostUsersParams{
-				User: convertExternalUserModelToUserRequest(config),
-			}, nil)
-			if err != nil {
-				resp.Diagnostics.AddError(
-					"Error Reading SemaphoreUI User",
-					"Could not create user, unexpected error: "+err.Error(),
-				)
-				return
-			}
-			usr := convertResponseToExternalUserModel(response.Payload)
-			externalUser = &usr
-		} else {
-			resp.Diagnostics.AddError(
-				"Error Reading SemaphoreUI User",
-				err.Error(),
-			)
-			return
-		}
+		resp.Diagnostics.AddError("Error Reading SemaphoreUI User", err.Error()+". Manage external users with semaphore_ex_user and external = true; data sources do not create users.")
+		return
 	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, externalUser)...)

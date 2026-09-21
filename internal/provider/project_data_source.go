@@ -54,11 +54,18 @@ func (d *projectDataSource) GetProjectByName(name string) (*ProjectModel, error)
 		return nil, fmt.Errorf("could not read Projects: %s", err.Error())
 	}
 
+	var found *ProjectModel
 	for _, project := range response.Payload {
 		if project.Name == name {
+			if found != nil {
+				return nil, fmt.Errorf("multiple projects have name %q; use an explicit id", name)
+			}
 			projectModel := convertProjectResponseToProjectModel(project)
-			return &projectModel, nil
+			found = &projectModel
 		}
+	}
+	if found != nil {
+		return found, nil
 	}
 	return nil, fmt.Errorf("project with name %s not found", name)
 }

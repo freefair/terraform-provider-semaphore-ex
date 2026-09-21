@@ -402,14 +402,14 @@ func convertEnvironmentResponseToProjectEnvironmentModel(ctx context.Context, en
 	if json.Unmarshal([]byte(environment.JSON), &model.Variables) != nil {
 		model.Variables = &map[string]string{}
 	}
-	if len(*model.Variables) == 0 && prev.Variables == nil {
+	if model.Variables != nil && len(*model.Variables) == 0 && prev.Variables == nil {
 		model.Variables = nil
 	}
 
 	if json.Unmarshal([]byte(environment.Env), &model.Environment) != nil {
 		model.Environment = &map[string]string{}
 	}
-	if len(*model.Environment) == 0 && prev.Environment == nil {
+	if model.Environment != nil && len(*model.Environment) == 0 && prev.Environment == nil {
 		model.Environment = nil
 	}
 
@@ -449,8 +449,8 @@ func convertEnvironmentResponseToProjectEnvironmentModel(ctx context.Context, en
 		}
 		secrets = append(secrets, modelSecret)
 	}
-	if len(secrets) == 0 && !prev.Secrets.IsNull() && !prev.Secrets.IsUnknown() {
-		prev.Secrets.ElementsAs(ctx, &secrets, false)
+	if len(secrets) == 0 && !prev.Secrets.IsNull() && !prev.Secrets.IsUnknown() && len(prev.Secrets.Elements()) == 0 {
+		secrets = []ProjectEnvironmentSecretModel{}
 	}
 
 	envSecrets, _ := types.ListValueFrom(ctx, types.ObjectType{AttrTypes: projectEnvironmentSecretAttributeTypes()}, secrets)

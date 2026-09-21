@@ -266,7 +266,7 @@ func ProjectTemplateSchema() superschema.Schema {
 			},
 			"playbook": superschema.StringAttribute{
 				Common: &schemaR.StringAttribute{
-					MarkdownDescription: "The playbook/script filename. Optional when `app` is `terraform` or `tofu`; required otherwise.",
+					MarkdownDescription: "The playbook/script filename. Optional when `app` is `terraform`, `tofu` or `terragrunt`; required otherwise.",
 				},
 				Resource: &schemaR.StringAttribute{
 					Optional: true,

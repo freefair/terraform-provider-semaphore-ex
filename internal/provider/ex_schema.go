@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 
 	schemaD "github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	schemaR "github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -10,6 +11,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	superschema "github.com/orange-cloudavenue/terraform-plugin-framework-superschema"
 )
+
+// Preserve a configured empty list, but never hide remote deletion of entries.
+func emptyListAfterRead(previous types.List, elementType attr.Type) types.List {
+	if !previous.IsNull() && !previous.IsUnknown() && len(previous.Elements()) == 0 {
+		return types.ListValueMust(elementType, []attr.Value{})
+	}
+	return types.ListNull(elementType)
+}
 
 func knownInt64Pointer(value types.Int64) *int64 {
 	if value.IsNull() || value.IsUnknown() {

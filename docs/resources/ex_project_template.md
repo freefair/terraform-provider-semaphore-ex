@@ -155,7 +155,7 @@ resource "semaphore_ex_project_environment" "extra" {
 - `executor_image` (String) Runner container image override. Empty uses the runner default. Must not have leading or trailing whitespace.
 - `git_branch` (String) Override the git branch defined in the project repository.
 - `jwt_params` (Attributes) Controls task JWT issuance. JWT material is never stored in Terraform state. Preserve an omitted object from prior state. (see [below for nested schema](#nestedatt--jwt_params))
-- `playbook` (String) The playbook/script filename. Optional when `app` is `terraform` or `tofu`; required otherwise. Value defaults to ``. Must be a relative path (path/to/playbook) or empty.
+- `playbook` (String) The playbook/script filename. Optional when `app` is `terraform`, `tofu` or `terragrunt`; required otherwise. Value defaults to ``. Must be a relative path (path/to/playbook) or empty.
 - `runner_tag_match_mode` (String) Runner tag matching policy: all or any. Value must be one of : `all`, `any`.
 - `runner_tags` (Set of String) Runner placement tags. Set must contain at most 32 elements. Element value must satisfy all validations: Runner tags must be nonempty, lowercase, trimmed, and at most 255 bytes.
 - `ssh_keys` (Attributes) SSH key selection. Set inherit=true to use the project default, or inherit=false with bindings (including an empty list) for an explicit selection. (see [below for nested schema](#nestedatt--ssh_keys))

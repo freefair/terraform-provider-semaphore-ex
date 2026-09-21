@@ -3,26 +3,27 @@
 page_title: "semaphore_ex_external_user Data Source - Semaphore EX"
 subcategory: ""
 description: |-
-  
+  Looks up an existing external user by username. A missing user is an error. Manage users with the semaphore_ex_user resource and external = true; this data source never creates or updates users.
 ---
 
 # semaphore_ex_external_user (Data Source)
 
-
+Looks up an existing external user by username. A missing user is an error. Manage users with the semaphore_ex_user resource and external = true; this data source never creates or updates users.
 
 ## Example Usage
 
 ```terraform
-# Lookup or Create External User
-data "semaphore_ex_user" "user" {
+# Look up an existing external user. Missing users produce an error.
+data "semaphore_ex_external_user" "user" {
   username = "batman"
 }
 
-# Lookup or Create External User with additional attributes
-data "semaphore_ex_user" "batman" {
+# Create and manage an external user explicitly when needed.
+resource "semaphore_ex_user" "batman" {
   username = "batman"
   name     = "Bruce Wayne"
   email    = "batman@wayneenterprises.com"
+  external = true
 }
 ```
 
@@ -35,8 +36,8 @@ data "semaphore_ex_user" "batman" {
 
 ### Optional
 
-- `email` (String) Email address. Defaults to the username if not supplied.
-- `name` (String) Display name. Defaults to the username if not supplied.
+- `email` (String) Email address returned by the server. Optional input is retained for compatibility and does not change the user; leave it unset for lookup.
+- `name` (String) Display name returned by the server. Optional input is retained for compatibility and does not change the user; leave it unset for lookup.
 
 ### Read-Only
 

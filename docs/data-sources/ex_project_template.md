@@ -54,7 +54,7 @@ data "semaphore_ex_project_template" "build" {
 - `git_branch` (String) Override the git branch defined in the project repository.
 - `inventory_id` (Number) The inventory ID that the template uses.
 - `jwt_params` (Attributes) Controls task JWT issuance. JWT material is never stored in Terraform state. (see [below for nested schema](#nestedatt--jwt_params))
-- `playbook` (String) The playbook/script filename. Optional when `app` is `terraform` or `tofu`; required otherwise.
+- `playbook` (String) The playbook/script filename. Optional when `app` is `terraform`, `tofu` or `terragrunt`; required otherwise.
 - `repository_id` (Number) The repository ID that the template uses.
 - `runner_tag_match_mode` (String) Runner tag matching policy: all or any.
 - `runner_tags` (Set of String) Runner placement tags.

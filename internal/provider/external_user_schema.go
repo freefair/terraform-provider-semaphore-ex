@@ -20,8 +20,8 @@ type ExternalUserModel struct {
 
 func ExternalUserSchema() superschema.Schema {
 	return superschema.Schema{
-		Resource: superschema.SchemaDetails{
-			MarkdownDescription: "The external user data source allows you to lookup an external User in SemaphoreUI. This special data source will create the external user in SemaphoreUI if they do not exist.",
+		DataSource: superschema.SchemaDetails{
+			MarkdownDescription: "Looks up an existing external user by username. A missing user is an error. Manage users with the semaphore_ex_user resource and external = true; this data source never creates or updates users.",
 		},
 		Attributes: map[string]superschema.Attribute{
 			"username": superschema.StringAttribute{
@@ -40,14 +40,14 @@ func ExternalUserSchema() superschema.Schema {
 			},
 			"name": superschema.StringAttribute{
 				DataSource: &schemaD.StringAttribute{
-					MarkdownDescription: "Display name. Defaults to the username if not supplied.",
+					MarkdownDescription: "Display name returned by the server. Optional input is retained for compatibility and does not change the user; leave it unset for lookup.",
 					Optional:            true,
 					Computed:            true,
 				},
 			},
 			"email": superschema.StringAttribute{
 				DataSource: &schemaD.StringAttribute{
-					MarkdownDescription: "Email address. Defaults to the username if not supplied.",
+					MarkdownDescription: "Email address returned by the server. Optional input is retained for compatibility and does not change the user; leave it unset for lookup.",
 					Optional:            true,
 					Computed:            true,
 				},

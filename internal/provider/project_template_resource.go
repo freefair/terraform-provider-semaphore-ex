@@ -94,13 +94,13 @@ func (v playbookRequiredValidator) ValidateResource(ctx context.Context, req res
 	if data.App.IsNull() {
 		app = "ansible" // matches the schema default
 	}
-	if app == "terraform" || app == "tofu" {
+	if app == "terraform" || app == "tofu" || app == "terragrunt" {
 		return
 	}
 	resp.Diagnostics.AddAttributeError(
 		path.Root("playbook"),
 		"Missing playbook",
-		"playbook is required when app is not `terraform` or `tofu`. Got app="+app+".",
+		"playbook is required when app is not `terraform`, `tofu` or `terragrunt`. Got app="+app+".",
 	)
 }
 
@@ -251,7 +251,7 @@ func convertProjectTemplateModelToTemplateRequest(ctx context.Context, template 
 	}
 
 	model.Vaults = []*models.TemplateVault{}
-	if !template.Vaults.IsNull() || !template.Vaults.IsUnknown() {
+	if !template.Vaults.IsNull() && !template.Vaults.IsUnknown() {
 		var vaults []ProjectTemplateVaultModel
 		template.Vaults.ElementsAs(ctx, &vaults, false)
 		for _, vault := range vaults {
@@ -339,19 +339,19 @@ func convertTemplateResponseToProjectTemplateModel(ctx context.Context, request 
 
 	if request.Description != "" {
 		model.Description = types.StringValue(request.Description)
-	} else {
+	} else if !prev.Description.IsNull() && prev.Description.ValueString() == "" {
 		model.Description = prev.Description
 	}
 
 	if request.GitBranch != "" {
 		model.GitBranch = types.StringValue(request.GitBranch)
-	} else {
+	} else if !prev.GitBranch.IsNull() && prev.GitBranch.ValueString() == "" {
 		model.GitBranch = prev.GitBranch
 	}
 
 	if request.ViewID != 0 {
 		model.ViewID = types.Int64Value(request.ViewID)
-	} else {
+	} else if !prev.ViewID.IsNull() && prev.ViewID.ValueInt64() == 0 {
 		model.ViewID = prev.ViewID
 	}
 
@@ -389,7 +389,7 @@ func convertTemplateResponseToProjectTemplateModel(ctx context.Context, request 
 	}
 
 	if len(request.SurveyVars) == 0 {
-		model.SurveyVars = prev.SurveyVars
+		model.SurveyVars = emptyListAfterRead(prev.SurveyVars, ProjectTemplateSurveyVarType)
 	} else {
 		var surveyVars []ProjectTemplateSurveyVarModel
 		for _, surveyVar := range request.SurveyVars {
@@ -420,7 +420,7 @@ func convertTemplateResponseToProjectTemplateModel(ctx context.Context, request 
 	}
 
 	if len(request.Vaults) == 0 {
-		model.Vaults = prev.Vaults
+		model.Vaults = emptyListAfterRead(prev.Vaults, ProjectTemplateVaultType)
 	} else {
 		sort.Sort(ByVaultID(request.Vaults))
 
