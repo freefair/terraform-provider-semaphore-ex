@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"context"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	schemaR "github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
@@ -30,10 +32,10 @@ func RunnerRegistrationTokenSchema() superschema.Schema {
 			MarkdownDescription: "**Deprecated:** this resource is deprecated and will be removed in a future release. " +
 				"resource generates a fresh one-time registration token for an existing, unregistered runner. " +
 				"Regenerating invalidates the previous token. The token is returned only once, at creation, and stored " +
-				"(sensitive) in Terraform state. The resource is immutable: changing `runner_id`, `project_id` or `keepers` " +
+				"(sensitive) in Terraform state. Changing `runner_id`, `project_id` or an established `keepers` map " +
 				"forces a new token to be generated. Use `keepers` to rotate the token on demand (e.g. bump a value to issue a new one). " +
 				"Import uses `runner/<id>` or `project/<id>/runner/<id>` and adopts only the runner association: " +
-				"`registration_token` is null because the API never returns the original token again. Import does not rotate it. " +
+				"`registration_token` is null because the API never returns the original token again. Import does not rotate it. The first configured `keepers` map after import is adopted without issuance; subsequent changes rotate. " +
 				"The runner must not already be registered, otherwise the API returns an error. " +
 				"Note: generating a token leaves the runner inactive until it registers, so a runner managed alongside this " +
 				"resource should set `active = false` to avoid a permanent diff.",
@@ -73,8 +75,18 @@ func RunnerRegistrationTokenSchema() superschema.Schema {
 					ElementType: types.StringType,
 				},
 				Resource: &schemaR.MapAttribute{
-					Optional:      true,
-					PlanModifiers: []planmodifier.Map{mapplanmodifier.RequiresReplace()},
+					Optional: true,
+					PlanModifiers: []planmodifier.Map{mapplanmodifier.RequiresReplaceIf(
+						func(ctx context.Context, req planmodifier.MapRequest, resp *mapplanmodifier.RequiresReplaceIfFuncResponse) {
+							var credential types.String
+							resp.Diagnostics.Append(req.State.GetAttribute(ctx, path.Root("registration_token"), &credential)...)
+							// Imported state has no recoverable credential or keeper baseline.
+							// The first configured map is metadata-only; later changes rotate.
+							resp.RequiresReplace = !credential.IsNull() || !req.StateValue.IsNull()
+						},
+						"Adopt the first imported keepers map without rotation; subsequent changes require replacement.",
+						"Adopt the first imported keepers map without rotation; subsequent changes require replacement.",
+					)},
 				},
 			},
 			"registration_token": superschema.StringAttribute{

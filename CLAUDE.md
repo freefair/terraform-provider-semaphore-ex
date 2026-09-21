@@ -86,6 +86,11 @@ bundled protocol type definitions. Moves perform no API writes; refresh hydrates
 EX-only fields. See `docs/lifecycle.md` and ADR 0007.
 `resourceNotFound` handles native EX, generated typed and generic runtime 404s.
 Only confirmed absence permits Read to remove state or Delete to succeed idempotently.
+`projectAbsenceTransport` checks project-scoped GET/DELETE 404s against current project
+access and administrator identity; ambiguous absence retains state. Do not bypass it
+with a separate HTTP client. See ADR 0008.
+Imported registration tokens adopt the first configured keeper map as metadata;
+only later changes or explicit replacement issue a new credential.
 Every readable resource has a data source. Registration-token imports preserve only
 the association, with a null one-time credential; a data source must never issue tokens.
 

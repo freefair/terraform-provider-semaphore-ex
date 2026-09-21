@@ -102,11 +102,16 @@ Import cannot reconstruct a secret that the API redacts or returns only once.
 Retain your configured secret inputs or use write-only inputs with their version attributes.
 Registration-token import adopts only the runner association and returns a warning with a null `registration_token`.
 It never generates or invalidates a token.
+The first configured `keepers` map after import is adopted as a local baseline without issuing a token.
+Changing or removing an established baseline requests replacement and rotation.
 Existing registration-token state remains intact during moves; explicit replacement requests a new token and remains subject to the runner's registration status.
 
 Native EX revisions are read into state and echoed on updates/deletes where required.
 A 409 conflict is an error requiring refresh and review; the provider does not silently bypass it.
-A confirmed 404 during resource refresh removes the missing resource from state; a subsequent apply can recreate it.
+Project-scoped 404s are checked against the parent project before they can remove state.
+If the project is inaccessible, only a fresh administrator identity can confirm its absence; an ambiguous response produces an error and preserves state.
+A non-admin must restore access or independently confirm deletion before explicitly removing an inaccessible project from state.
+A missing child in a readable project, or confirmed absence for an administrator, still permits recreation on a subsequent apply.
 Authentication failures, authorization failures and transient errors preserve the previous state.
 Missing singleton capability endpoints remain errors where they do not establish that the managed configuration was deleted.
 
@@ -125,4 +130,5 @@ Use the matching runner data source for durable runner configuration.
 `TestAcc_ProviderLifecycleCLI` executes both move forms, both import forms, both forgetting forms, refresh-only, targeting, forced replacement, recovery after external deletion and destroy.
 `TestAcc_LegacyProviderMovedGraph` creates all 15 resource types with the published v0.3.9 provider, requires no-op destination plans, and verifies stable IDs and retained secrets.
 The registry parity test fails when a readable resource is added without its data source.
+See [ADR 0008](adr/0008-confirm-absence-and-adopt-imported-keepers.md) for the absence and keeper-adoption contracts.
 See [ADR 0007](adr/0007-complete-resource-lifecycle.md) for design choices and boundaries.

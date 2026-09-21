@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-testing/helper/acctest"
 	acctestresource "github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/plancheck"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -39,7 +40,7 @@ func TestRegistrationTokenImportNeverIssuesCredential(t *testing.T) {
 	}
 }
 func TestAcc_RegistrationTokenImport(t *testing.T) {
-	config := fmt.Sprintf("resource \"semaphore_ex_runner\" \"test\" {\n name = %q\n active = false\n}\nresource \"semaphore_ex_runner_registration_token\" \"test\" {\n runner_id = semaphore_ex_runner.test.id\n}\n", "import-token-"+acctest.RandString(8))
+	config := fmt.Sprintf("resource \"semaphore_ex_runner\" \"test\" {\n name = %q\n active = false\n}\nresource \"semaphore_ex_runner_registration_token\" \"test\" {\n runner_id = semaphore_ex_runner.test.id\n keepers = { rotation = \"1\" }\n}\n", "import-token-"+acctest.RandString(8))
 	runnerConfig := strings.Split(config, "resource \"semaphore_ex_runner_registration_token\"")[0]
 	acctestresource.Test(t, acctestresource.TestCase{
 		PreCheck: func() { testAccPreCheck(t) }, ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -58,6 +59,9 @@ import {
 }
 `, Check: acctestresource.TestCheckNoResourceAttr("semaphore_ex_runner_registration_token.test", "registration_token")},
 			{Config: config, PlanOnly: true},
+			{Config: strings.Replace(config, `rotation = "1"`, `rotation = "2"`, 1),
+				ConfigPlanChecks: acctestresource.ConfigPlanChecks{PreApply: []plancheck.PlanCheck{plancheck.ExpectResourceAction("semaphore_ex_runner_registration_token.test", plancheck.ResourceActionReplace)}},
+				Check:            acctestresource.TestCheckResourceAttrSet("semaphore_ex_runner_registration_token.test", "registration_token")},
 		},
 	})
 }

@@ -154,9 +154,8 @@ func (r *runnerRegistrationTokenResource) Read(ctx context.Context, req resource
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
-// Update is never reached: every settable attribute forces replacement, so a
-// new token is always generated via Create. It is implemented defensively to
-// preserve the computed values if it ever runs.
+// Update adopts the initial keeper baseline after import without issuing a
+// credential. Subsequent keeper changes and identity changes use replacement.
 func (r *runnerRegistrationTokenResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var plan, state RunnerRegistrationTokenModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)

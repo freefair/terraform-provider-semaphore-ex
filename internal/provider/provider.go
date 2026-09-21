@@ -169,14 +169,11 @@ func (p *SemaphoreUIProvider) Configure(ctx context.Context, req provider.Config
 		return
 	}
 
-	var rt *httptransport.Runtime
+	rt := httptransport.New(u.Host, u.Path, []string{u.Scheme})
 	if tlsSkipVerify == "true" {
-		transport := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
-		httpClient := &http.Client{Transport: transport}
-		rt = httptransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpClient)
-	} else {
-		rt = httptransport.New(u.Host, u.Path, []string{u.Scheme})
+		rt.Transport = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
 	}
+	rt.Transport = &projectAbsenceTransport{next: rt.Transport, basePath: rt.BasePath}
 	rt.DefaultAuthentication = httptransport.BearerToken(apiToken)
 
 	client := apiclient.New(rt, strfmt.Default)
