@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
-	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/key_store"
+	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"net/http"
+	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 )
@@ -49,78 +51,33 @@ func (d *projectKeyDataSource) Schema(ctx context.Context, _ datasource.SchemaRe
 	resp.Schema = ProjectKeySchema().GetDataSource(ctx)
 }
 
-func (d *projectKeyDataSource) GetKeyByName(ctx context.Context, projectID int64, name string) (*ProjectKeyModel, error) {
-	response, err := d.client.KeyStore.GetProjectProjectIDKeysContext(ctx, &key_store.GetProjectProjectIDKeysParams{
-		ProjectID: projectID,
-	}, nil)
-	if err != nil {
-		return nil, fmt.Errorf("could not read project keys: %s", err.Error())
+func (d *projectKeyDataSource) GetKeyByID(ctx context.Context, projectID int64, id int64) (*ProjectKeyModel, error) {
+	var key models.AccessKey
+	if err := exRequest(ctx, d.client, http.MethodGet, "/project/{project_id}/keys/{key_id}", map[string]string{"project_id": strconv.FormatInt(projectID, 10), "key_id": strconv.FormatInt(id, 10)}, nil, &key); err != nil {
+		return nil, err
 	}
-	for _, key := range response.Payload {
-		if key.Name == name {
-			model := ProjectKeyModel{
-				ProjectID: types.Int64Value(key.ProjectID),
-				ID:        types.Int64Value(key.ID),
-				Name:      types.StringValue(key.Name),
-			}
-			switch key.Type {
-			case ProjectKeyTypeNone:
-				model.None = &ProjectKeyNone{}
-			case ProjectKeyTypeLoginPassword:
-				model.LoginPassword = &ProjectKeyLoginPassword{
-					Password: types.StringValue(""),
-				}
-			case ProjectKeyTypeSSH:
-				model.SSH = &ProjectKeySSH{
-					PrivateKey: types.StringValue(""),
-				}
-			case ProjectKeyTypeString:
-				model.String = &ProjectKeyString{Value: types.StringValue("")}
-			}
-			if key.SourceStorageType != nil {
-				model.RemoteReference = remoteReferenceFromAccessKey(key)
-			}
-			return &model, nil
-		}
+	if key.ID != id || key.ProjectID != projectID {
+		return nil, fmt.Errorf("key detail returned a different identity")
 	}
-	return nil, fmt.Errorf("project key with name %s not found", name)
-}
-
-func (d *projectKeyDataSource) GetKeyByID(ctx context.Context, projectID int64, ID int64) (*ProjectKeyModel, error) {
-	response, err := d.client.KeyStore.GetProjectProjectIDKeysContext(ctx, &key_store.GetProjectProjectIDKeysParams{
-		ProjectID: projectID,
-	}, nil)
-	if err != nil {
-		return nil, fmt.Errorf("could not read project keys: %s", err.Error())
+	model := ProjectKeyModel{ProjectID: types.Int64Value(key.ProjectID), ID: types.Int64Value(key.ID), Name: types.StringValue(key.Name)}
+	// The read DTO intentionally redacts login and secret material. Unknown values
+	// stay null instead of falsely claiming an empty password or private key.
+	switch key.Type {
+	case ProjectKeyTypeNone:
+		model.None = &ProjectKeyNone{}
+	case ProjectKeyTypeLoginPassword:
+		model.LoginPassword = &ProjectKeyLoginPassword{}
+	case ProjectKeyTypeSSH:
+		model.SSH = &ProjectKeySSH{}
+	case ProjectKeyTypeString:
+		model.String = &ProjectKeyString{}
+	default:
+		return nil, fmt.Errorf("key detail returned an unsupported key type")
 	}
-	for _, key := range response.Payload {
-		if key.ID == ID {
-			model := ProjectKeyModel{
-				ProjectID: types.Int64Value(key.ProjectID),
-				ID:        types.Int64Value(key.ID),
-				Name:      types.StringValue(key.Name),
-			}
-			switch key.Type {
-			case ProjectKeyTypeNone:
-				model.None = &ProjectKeyNone{}
-			case ProjectKeyTypeLoginPassword:
-				model.LoginPassword = &ProjectKeyLoginPassword{
-					Password: types.StringValue(""),
-				}
-			case ProjectKeyTypeSSH:
-				model.SSH = &ProjectKeySSH{
-					PrivateKey: types.StringValue(""),
-				}
-			case ProjectKeyTypeString:
-				model.String = &ProjectKeyString{Value: types.StringValue("")}
-			}
-			if key.SourceStorageType != nil {
-				model.RemoteReference = remoteReferenceFromAccessKey(key)
-			}
-			return &model, nil
-		}
+	if key.SourceStorageType != nil {
+		model.RemoteReference = remoteReferenceFromAccessKey(&key)
 	}
-	return nil, fmt.Errorf("project key with id %d not found", ID)
+	return &model, nil
 }
 
 func (d *projectKeyDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
@@ -129,32 +86,14 @@ func (d *projectKeyDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	var model ProjectKeyModel
-	if !config.ID.IsUnknown() && !config.ID.IsNull() {
-		key, err := d.GetKeyByID(ctx, config.ProjectID.ValueInt64(), config.ID.ValueInt64())
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Error Reading SemaphoreUI Project Key",
-				err.Error(),
-			)
-			return
-		}
-		model = *key
-	} else if !config.Name.IsUnknown() && !config.Name.IsNull() {
-		key, err := d.GetKeyByName(ctx, config.ProjectID.ValueInt64(), config.Name.ValueString())
-		if err != nil {
-			resp.Diagnostics.AddError(
-				"Error Reading SemaphoreUI Project Key",
-				err.Error(),
-			)
-			return
-		}
-		model = *key
-	}
-
-	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
-	if resp.Diagnostics.HasError() {
+	if config.ID.IsNull() || config.ID.IsUnknown() {
+		resp.Diagnostics.AddError("Invalid Key Identity", "Resolve a known key id before reading details.")
 		return
 	}
+	model, err := d.GetKeyByID(ctx, config.ProjectID.ValueInt64(), config.ID.ValueInt64())
+	if err != nil {
+		resp.Diagnostics.AddError("Error Reading Semaphore EX Project Key", err.Error())
+		return
+	}
+	resp.Diagnostics.Append(resp.State.Set(ctx, model)...)
 }

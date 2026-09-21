@@ -121,3 +121,8 @@ updates from different clients cannot be made atomic by the provider.
 `allow_destroy` and `allow_auto_approve` expose server/UI options; they are not
 independent authorization boundaries. The server's actual task execution rules still
 apply. Integration `task_params` remains a task invocation contract.
+
+Key data sources read the key detail endpoint after resolving identity. Redacted
+passwords, private keys, and string secret values are null; an empty string is no
+longer fabricated to represent a value the server withheld. Literal secret recovery
+is not supported by the server's key read DTO.
