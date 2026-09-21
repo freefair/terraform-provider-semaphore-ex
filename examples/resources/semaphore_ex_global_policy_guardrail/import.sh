@@ -1,0 +1,1 @@
+terraform import semaphore_ex_global_policy_guardrail.configuration global

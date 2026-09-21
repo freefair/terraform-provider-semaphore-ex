@@ -36,7 +36,7 @@ func nativeGuardrailPolicy(t *testing.T) tftypes.Value {
 }
 
 func TestAcc_EXGovernanceActions(t *testing.T) {
-	resource.Test(t, resource.TestCase{PreCheck: func() { testAccPreCheck(t) }, ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Steps: []resource.TestStep{{Config: `data "semaphore_ex_global_workflow_artifact_retention" "test" {}`, Check: func(_ *terraform.State) error {
+	resource.Test(t, resource.TestCase{PreCheck: func() { testAccPreCheck(t) }, ProtoV6ProviderFactories: testAccProtoV6ProviderFactories, Steps: []resource.TestStep{{Config: `data "semaphore_ex_global_workflow_artifact_retention" "test" {}`, Check: func(snapshot *terraform.State) error {
 		ctx := context.Background()
 		retention := &exWorkflowArtifactRetentionPublishAction{client: testClient()}
 		publish := func(expected int64) action.InvokeResponse {
@@ -48,24 +48,36 @@ func TestAcc_EXGovernanceActions(t *testing.T) {
 			})}, &response)
 			return response
 		}
-		first := publish(0)
+		currentRevision, err := strconv.ParseInt(snapshot.RootModule().Resources["data.semaphore_ex_global_workflow_artifact_retention.test"].Primary.Attributes["global_revision"], 10, 64)
+		if err != nil {
+			return err
+		}
+		first := publish(currentRevision)
 		if first.Diagnostics.HasError() {
 			return fmt.Errorf("publish initial retention: %v", first.Diagnostics)
 		}
-		stale := publish(0)
+		stale := publish(currentRevision)
 		if !stale.Diagnostics.HasError() {
 			return fmt.Errorf("stale retention revision unexpectedly succeeded")
 		}
 
+		var initial struct {
+			Draft struct {
+				Revision int64 `json:"revision"`
+			} `json:"draft"`
+		}
+		if err := exRequest(ctx, testClient(), http.MethodGet, "/policy-guardrails", nil, nil, &initial); err != nil {
+			return err
+		}
 		draft := &exPolicyGuardrailAction{client: testClient()}
 		draftResponse := action.InvokeResponse{}
-		draft.Invoke(ctx, action.InvokeRequest{Config: governanceActionConfig(t, draft, map[string]tftypes.Value{"project_id": tftypes.NewValue(tftypes.Number, nil), "expected_revision": tftypes.NewValue(tftypes.Number, int64(1)), "source_yaml": tftypes.NewValue(tftypes.String, nil), "policy": nativeGuardrailPolicy(t)})}, &draftResponse)
+		draft.Invoke(ctx, action.InvokeRequest{Config: governanceActionConfig(t, draft, map[string]tftypes.Value{"project_id": tftypes.NewValue(tftypes.Number, nil), "expected_revision": tftypes.NewValue(tftypes.Number, initial.Draft.Revision), "source_yaml": tftypes.NewValue(tftypes.String, nil), "policy": nativeGuardrailPolicy(t)})}, &draftResponse)
 		if draftResponse.Diagnostics.HasError() {
 			return fmt.Errorf("save draft: %v", draftResponse.Diagnostics)
 		}
 		publishGuardrail := &exPolicyGuardrailAction{client: testClient(), publish: true}
 		publishResponse := action.InvokeResponse{}
-		publishGuardrail.Invoke(ctx, action.InvokeRequest{Config: governanceActionConfig(t, publishGuardrail, map[string]tftypes.Value{"project_id": tftypes.NewValue(tftypes.Number, nil), "expected_revision": tftypes.NewValue(tftypes.Number, int64(2)), "source_yaml": tftypes.NewValue(tftypes.String, nil), "policy": tftypes.NewValue(tftypes.DynamicPseudoType, nil)})}, &publishResponse)
+		publishGuardrail.Invoke(ctx, action.InvokeRequest{Config: governanceActionConfig(t, publishGuardrail, map[string]tftypes.Value{"project_id": tftypes.NewValue(tftypes.Number, nil), "expected_revision": tftypes.NewValue(tftypes.Number, initial.Draft.Revision+1), "source_yaml": tftypes.NewValue(tftypes.String, nil), "policy": tftypes.NewValue(tftypes.DynamicPseudoType, nil)})}, &publishResponse)
 		if publishResponse.Diagnostics.HasError() {
 			return fmt.Errorf("publish draft: %v", publishResponse.Diagnostics)
 		}
@@ -79,7 +91,7 @@ func TestAcc_EXGovernanceActions(t *testing.T) {
 		if err := exRequest(ctx, testClient(), "GET", "/policy-guardrails", nil, nil, &state); err != nil {
 			return err
 		}
-		if state.Draft.SourceYAML == "" || state.Draft.Revision < 3 || state.Draft.ActiveRevision == nil {
+		if state.Draft.SourceYAML == "" || state.Draft.Revision < initial.Draft.Revision+2 || state.Draft.ActiveRevision == nil {
 			return fmt.Errorf("unexpected published guardrail state: source=%q revision=%d active=%v", state.Draft.SourceYAML, state.Draft.Revision, state.Draft.ActiveRevision)
 		}
 		var project map[string]any

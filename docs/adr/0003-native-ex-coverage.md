@@ -40,9 +40,10 @@ Use Terraform Actions for operations with no persistent resource lifecycle.
 Publishing a template version is explicit and returns publication progress;
 the version data source only reads immutable metadata. System option writes
 are actions because the API has no deletion contract. They do not imply a
-reset on Terraform destroy. Append-only retention and guardrail publications
-also use explicit actions with revision preconditions and data sources for
-current policy inspection; deleting publication history is not implied.
+reset on Terraform destroy. Guardrail publication remains an explicit revision-fenced Action. ADR 0010
+adds managed draft and retention configuration with forget-on-destroy semantics;
+immutable publication history is preserved. Matching data sources expose the
+current draft and effective retention policy.
 Confidential action inputs use write-only
 attributes, with sensitive ephemeral input variables in examples.
 

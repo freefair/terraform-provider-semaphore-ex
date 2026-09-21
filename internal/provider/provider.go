@@ -212,6 +212,10 @@ func (p *SemaphoreUIProvider) Actions(context.Context) []func() action.Action {
 
 func (p *SemaphoreUIProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
+		NewGlobalPolicyGuardrailResource,
+		NewProjectPolicyGuardrailResource,
+		NewGlobalWorkflowArtifactRetentionResource,
+		NewProjectWorkflowArtifactRetentionResource,
 		NewRuntimeSecretsResource,
 		NewIntegrationAliasResource,
 		NewAppResource,

@@ -25,7 +25,7 @@ All type names below have the `semaphore_ex_` prefix.
 | Credentials | `project_secret_storage`, `global_credential`, `global_credential_grant`, `project_generated_ssh_key`, external references on project keys and environments |
 | Task SSH keys | `project_ssh_key_policy`, `ssh_keys` on templates and the task-start Action |
 | Notifications | Global/project notification destinations and rules, `audit_webhook` |
-| Governance | `project_deployment_window`; guardrail and artifact-retention policy data sources with separate mutation Actions |
+| Governance | `project_deployment_window`; managed guardrail drafts and retention policies, corresponding data sources, and explicit publication Actions |
 | Identity | `ldap_configuration`, `ldap_group_mapping`, `oidc_group_mapping`, `totp_policy`, read-only `external_user` |
 | Executors | `docker_execution_policy`, `kubernetes_execution_policy` |
 | Integration | `integration_alias`, `project_integration_matcher`, `project_integration_extract_value` |
@@ -279,3 +279,24 @@ UI option without independent server enforcement. Input validation is not a secu
 boundary or a revision fence: the server still owns authorization, admission,
 preflight review proof, and execution. The provider never obtains review tokens
 or approves a preflight automatically.
+
+## Managed governance configuration
+
+`semaphore_ex_global_policy_guardrail` and `semaphore_ex_project_policy_guardrail`
+manage only the draft's authored `source_yaml`; `yamlencode` allows native HCL
+expressions. They never publish a draft. Publication remains the existing explicit
+Action with its reviewed `expected_revision`.
+
+`semaphore_ex_global_workflow_artifact_retention` and
+`semaphore_ex_project_workflow_artifact_retention` manage the policy owned by their
+scope. Data sources continue to expose the effective inherited limits separately.
+Updates append a revision and use the revision captured in Terraform state. Stale
+writes fail without fetching a fresh revision or retrying the operation.
+
+Import uses `global` or `project/<id>`. Destroy forgets ownership for all four
+resources, preserving current settings and immutable history. Changing the project
+scope therefore also leaves the previous project's policy intact. The server offers
+no delete/reset operation; the provider does not invent one. External draft or
+policy edits are read as drift. General server options remain explicit `option_set`
+Actions with a corresponding data source because option keys do not have a uniform
+reset or ownership contract.

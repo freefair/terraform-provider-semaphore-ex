@@ -1,0 +1,1 @@
+terraform import semaphore_ex_project_workflow_artifact_retention.configuration project/1
