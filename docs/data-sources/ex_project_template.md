@@ -140,15 +140,25 @@ Read-Only:
 
 Read-Only:
 
+- `choices` (Attributes List) Ordered enum/select options; repeated display names are preserved. Configure choices or enum_values. Omit both to preserve existing options; [] clears them. (see [below for nested schema](#nestedatt--survey_vars--choices))
 - `default_value` (String, Sensitive) Scalar default. Use default_values for a select survey.
 - `default_values` (List of String, Sensitive) Default selections for a select survey.
 - `description` (String) The description of the survey variable.
-- `enum_values` (Map of String) The enum name/values.
+- `enum_values` (Map of String) Legacy unordered name/value representation. Null when repeated labels cannot be represented; use choices for full order and labels.
 - `name` (String) The name of the survey variable.
 - `required` (Boolean) Whether the survey variable is required.
 - `target` (String) Empty uses the application's normal parameter channel; env exports an environment variable.
 - `title` (String) The title of the survey variable.
 - `type` (String) The type of the survey variable.
+
+<a id="nestedatt--survey_vars--choices"></a>
+### Nested Schema for `survey_vars.choices`
+
+Read-Only:
+
+- `name` (String) .
+- `value` (String) .
+
 
 
 <a id="nestedatt--task_params"></a>

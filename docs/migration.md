@@ -139,3 +139,24 @@ Nodes with empty or duplicate labels receive deterministic `node-<server_id>` ke
 (with a collision-safe prefix if necessary). Arbitrary Terraform-only keys are not
 stored by the server and cannot be recovered after discarding state; adopt the keys
 shown by import in your HCL. Edges and artifact references use those same keys.
+
+## Ordered survey choices
+
+Survey `choices` is an ordered list of `{ name, value }` objects. It retains display
+order and repeated labels that the legacy `enum_values` map cannot represent.
+Configure one representation per survey variable. Both are readable outputs;
+`enum_values` is null when labels repeat. Existing map-based states and imports
+remain supported, and their current server order is preserved when the map is unchanged.
+Omitting both inputs retains existing options; use `choices = []` to clear them.
+
+```hcl
+survey_vars = [{
+  name  = "target"
+  title = "Target"
+  type  = "enum"
+  choices = [
+    { name = "Primary", value = "first" },
+    { name = "Primary", value = "second" },
+  ]
+}]
+```

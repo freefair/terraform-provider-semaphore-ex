@@ -255,16 +255,26 @@ Required:
 
 - `name` (String) The name of the survey variable.
 - `title` (String) The title of the survey variable.
-- `type` (String) The type of the survey variable. Valid types are `string`, `integer`, `secret`, `text`, `enum` and `select`. When `enum` or `select` is used, the `enum_values` attribute must be defined. Value must satisfy at least one of the validations: value must be one of: ["string" "integer" "secret" "text"] + Value must satisfy all of the validations: value must be one of: ["enum" "select"] + Ensure that if an attribute is set, also these are set: "[<.enum_values]".
+- `type` (String) The type of the survey variable. Valid types are `string`, `integer`, `secret`, `text`, `enum` and `select`. Use choices or enum_values for enum/select options; omission preserves existing options. Value must be one of : `string`, `integer`, `secret`, `text`, `enum`, `select`.
 
 Optional:
 
+- `choices` (Attributes List) Ordered enum/select options; repeated display names are preserved. Configure choices or enum_values. Omit both to preserve existing options; [] clears them. Ensure that if an attribute is set, these are not set: "[<.enum_values]". (see [below for nested schema](#nestedatt--survey_vars--choices))
 - `default_value` (String, Sensitive) Scalar default. Use default_values for a select survey. Ensure that if an attribute is set, these are not set: "[<.default_values]".
 - `default_values` (List of String, Sensitive) Default selections for a select survey.
 - `description` (String) The description of the survey variable.
-- `enum_values` (Map of String) The enum name/values. Map must contain at least 1 elements. Ensure that if an attribute is set, also these are set: "[<.type]".
+- `enum_values` (Map of String) Legacy unordered name/value representation. Null when repeated labels cannot be represented; use choices for full order and labels. Map must contain at least 1 elements. Ensure that if an attribute is set, also these are set: "[<.type]".
 - `required` (Boolean) Whether the survey variable is required. Value defaults to `false`.
 - `target` (String) Empty uses the application's normal parameter channel; env exports an environment variable. Value must be one of : `env`.
+
+<a id="nestedatt--survey_vars--choices"></a>
+### Nested Schema for `survey_vars.choices`
+
+Required:
+
+- `name` (String) .
+- `value` (String) .
+
 
 
 <a id="nestedatt--task_params"></a>

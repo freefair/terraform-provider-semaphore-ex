@@ -76,3 +76,10 @@ keys on refresh. The server's POST/PUT implementation preserves request node ord
 while replacing temporary IDs; the provider binds those returned IDs once and then
 uses ID-based reconciliation. Existing positive IDs and node counts are checked.
 This avoids requiring unique labels or adding a server-side Terraform naming field.
+
+Survey options use an additive ordered `choices` list. The published `enum_values`
+map type remains available and becomes a computed counterpart where labels are
+unique. Repeated labels yield a null map rather than silently dropping an option.
+Import hydrates both representations. An unchanged legacy map preserves the server's
+current order; changed maps use deterministic lexical label order. Explicit lists
+preserve their authored order. Omission retains options; an explicit empty list clears.

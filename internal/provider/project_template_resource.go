@@ -105,7 +105,7 @@ func (v playbookRequiredValidator) ValidateResource(ctx context.Context, req res
 }
 
 func (r *projectTemplateResource) ConfigValidators(_ context.Context) []resource.ConfigValidator {
-	return []resource.ConfigValidator{playbookRequiredValidator{}, templateSSHKeysValidator{}, templateSettingsValidator{}, resourcevalidator.ExactlyOneOf(path.MatchRoot("environment_id"), path.MatchRoot("environment_ids"))}
+	return []resource.ConfigValidator{playbookRequiredValidator{}, templateSSHKeysValidator{}, templateSettingsValidator{}, surveyChoicesValidator{}, resourcevalidator.ExactlyOneOf(path.MatchRoot("environment_id"), path.MatchRoot("environment_ids"))}
 }
 
 type templateSSHKeysValidator struct{}
@@ -239,12 +239,7 @@ func convertProjectTemplateModelToTemplateRequest(ctx context.Context, template 
 				surveyVarModel.Description = surveyVar.Description.ValueString()
 			}
 			if surveyVar.Type.ValueString() == "enum" || surveyVar.Type.ValueString() == "select" {
-				for name, value := range surveyVar.EnumValues {
-					surveyVarModel.Values = append(surveyVarModel.Values, &models.TemplateSurveyVarValue{
-						Name:  name,
-						Value: value,
-					})
-				}
+				surveyVarModel.Values = surveyChoicesToAPI(surveyVar)
 			}
 			model.SurveyVars = append(model.SurveyVars, &surveyVarModel)
 		}
@@ -401,17 +396,16 @@ func convertTemplateResponseToProjectTemplateModel(ctx context.Context, request 
 				Target:        stringOrNull(surveyVar.Target),
 				DefaultValue:  types.StringNull(),
 				DefaultValues: types.ListNull(types.StringType),
+				EnumValues:    types.MapNull(types.StringType),
+				Choices:       types.ListNull(surveyChoiceType()),
 			}
 			if surveyVar.Description != "" {
 				surveyVarModel.Description = types.StringValue(surveyVar.Description)
 			}
 			readSurveyDefault(ctx, surveyVar.DefaultValue, &surveyVarModel)
 			if surveyVar.Type == "enum" || surveyVar.Type == "select" {
-				enumValuesMap := map[string]string{}
-				for _, value := range surveyVar.Values {
-					enumValuesMap[value.Name] = value.Value
-				}
-				surveyVarModel.EnumValues = enumValuesMap
+				surveyVarModel.Choices = surveyChoicesFromAPI(surveyVar.Values)
+				surveyVarModel.EnumValues = surveyMapFromChoices(surveyVarModel.Choices)
 			}
 			surveyVars = append(surveyVars, surveyVarModel)
 		}

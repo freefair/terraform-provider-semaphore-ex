@@ -2,6 +2,7 @@ package provider
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/mapvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
@@ -72,15 +73,16 @@ type (
 	}
 
 	ProjectTemplateSurveyVarModel struct {
-		Name          types.String      `tfsdk:"name"`
-		Title         types.String      `tfsdk:"title"`
-		Description   types.String      `tfsdk:"description"`
-		Required      types.Bool        `tfsdk:"required"`
-		Type          types.String      `tfsdk:"type"`
-		EnumValues    map[string]string `tfsdk:"enum_values"`
-		Target        types.String      `tfsdk:"target"`
-		DefaultValue  types.String      `tfsdk:"default_value"`
-		DefaultValues types.List        `tfsdk:"default_values"`
+		Name          types.String `tfsdk:"name"`
+		Title         types.String `tfsdk:"title"`
+		Description   types.String `tfsdk:"description"`
+		Required      types.Bool   `tfsdk:"required"`
+		Type          types.String `tfsdk:"type"`
+		EnumValues    types.Map    `tfsdk:"enum_values"`
+		Choices       types.List   `tfsdk:"choices"`
+		Target        types.String `tfsdk:"target"`
+		DefaultValue  types.String `tfsdk:"default_value"`
+		DefaultValues types.List   `tfsdk:"default_values"`
 	}
 
 	ProjectTemplateVaultModel struct {
@@ -110,6 +112,7 @@ var (
 			"target":         types.StringType,
 			"default_value":  types.StringType,
 			"default_values": types.ListType{ElemType: types.StringType},
+			"choices":        types.ListType{ElemType: surveyChoiceType()},
 			"enum_values": types.MapType{
 				ElemType: types.StringType,
 			},
@@ -488,18 +491,10 @@ func ProjectTemplateSchema() superschema.Schema {
 							MarkdownDescription: "The type of the survey variable.",
 						},
 						Resource: &schemaR.StringAttribute{
-							MarkdownDescription: "Valid types are `string`, `integer`, `secret`, `text`, `enum` and `select`. When `enum` or `select` is used, the `enum_values` attribute must be defined.",
+							MarkdownDescription: "Valid types are `string`, `integer`, `secret`, `text`, `enum` and `select`. Use choices or enum_values for enum/select options; omission preserves existing options.",
 							Required:            true,
 							Validators: []validator.String{
-								stringvalidator.Any(
-									stringvalidator.OneOf("string", "integer", "secret", "text"),
-									stringvalidator.All(
-										stringvalidator.OneOf("enum", "select"),
-										stringvalidator.AlsoRequires(path.Expressions{
-											path.MatchRelative().AtParent().AtName("enum_values"),
-										}...),
-									),
-								),
+								stringvalidator.OneOf("string", "integer", "secret", "text", "enum", "select"),
 							},
 						},
 						DataSource: &schemaD.StringAttribute{
@@ -521,13 +516,23 @@ func ProjectTemplateSchema() superschema.Schema {
 						Resource:   &schemaR.ListAttribute{Optional: true},
 						DataSource: &schemaD.ListAttribute{Computed: true},
 					},
+					"choices": superschema.ListNestedAttribute{
+						Common:     &schemaR.ListNestedAttribute{MarkdownDescription: "Ordered enum/select options; repeated display names are preserved. Configure choices or enum_values. Omit both to preserve existing options; [] clears them."},
+						Resource:   &schemaR.ListNestedAttribute{Optional: true, Computed: true, Validators: []validator.List{listvalidator.ConflictsWith(path.MatchRelative().AtParent().AtName("enum_values"))}},
+						DataSource: &schemaD.ListNestedAttribute{Computed: true},
+						Attributes: map[string]superschema.Attribute{
+							"name":  superschema.StringAttribute{Resource: &schemaR.StringAttribute{Required: true}, DataSource: &schemaD.StringAttribute{Computed: true}},
+							"value": superschema.StringAttribute{Resource: &schemaR.StringAttribute{Required: true}, DataSource: &schemaD.StringAttribute{Computed: true}},
+						},
+					},
 					"enum_values": superschema.MapAttribute{
 						Common: &schemaR.MapAttribute{
-							MarkdownDescription: "The enum name/values.",
+							MarkdownDescription: "Legacy unordered name/value representation. Null when repeated labels cannot be represented; use choices for full order and labels.",
 							ElementType:         types.StringType,
 						},
 						Resource: &schemaR.MapAttribute{
 							Optional: true,
+							Computed: true,
 							Validators: []validator.Map{
 								mapvalidator.SizeAtLeast(1),
 								mapvalidator.AlsoRequires(path.Expressions{
