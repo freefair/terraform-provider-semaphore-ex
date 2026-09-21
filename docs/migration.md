@@ -7,8 +7,8 @@ Existing `SEMAPHOREUI_*` environment names remain supported.
 ## Existing state
 
 A provider-source replacement alone does not rename resource types.
-The development build supports direct `moved` migration from `semaphoreui/semaphore` v0.3.9, schema version 0, for all 15 resource types published by that provider.
-Use the EX build containing this feature; published versions through 1.0.3 do not contain these state movers.
+Provider v1.1.0 and newer support direct `moved` migration from `semaphoreui/semaphore` v0.3.9, schema version 0, for all 15 resource types published by that provider.
+Use EX provider v1.1.0 or newer; published versions through 1.0.3 do not contain these state movers.
 Keep the same API server and existing resource settings, replace the type prefix in resource blocks and references, and add one move per managed resource:
 
 ```hcl

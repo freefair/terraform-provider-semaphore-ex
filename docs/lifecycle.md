@@ -82,7 +82,7 @@ Import examples use illustrative IDs; replace them with the existing object's id
 | [project_user](resources/ex_project_user.md) | Update / replace | Revoke membership/grant | `project/1/user/3` | Yes | Yes |
 | [project_view](resources/ex_project_view.md) | Update / replace | Delete object | `project/1/view/2` | Yes | Yes |
 | [runner](resources/ex_runner.md) | Update / replace | Delete object | `runner/1` | Yes | Yes |
-| [runner_registration_token](resources/ex_runner_registration_token.md) | Replace | Forget association; token expires independently | `runner/1`, `project/1/runner/2` | One-time secret; unavailable | Yes |
+| [runner_registration_token](resources/ex_runner_registration_token.md) | Adopt initial keepers / replace | Forget association; token expires independently | `runner/1`, `project/1/runner/2` | One-time secret; unavailable | Yes |
 | [template_acl](resources/ex_template_acl.md) | Update / replace | Revoke membership/grant | `project/1/template/2/acl/3` | Yes | No legacy type |
 | [totp_policy](resources/ex_totp_policy.md) | Update / replace | Disable policy | `totp` | Yes | No legacy type |
 | [user](resources/ex_user.md) | Update / replace | Delete object | `user/1` | Yes | Yes |
