@@ -35,6 +35,9 @@ func workflowDecodedDefinition(ctx context.Context, raw map[string]any) (exWorkf
 	decodedNodes := make([]any, 0, len(nodes))
 	for _, rawNode := range nodes {
 		node := workflowCopyObject(rawNode)
+		if node["display_name"] == nil {
+			node["display_name"] = ""
+		}
 		id, _ := identityNumber(node["id"])
 		node["server_id"], node["key"] = id, keys[id]
 		if node["task_params"] != nil {
@@ -148,7 +151,14 @@ func workflowDecodedResource(ctx context.Context, raw map[string]any, previous .
 	if err != nil {
 		return result, err
 	}
-	keys := make(map[int64]string, len(nodes))
+	var prior *exWorkflowDefinitionModel
+	if len(previous) > 0 {
+		prior = previous[0]
+	}
+	keys, err := workflowResourceNodeKeys(nodes, prior)
+	if err != nil {
+		return result, err
+	}
 	priorTaskParams := map[string]*TaskParamsModel{}
 	if len(previous) > 0 && previous[0] != nil && !previous[0].Nodes.IsNull() && !previous[0].Nodes.IsUnknown() {
 		var priorNodes []types.Object
@@ -166,25 +176,12 @@ func workflowDecodedResource(ctx context.Context, raw map[string]any, previous .
 			}
 		}
 	}
-	for _, node := range nodes {
-		id, err := identityNumber(node["id"])
-		if err != nil || id <= 0 {
-			return result, fmt.Errorf("workflow node has no valid server ID")
-		}
-		name, ok := node["display_name"].(string)
-		if !ok || name == "" {
-			return result, fmt.Errorf("workflow node has no persisted display name")
-		}
-		for _, key := range keys {
-			if key == name {
-				return result, fmt.Errorf("workflow contains duplicate node display names")
-			}
-		}
-		keys[id] = name
-	}
 	decodedNodes := make([]any, 0, len(nodes))
 	for _, rawNode := range nodes {
 		node := workflowCopyObject(rawNode)
+		if node["display_name"] == nil {
+			node["display_name"] = ""
+		}
 		id, _ := identityNumber(node["id"])
 		node["server_id"], node["key"] = id, keys[id]
 		if node["task_params"] != nil || priorTaskParams[keys[id]] != nil {

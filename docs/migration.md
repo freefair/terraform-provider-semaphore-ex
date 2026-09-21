@@ -126,3 +126,16 @@ Key data sources read the key detail endpoint after resolving identity. Redacted
 passwords, private keys, and string secret values are null; an empty string is no
 longer fabricated to represent a value the server withheld. Literal secret recovery
 is not supported by the server's key read DTO.
+
+## Workflow labels and identity
+
+Workflow node `key` and `display_name` are independent. Existing Terraform keys are
+retained by `server_id` during refresh, including label changes and reordering.
+Renaming a display label therefore preserves the node and its graph references.
+Empty and repeated labels are supported.
+
+Import keeps the established unique, nonempty label-based keys where unambiguous.
+Nodes with empty or duplicate labels receive deterministic `node-<server_id>` keys
+(with a collision-safe prefix if necessary). Arbitrary Terraform-only keys are not
+stored by the server and cannot be recovered after discarding state; adopt the keys
+shown by import in your HCL. Edges and artifact references use those same keys.

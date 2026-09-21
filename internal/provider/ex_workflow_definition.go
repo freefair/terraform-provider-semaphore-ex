@@ -92,7 +92,7 @@ func (d *exWorkflowDefinitionDataSource) Configure(_ context.Context, q datasour
 func workflowNodeAttrs(computed bool) map[string]rs.Attribute { // kept native so references are validated by Terraform's type system
 	opt := func() bool { return !computed }
 	return map[string]rs.Attribute{
-		"key": rs.StringAttribute{Required: !computed, Computed: computed, MarkdownDescription: "Unique persisted node identity; it must equal display_name."}, "server_id": rs.Int64Attribute{Computed: true},
+		"key": rs.StringAttribute{Required: !computed, Computed: computed, MarkdownDescription: "Stable Terraform node key, independent of display_name. Existing keys are retained by server_id on refresh."}, "server_id": rs.Int64Attribute{Computed: true},
 		"template_id": rs.Int64Attribute{Optional: opt(), Computed: true}, "display_name": rs.StringAttribute{Optional: opt(), Computed: true}, "kind": rs.StringAttribute{Optional: opt(), Computed: true}, "convergence_mode": rs.StringAttribute{Optional: opt(), Computed: true}, "join_mode": rs.StringAttribute{Optional: opt(), Computed: true}, "position_x": rs.Int64Attribute{Optional: opt(), Computed: true}, "position_y": rs.Int64Attribute{Optional: opt(), Computed: true}, "note": rs.StringAttribute{Optional: opt(), Computed: true}, "delay_seconds": rs.Int64Attribute{Optional: opt(), Computed: true},
 		"approval_timeout": rs.Int64Attribute{Optional: opt(), Computed: true}, "approval_message": rs.StringAttribute{Optional: opt(), Computed: true}, "approval_permission": rs.Int64Attribute{Optional: opt(), Computed: true}, "approval_timeout_outcome": rs.StringAttribute{Optional: opt(), Computed: true}, "approval_separation_of_duties": rs.BoolAttribute{Optional: opt(), Computed: true},
 		"approval_role_policy":             rs.SingleNestedAttribute{Optional: opt(), Computed: true, Attributes: map[string]rs.Attribute{"revision": rs.Int64Attribute{Computed: true}, "mode": rs.StringAttribute{Optional: opt(), Computed: true}, "role_ids": rs.ListAttribute{Optional: opt(), Computed: true, ElementType: types.StringType}, "minimum_distinct_approvers": rs.Int64Attribute{Optional: opt(), Computed: true}, "initiator_separation": rs.BoolAttribute{Optional: opt(), Computed: true}}},
@@ -309,10 +309,6 @@ func workflowDefinitionBody(ctx context.Context, m exWorkflowDefinitionModel, pr
 			if _, found := nodeIDs[key.ValueString()]; found {
 				return nil, fmt.Errorf("node key is duplicated")
 			}
-			displayName, _ := node.Attributes()["display_name"].(types.String)
-			if !displayName.IsNull() && !displayName.IsUnknown() && displayName.ValueString() != key.ValueString() {
-				return nil, fmt.Errorf("node display_name must equal key %q", key.ValueString())
-			}
 			id, _ := node.Attributes()["server_id"].(types.Int64)
 			serverID := id.ValueInt64()
 			if serverID <= 0 {
@@ -342,7 +338,9 @@ func workflowDefinitionBody(ctx context.Context, m exWorkflowDefinitionModel, pr
 			}
 			item := wire
 			key, _ = node.Attributes()["key"].(types.String)
-			item["display_name"] = key.ValueString()
+			if _, configured := item["display_name"]; !configured {
+				item["display_name"] = key.ValueString()
+			}
 			if policy, ok := item["approval_role_policy"].(map[string]any); ok {
 				if priorPolicy, exists := priorApprovalPolicies[key.ValueString()]; exists {
 					if priorWire, err := workflowWireObject(ctx, priorPolicy); err == nil {
@@ -564,7 +562,12 @@ func (r *exWorkflowDefinitionResource) Create(ctx context.Context, q resource.Cr
 		p.Diagnostics.AddError("Error Creating Workflow Definition", e.Error())
 		return
 	}
-	next, e := workflowState(ctx, m, raw)
+	bound, e := workflowBindMutationIDs(ctx, m, raw)
+	if e != nil {
+		p.Diagnostics.AddError("Invalid Workflow Node Identities", e.Error())
+		return
+	}
+	next, e := workflowState(ctx, bound, raw)
 	if e != nil {
 		p.Diagnostics.AddError("Invalid Workflow Definition Response", e.Error())
 		return
@@ -607,7 +610,12 @@ func (r *exWorkflowDefinitionResource) Update(ctx context.Context, q resource.Up
 		p.Diagnostics.AddError("Error Updating Workflow Definition", e.Error())
 		return
 	}
-	next, e := workflowState(ctx, m, raw)
+	bound, e := workflowBindMutationIDs(ctx, m, raw)
+	if e != nil {
+		p.Diagnostics.AddError("Invalid Workflow Node Identities", e.Error())
+		return
+	}
+	next, e := workflowState(ctx, bound, raw)
 	if e != nil {
 		p.Diagnostics.AddError("Invalid Workflow Definition Response", e.Error())
 		return

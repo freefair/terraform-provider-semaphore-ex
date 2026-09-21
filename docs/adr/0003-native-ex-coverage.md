@@ -87,13 +87,10 @@ workloads or contact production identity systems.
 
 ## Workflow resource identity and normalization
 
-Workflow resources use unique persisted node display names as HCL keys so an
-import reconstructs the same graph references without client-only aliases.
-Server numeric IDs remain computed and survive ordinary updates. Empty or
-duplicate names are diagnosed explicitly. A separate persisted client key would
-require a server migration, while import-time mapping would add manual state
-reconciliation; neither is necessary for this contract. Read-only data sources
-continue to use node-ID keys for arbitrary existing graphs.
+The original display-name identity decision is superseded by ADR 0010. Workflow
+keys now remain stable through server node IDs; display labels may be changed,
+empty, or repeated. Unique label-based import keys remain compatible, with
+ID-derived keys for ambiguous labels.
 
 Task-parameter decoding preserves explicitly configured empty strings, lists
 and nested blocks when the API omits equivalent zero values. It continues to

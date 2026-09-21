@@ -57,7 +57,7 @@ resource "semaphore_ex_workflow_definition" "release" {
 
 Required:
 
-- `key` (String) Unique persisted node identity; it must equal display_name.
+- `key` (String) Stable Terraform node key, independent of display_name. Existing keys are retained by server_id on refresh.
 
 Optional:
 

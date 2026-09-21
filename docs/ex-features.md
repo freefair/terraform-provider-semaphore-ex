@@ -41,9 +41,9 @@ After completion, remove the schedule from configuration or set a new future `ru
 The current server also rejects updates to a past `run_at`, including unrelated edits.
 The provider does not move execution times forward automatically.
 
-Workflow resources use unique persisted node display names as their HCL `key` values.
-An optional `display_name` must equal `key`. This lets import recover edge and artifact references.
-Empty or duplicate persisted names must be corrected before resource import; data sources can still inspect those graphs with server-ID keys.
+Workflow node `key` is independent of `display_name`. Refresh keeps keys stable by server ID.
+Imports retain unique nonempty labels as initial keys for backward compatibility;
+empty or duplicate labels receive deterministic server-ID keys. Graph references use the same keys.
 Node IDs survive reorder and ordinary updates. Optional/computed access policy retains the actual imported policy; explicit empty role lists clear it.
 
 ## SSH keys for private dependencies

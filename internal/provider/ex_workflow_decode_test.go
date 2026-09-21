@@ -93,9 +93,9 @@ func TestWorkflowDecodedResourceUsesDisplayNamesForGraphIdentity(t *testing.T) {
 	require.Equal(t, types.StringValue("Build"), artifacts[0].Attributes()["source_key"])
 }
 
-func TestWorkflowDecodedResourceRejectsUnstableDisplayName(t *testing.T) {
+func TestWorkflowDecodedResourceAcceptsRepeatedDisplayName(t *testing.T) {
 	_, err := workflowDecodedResource(context.Background(), map[string]any{"nodes": []any{map[string]any{"id": int64(2), "display_name": "Build"}, map[string]any{"id": int64(3), "display_name": "Build"}}})
-	require.ErrorContains(t, err, "duplicate node display names")
+	require.NoError(t, err)
 }
 
 func TestAcc_EXWorkflowDefinitionDataSource(t *testing.T) {

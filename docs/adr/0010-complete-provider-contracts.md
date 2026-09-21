@@ -66,3 +66,13 @@ conversion and secret redaction in one place. Collection schemas deliberately li
 allowed summary fields instead of copying arbitrary API response objects into state.
 Only routes with documented count/offset pagination receive those parameters;
 unpaginated APIs are read once. Ordering follows stable server IDs.
+
+## Workflow identity compatibility
+
+Refresh maps persisted server IDs to existing Terraform keys. Import retains unique
+nonempty labels as initial keys for compatibility with earlier imports, and assigns
+ID-derived keys where labels are empty or ambiguous. Labels never replace existing
+keys on refresh. The server's POST/PUT implementation preserves request node order
+while replacing temporary IDs; the provider binds those returned IDs once and then
+uses ID-based reconciliation. Existing positive IDs and node counts are checked.
+This avoids requiring unique labels or adding a server-side Terraform naming field.
