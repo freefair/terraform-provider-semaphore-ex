@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -83,7 +84,27 @@ func (r *projectKeyResource) ConfigValidators(ctx context.Context) []resource.Co
 
 func (r *projectKeyResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
 	var config ProjectKeyModel
-	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	// Configuration objects can be unknown even though CRUD models only need
+	// to represent resolved objects. Decode each known validation input separately.
+	for _, field := range []struct {
+		name   string
+		target any
+	}{
+		{"remote_reference", &config.RemoteReference},
+		{ProjectKeyTypeLoginPassword, &config.LoginPassword},
+		{ProjectKeyTypeSSH, &config.SSH},
+		{ProjectKeyTypeString, &config.String},
+		{ProjectKeyTypeNone, &config.None},
+	} {
+		var value types.Object
+		resp.Diagnostics.Append(req.Config.GetAttribute(ctx, path.Root(field.name), &value)...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		if !value.IsNull() && !value.IsUnknown() {
+			resp.Diagnostics.Append(tfsdk.ValueAs(ctx, value, field.target)...)
+		}
+	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -97,16 +118,16 @@ func validateProjectKeyConfig(_ context.Context, config ProjectKeyModel, diagnos
 		return
 	}
 	ref := config.RemoteReference
-	if !hasProjectKeyValue(ref.Path) || ref.Path.ValueString() == "" {
+	if !ref.Path.IsUnknown() && (!hasProjectKeyValue(ref.Path) || ref.Path.ValueString() == "") {
 		diagnostics.AddAttributeError(path.Root("remote_reference").AtName("path"), "Incomplete remote secret reference", "remote_reference requires path.")
 	}
-	if ref.StorageType.ValueString() == "vault" && (ref.StorageID.IsNull() || ref.StorageID.IsUnknown()) {
+	if ref.StorageType.ValueString() == "vault" && ref.StorageID.IsNull() {
 		diagnostics.AddAttributeError(path.Root("remote_reference").AtName("storage_id"), "Incomplete remote secret reference", "vault remote_reference requires storage_id.")
 	}
-	if ref.StorageType.ValueString() == "vault" && (!hasProjectKeyValue(ref.Field) || ref.Field.ValueString() == "") {
+	if ref.StorageType.ValueString() == "vault" && !ref.Field.IsUnknown() && (!hasProjectKeyValue(ref.Field) || ref.Field.ValueString() == "") {
 		diagnostics.AddAttributeError(path.Root("remote_reference").AtName("field"), "Incomplete remote secret reference", "vault remote_reference requires field.")
 	}
-	if ref.StorageType.ValueString() != "vault" && !ref.StorageID.IsNull() && !ref.StorageID.IsUnknown() {
+	if !ref.StorageType.IsUnknown() && ref.StorageType.ValueString() != "vault" && !ref.StorageID.IsNull() && !ref.StorageID.IsUnknown() {
 		diagnostics.AddAttributeError(path.Root("remote_reference").AtName("storage_id"), "Invalid remote secret reference", "storage_id is only valid for vault remote_reference.")
 	}
 	if config.LoginPassword != nil && (hasProjectKeyValue(config.LoginPassword.Password) || hasProjectKeyValue(config.LoginPassword.PasswordWO)) {

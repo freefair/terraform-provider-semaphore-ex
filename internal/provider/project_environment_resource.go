@@ -14,6 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -97,7 +98,20 @@ func (r *projectEnvironmentResource) Schema(ctx context.Context, _ resource.Sche
 
 func (r *projectEnvironmentResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
 	var config ProjectEnvironmentModel
-	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
+	// Variables and environment maps are unrelated to these checks and may
+	// contain unknowns that the resolved CRUD model cannot represent.
+	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, path.Root("secrets"), &config.Secrets)...)
+	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, path.Root("sync_paths"), &config.SyncPaths)...)
+	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, path.Root("sync_enabled"), &config.SyncEnabled)...)
+	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, path.Root("sync_interval"), &config.SyncInterval)...)
+	var storage types.Object
+	resp.Diagnostics.Append(req.Config.GetAttribute(ctx, path.Root("secret_storage"), &storage)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	if !storage.IsNull() && !storage.IsUnknown() {
+		resp.Diagnostics.Append(tfsdk.ValueAs(ctx, storage, &config.SecretStorage)...)
+	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -108,13 +122,22 @@ func (r *projectEnvironmentResource) ModifyPlan(ctx context.Context, req resourc
 	if req.Plan.Raw.IsNull() {
 		return
 	}
-	var plan ProjectEnvironmentModel
-	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
+	var syncPaths types.List
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("sync_paths"), &syncPaths)...)
+	if resp.Diagnostics.HasError() || syncPaths.IsNull() || syncPaths.IsUnknown() || len(syncPaths.Elements()) == 0 {
+		return
+	}
+	var storage types.Object
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("secret_storage"), &storage)...)
+	if resp.Diagnostics.HasError() || storage.IsUnknown() {
+		return
+	}
+	var storageID types.Int64
+	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("secret_storage").AtName("id"), &storageID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	if !plan.SyncPaths.IsNull() && !plan.SyncPaths.IsUnknown() && len(plan.SyncPaths.Elements()) > 0 &&
-		(plan.SecretStorage == nil || plan.SecretStorage.ID.IsNull() || plan.SecretStorage.ID.IsUnknown()) {
+	if storageID.IsNull() {
 		resp.Diagnostics.AddAttributeError(path.Root("sync_paths"), "Missing secret storage", "sync_paths require secret_storage.id.")
 	}
 }
@@ -125,9 +148,18 @@ func configured(value types.String) bool {
 
 func validateProjectEnvironmentConfig(ctx context.Context, config ProjectEnvironmentModel, diagnostics *diag.Diagnostics) {
 	if !config.Secrets.IsNull() && !config.Secrets.IsUnknown() {
-		var secrets []ProjectEnvironmentSecretModel
+		var secrets []types.Object
 		diagnostics.Append(config.Secrets.ElementsAs(ctx, &secrets, false)...)
-		for index, secret := range secrets {
+		for index, value := range secrets {
+			if value.IsNull() || value.IsUnknown() {
+				continue
+			}
+			var secret ProjectEnvironmentSecretModel
+			diags := tfsdk.ValueAs(ctx, value, &secret)
+			diagnostics.Append(diags...)
+			if diags.HasError() {
+				continue
+			}
 			secretPath := path.Root("secrets").AtListIndex(index)
 			hasStorage := !secret.StorageID.IsNull() && !secret.StorageID.IsUnknown()
 			hasReferencePart := hasStorage || configured(secret.Mount) || configured(secret.Path) || configured(secret.Field) || (!secret.Version.IsNull() && !secret.Version.IsUnknown())
@@ -136,13 +168,18 @@ func validateProjectEnvironmentConfig(ctx context.Context, config ProjectEnviron
 			if hasStorage && hasValue {
 				diagnostics.AddAttributeError(secretPath, "Conflicting secret sources", "Set either value for a plaintext secret or storage_id with its remote reference, not both.")
 			}
-			if !hasStorage && hasReferencePart {
+			if secret.StorageID.IsNull() && hasReferencePart {
 				diagnostics.AddAttributeError(secretPath, "Incomplete remote secret reference", "mount, path, version, and field require storage_id.")
 			}
-			if !hasStorage && !hasValue && !hasReferencePart {
+			if !hasStorage && !hasValue && !hasReferencePart &&
+				!secret.StorageID.IsUnknown() && !secret.Value.IsUnknown() &&
+				!secret.Mount.IsUnknown() && !secret.Path.IsUnknown() &&
+				!secret.Field.IsUnknown() && !secret.Version.IsUnknown() {
 				diagnostics.AddAttributeError(secretPath, "Missing secret source", "Set value for a plaintext secret or storage_id, path, and field for a remote secret reference.")
 			}
-			if hasStorage && (!configured(secret.Path) || secret.Path.ValueString() == "" || !configured(secret.Field) || secret.Field.ValueString() == "") {
+			missingPath := !secret.Path.IsUnknown() && (!configured(secret.Path) || secret.Path.ValueString() == "")
+			missingField := !secret.Field.IsUnknown() && (!configured(secret.Field) || secret.Field.ValueString() == "")
+			if hasStorage && (missingPath || missingField) {
 				diagnostics.AddAttributeError(secretPath, "Incomplete remote secret reference", "Remote secret references require both path and field.")
 			}
 		}
@@ -155,9 +192,18 @@ func validateProjectEnvironmentConfig(ctx context.Context, config ProjectEnviron
 		diagnostics.AddAttributeError(path.Root("sync_interval"), "Invalid synchronization interval", "sync_interval must be positive when sync_enabled is true.")
 	}
 	if !config.SyncPaths.IsNull() && !config.SyncPaths.IsUnknown() {
-		var syncPaths []ProjectEnvironmentSyncPathModel
+		var syncPaths []types.Object
 		diagnostics.Append(config.SyncPaths.ElementsAs(ctx, &syncPaths, false)...)
-		for index, syncPath := range syncPaths {
+		for index, value := range syncPaths {
+			if value.IsNull() || value.IsUnknown() {
+				continue
+			}
+			var syncPath ProjectEnvironmentSyncPathModel
+			diags := tfsdk.ValueAs(ctx, value, &syncPath)
+			diagnostics.Append(diags...)
+			if diags.HasError() {
+				continue
+			}
 			pathValue := path.Root("sync_paths").AtListIndex(index)
 			if syncPath.AccessKeyID.IsNull() || (!syncPath.AccessKeyID.IsUnknown() && syncPath.AccessKeyID.ValueInt64() <= 0) ||
 				(!syncPath.Mount.IsUnknown() && (!configured(syncPath.Mount) || syncPath.Mount.ValueString() == "")) ||
