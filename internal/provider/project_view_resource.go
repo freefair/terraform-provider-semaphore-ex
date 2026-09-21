@@ -77,7 +77,7 @@ func (r *projectViewResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	response, err := r.client.Project.PostProjectProjectIDViews(&project.PostProjectProjectIDViewsParams{
+	response, err := r.client.Project.PostProjectProjectIDViewsContext(ctx, &project.PostProjectProjectIDViewsParams{
 		ProjectID: plan.ProjectID.ValueInt64(),
 		View:      convertProjectViewModelToView(plan),
 	}, nil)
@@ -105,7 +105,7 @@ func (r *projectViewResource) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 
-	response, err := r.client.Project.GetProjectProjectIDViewsViewID(&project.GetProjectProjectIDViewsViewIDParams{
+	response, err := r.client.Project.GetProjectProjectIDViewsViewIDContext(ctx, &project.GetProjectProjectIDViewsViewIDParams{
 		ProjectID: state.ProjectID.ValueInt64(),
 		ViewID:    state.ID.ValueInt64(),
 	}, nil)
@@ -137,7 +137,7 @@ func (r *projectViewResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	_, err := r.client.Project.PutProjectProjectIDViewsViewID(&project.PutProjectProjectIDViewsViewIDParams{
+	_, err := r.client.Project.PutProjectProjectIDViewsViewIDContext(ctx, &project.PutProjectProjectIDViewsViewIDParams{
 		ProjectID: plan.ProjectID.ValueInt64(),
 		ViewID:    plan.ID.ValueInt64(),
 		View: &models.ViewRequest{
@@ -155,7 +155,7 @@ func (r *projectViewResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	response, err := r.client.Project.GetProjectProjectIDViewsViewID(&project.GetProjectProjectIDViewsViewIDParams{
+	response, err := r.client.Project.GetProjectProjectIDViewsViewIDContext(ctx, &project.GetProjectProjectIDViewsViewIDParams{
 		ProjectID: plan.ProjectID.ValueInt64(),
 		ViewID:    plan.ID.ValueInt64(),
 	}, nil)
@@ -182,7 +182,7 @@ func (r *projectViewResource) Delete(ctx context.Context, req resource.DeleteReq
 		return
 	}
 
-	_, err := r.client.Project.DeleteProjectProjectIDViewsViewID(&project.DeleteProjectProjectIDViewsViewIDParams{
+	_, err := r.client.Project.DeleteProjectProjectIDViewsViewIDContext(ctx, &project.DeleteProjectProjectIDViewsViewIDParams{
 		ProjectID: state.ProjectID.ValueInt64(),
 		ViewID:    state.ID.ValueInt64(),
 	}, nil)
@@ -205,7 +205,7 @@ func (r *projectViewResource) ImportState(ctx context.Context, req resource.Impo
 		return
 	}
 
-	response, err := r.client.Project.GetProjectProjectIDViewsViewID(&project.GetProjectProjectIDViewsViewIDParams{
+	response, err := r.client.Project.GetProjectProjectIDViewsViewIDContext(ctx, &project.GetProjectProjectIDViewsViewIDParams{
 		ProjectID: fields["project"],
 		ViewID:    fields["view"],
 	}, nil)

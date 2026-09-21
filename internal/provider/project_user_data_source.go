@@ -49,8 +49,8 @@ func (d *projectUserDataSource) Schema(ctx context.Context, _ datasource.SchemaR
 	resp.Schema = ProjectUserSchema().GetDataSource(ctx)
 }
 
-func (d *projectUserDataSource) getProjectUserModelFromAPI(projectId types.Int64, userId types.Int64) (*ProjectUserModel, error) {
-	payload, err := d.client.Project.GetProjectProjectIDUsers(&project.GetProjectProjectIDUsersParams{ProjectID: projectId.ValueInt64()}, nil)
+func (d *projectUserDataSource) getProjectUserModelFromAPI(ctx context.Context, projectId types.Int64, userId types.Int64) (*ProjectUserModel, error) {
+	payload, err := d.client.Project.GetProjectProjectIDUsersContext(ctx, &project.GetProjectProjectIDUsersParams{ProjectID: projectId.ValueInt64()}, nil)
 	if err != nil {
 		return nil, fmt.Errorf("could not read Users for project ID %d: %s", projectId.ValueInt64(), err.Error())
 	}
@@ -82,7 +82,7 @@ func (d *projectUserDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	state, err := d.getProjectUserModelFromAPI(config.ProjectID, config.UserID)
+	state, err := d.getProjectUserModelFromAPI(ctx, config.ProjectID, config.UserID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Semaphore Project Users",

@@ -53,7 +53,7 @@ func (d *runnerDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	}
 
 	if !config.ID.IsNull() && !config.ID.IsUnknown() {
-		response, err := d.client.Runner.GetRunnersRunnerID(&runner.GetRunnersRunnerIDParams{
+		response, err := d.client.Runner.GetRunnersRunnerIDContext(ctx, &runner.GetRunnersRunnerIDParams{
 			RunnerID: config.ID.ValueInt64(),
 		}, nil)
 		if err != nil {
@@ -72,7 +72,7 @@ func (d *runnerDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		return
 	}
 
-	response, err := d.client.Runner.GetRunners(&runner.GetRunnersParams{}, nil)
+	response, err := d.client.Runner.GetRunnersContext(ctx, &runner.GetRunnersParams{}, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading SemaphoreUI Runners",

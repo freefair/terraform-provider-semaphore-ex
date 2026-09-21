@@ -178,7 +178,7 @@ func (r *projectInventoryResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	response, err := r.client.Inventory.PostProjectProjectIDInventory(&inventory.PostProjectProjectIDInventoryParams{
+	response, err := r.client.Inventory.PostProjectProjectIDInventoryContext(ctx, &inventory.PostProjectProjectIDInventoryParams{
 		ProjectID: plan.ProjectID.ValueInt64(),
 		Inventory: convertProjectInventoryModelToInventoryRequest(plan),
 	}, nil)
@@ -209,7 +209,7 @@ func (r *projectInventoryResource) Read(ctx context.Context, req resource.ReadRe
 		return
 	}
 
-	response, err := r.client.Inventory.GetProjectProjectIDInventoryInventoryID(&inventory.GetProjectProjectIDInventoryInventoryIDParams{
+	response, err := r.client.Inventory.GetProjectProjectIDInventoryInventoryIDContext(ctx, &inventory.GetProjectProjectIDInventoryInventoryIDParams{
 		ProjectID:   state.ProjectID.ValueInt64(),
 		InventoryID: state.ID.ValueInt64(),
 	}, nil)
@@ -244,7 +244,7 @@ func (r *projectInventoryResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	_, err := r.client.Inventory.PutProjectProjectIDInventoryInventoryID(&inventory.PutProjectProjectIDInventoryInventoryIDParams{
+	_, err := r.client.Inventory.PutProjectProjectIDInventoryInventoryIDContext(ctx, &inventory.PutProjectProjectIDInventoryInventoryIDParams{
 		ProjectID:   plan.ProjectID.ValueInt64(),
 		InventoryID: plan.ID.ValueInt64(),
 		Inventory:   convertProjectInventoryModelToInventoryRequest(plan),
@@ -258,7 +258,7 @@ func (r *projectInventoryResource) Update(ctx context.Context, req resource.Upda
 	}
 
 	// Fetch updated values as PutProjectProjectIDInventoryInventoryID does not return updated project inventory
-	response, err := r.client.Inventory.GetProjectProjectIDInventoryInventoryID(&inventory.GetProjectProjectIDInventoryInventoryIDParams{
+	response, err := r.client.Inventory.GetProjectProjectIDInventoryInventoryIDContext(ctx, &inventory.GetProjectProjectIDInventoryInventoryIDParams{
 		ProjectID:   plan.ProjectID.ValueInt64(),
 		InventoryID: plan.ID.ValueInt64(),
 	}, nil)
@@ -290,7 +290,7 @@ func (r *projectInventoryResource) Delete(ctx context.Context, req resource.Dele
 	}
 
 	// Delete existing resource
-	_, err := r.client.Inventory.DeleteProjectProjectIDInventoryInventoryID(&inventory.DeleteProjectProjectIDInventoryInventoryIDParams{
+	_, err := r.client.Inventory.DeleteProjectProjectIDInventoryInventoryIDContext(ctx, &inventory.DeleteProjectProjectIDInventoryInventoryIDParams{
 		ProjectID:   state.ProjectID.ValueInt64(),
 		InventoryID: state.ID.ValueInt64(),
 	}, nil)
@@ -313,7 +313,7 @@ func (r *projectInventoryResource) ImportState(ctx context.Context, req resource
 		return
 	}
 
-	response, err := r.client.Inventory.GetProjectProjectIDInventoryInventoryID(&inventory.GetProjectProjectIDInventoryInventoryIDParams{
+	response, err := r.client.Inventory.GetProjectProjectIDInventoryInventoryIDContext(ctx, &inventory.GetProjectProjectIDInventoryInventoryIDParams{
 		ProjectID:   fields["project"],
 		InventoryID: fields["inventory"],
 	}, nil)

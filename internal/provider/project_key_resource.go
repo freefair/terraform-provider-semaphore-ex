@@ -256,8 +256,8 @@ func convertAccessKeyResponseToProjectKeyModel(key *models.AccessKey, prev *Proj
 	return model
 }
 
-func (r *projectKeyResource) getProjectKeyModelFromClient(projectId types.Int64, keyId types.Int64, prev *ProjectKeyModel) (*ProjectKeyModel, error) {
-	payload, err := r.client.KeyStore.GetProjectProjectIDKeys(&key_store.GetProjectProjectIDKeysParams{
+func (r *projectKeyResource) getProjectKeyModelFromClient(ctx context.Context, projectId types.Int64, keyId types.Int64, prev *ProjectKeyModel) (*ProjectKeyModel, error) {
+	payload, err := r.client.KeyStore.GetProjectProjectIDKeysContext(ctx, &key_store.GetProjectProjectIDKeysParams{
 		ProjectID: projectId.ValueInt64(),
 	}, nil)
 	if err != nil {
@@ -301,7 +301,7 @@ func (r *projectKeyResource) Create(ctx context.Context, req resource.CreateRequ
 	}
 	secrets := resolveSecrets(&plan, &config)
 
-	response, err := r.client.KeyStore.PostProjectProjectIDKeys(&key_store.PostProjectProjectIDKeysParams{
+	response, err := r.client.KeyStore.PostProjectProjectIDKeysContext(ctx, &key_store.PostProjectProjectIDKeysParams{
 		ProjectID: plan.ProjectID.ValueInt64(),
 		AccessKey: convertProjectKeyModelToAccessKeyRequest(plan, secrets),
 	}, nil)
@@ -328,7 +328,7 @@ func (r *projectKeyResource) Read(ctx context.Context, req resource.ReadRequest,
 		return
 	}
 
-	model, err := r.getProjectKeyModelFromClient(state.ProjectID, state.ID, &state)
+	model, err := r.getProjectKeyModelFromClient(ctx, state.ProjectID, state.ID, &state)
 	if resourceNotFound(err) {
 		resp.State.RemoveResource(ctx)
 		return
@@ -428,7 +428,7 @@ func (r *projectKeyResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	// Update existing resource
-	_, err := r.client.KeyStore.PutProjectProjectIDKeysKeyID(&key_store.PutProjectProjectIDKeysKeyIDParams{
+	_, err := r.client.KeyStore.PutProjectProjectIDKeysKeyIDContext(ctx, &key_store.PutProjectProjectIDKeysKeyIDParams{
 		ProjectID: plan.ProjectID.ValueInt64(),
 		KeyID:     plan.ID.ValueInt64(),
 		AccessKey: key,
@@ -442,7 +442,7 @@ func (r *projectKeyResource) Update(ctx context.Context, req resource.UpdateRequ
 	}
 
 	// Fetch updated values as PutProjectProjectIDKeysKeyID does not return updated projectKey
-	model, err := r.getProjectKeyModelFromClient(state.ProjectID, state.ID, &plan)
+	model, err := r.getProjectKeyModelFromClient(ctx, state.ProjectID, state.ID, &plan)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Semaphore Project Keys",
@@ -493,7 +493,7 @@ func (r *projectKeyResource) Delete(ctx context.Context, req resource.DeleteRequ
 	}
 
 	// Delete existing resource
-	_, err := r.client.KeyStore.DeleteProjectProjectIDKeysKeyID(&key_store.DeleteProjectProjectIDKeysKeyIDParams{
+	_, err := r.client.KeyStore.DeleteProjectProjectIDKeysKeyIDContext(ctx, &key_store.DeleteProjectProjectIDKeysKeyIDParams{
 		ProjectID: state.ProjectID.ValueInt64(),
 		KeyID:     state.ID.ValueInt64(),
 	}, nil)
@@ -517,7 +517,7 @@ func (r *projectKeyResource) ImportState(ctx context.Context, req resource.Impor
 	}
 
 	// Get the project key from the client filling required secrets with empty strings
-	model, err := r.getProjectKeyModelFromClient(types.Int64Value(fields["project"]), types.Int64Value(fields["key"]), &ProjectKeyModel{
+	model, err := r.getProjectKeyModelFromClient(ctx, types.Int64Value(fields["project"]), types.Int64Value(fields["key"]), &ProjectKeyModel{
 		LoginPassword: &ProjectKeyLoginPassword{
 			Password: types.StringValue(""),
 		},

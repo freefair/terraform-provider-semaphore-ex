@@ -72,7 +72,7 @@ func (r *runnerRegistrationTokenResource) Create(ctx context.Context, req resour
 
 	var payload *models.RunnerRegistrationToken
 	if plan.isProject() {
-		response, err := r.client.Runner.PostProjectProjectIDRunnersRunnerIDRegistrationToken(&runner.PostProjectProjectIDRunnersRunnerIDRegistrationTokenParams{
+		response, err := r.client.Runner.PostProjectProjectIDRunnersRunnerIDRegistrationTokenContext(ctx, &runner.PostProjectProjectIDRunnersRunnerIDRegistrationTokenParams{
 			ProjectID: plan.ProjectID.ValueInt64(),
 			RunnerID:  plan.RunnerID.ValueInt64(),
 		}, nil)
@@ -85,7 +85,7 @@ func (r *runnerRegistrationTokenResource) Create(ctx context.Context, req resour
 		}
 		payload = response.Payload
 	} else {
-		response, err := r.client.Runner.PostRunnersRunnerIDRegistrationToken(&runner.PostRunnersRunnerIDRegistrationTokenParams{
+		response, err := r.client.Runner.PostRunnersRunnerIDRegistrationTokenContext(ctx, &runner.PostRunnersRunnerIDRegistrationTokenParams{
 			RunnerID: plan.RunnerID.ValueInt64(),
 		}, nil)
 		if err != nil {
@@ -119,7 +119,7 @@ func (r *runnerRegistrationTokenResource) Read(ctx context.Context, req resource
 	}
 
 	if state.isProject() {
-		_, err := r.client.Runner.GetProjectProjectIDRunnersRunnerID(&runner.GetProjectProjectIDRunnersRunnerIDParams{
+		_, err := r.client.Runner.GetProjectProjectIDRunnersRunnerIDContext(ctx, &runner.GetProjectProjectIDRunnersRunnerIDParams{
 			ProjectID: state.ProjectID.ValueInt64(),
 			RunnerID:  state.RunnerID.ValueInt64(),
 		}, nil)
@@ -135,7 +135,7 @@ func (r *runnerRegistrationTokenResource) Read(ctx context.Context, req resource
 			return
 		}
 	} else {
-		_, err := r.client.Runner.GetRunnersRunnerID(&runner.GetRunnersRunnerIDParams{
+		_, err := r.client.Runner.GetRunnersRunnerIDContext(ctx, &runner.GetRunnersRunnerIDParams{
 			RunnerID: state.RunnerID.ValueInt64(),
 		}, nil)
 		if err != nil {

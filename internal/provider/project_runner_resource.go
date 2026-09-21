@@ -106,7 +106,7 @@ func (r *projectRunnerResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	response, err := r.client.Runner.PostProjectProjectIDRunners(&runner.PostProjectProjectIDRunnersParams{
+	response, err := r.client.Runner.PostProjectProjectIDRunnersContext(ctx, &runner.PostProjectProjectIDRunnersParams{
 		ProjectID: plan.ProjectID.ValueInt64(),
 		Runner:    request,
 	}, nil)
@@ -118,7 +118,7 @@ func (r *projectRunnerResource) Create(ctx context.Context, req resource.CreateR
 		return
 	}
 
-	if err := r.ensureActive(plan.ProjectID.ValueInt64(), response.Payload.ID, plan.Active.ValueBool(), response.Payload.Active); err != nil {
+	if err := r.ensureActive(ctx, plan.ProjectID.ValueInt64(), response.Payload.ID, plan.Active.ValueBool(), response.Payload.Active); err != nil {
 		resp.Diagnostics.AddError(
 			"Error Setting SemaphoreUI Project Runner Active State",
 			"Could not set project runner active state, unexpected error: "+err.Error(),
@@ -141,11 +141,11 @@ func (r *projectRunnerResource) Create(ctx context.Context, req resource.CreateR
 // ensureActive sets the runner active state via the dedicated endpoint when the
 // current state differs from the desired one. Some SemaphoreUI versions ignore
 // the `active` field on create/update and only honor this endpoint.
-func (r *projectRunnerResource) ensureActive(projectID, runnerID int64, desired, current bool) error {
+func (r *projectRunnerResource) ensureActive(ctx context.Context, projectID, runnerID int64, desired, current bool) error {
 	if desired == current {
 		return nil
 	}
-	_, err := r.client.Runner.PostProjectProjectIDRunnersRunnerIDActive(&runner.PostProjectProjectIDRunnersRunnerIDActiveParams{
+	_, err := r.client.Runner.PostProjectProjectIDRunnersRunnerIDActiveContext(ctx, &runner.PostProjectProjectIDRunnersRunnerIDActiveParams{
 		ProjectID: projectID,
 		RunnerID:  runnerID,
 		Active:    &models.RunnerActive{Active: desired},
@@ -160,7 +160,7 @@ func (r *projectRunnerResource) Read(ctx context.Context, req resource.ReadReque
 		return
 	}
 
-	response, err := r.client.Runner.GetProjectProjectIDRunnersRunnerID(&runner.GetProjectProjectIDRunnersRunnerIDParams{
+	response, err := r.client.Runner.GetProjectProjectIDRunnersRunnerIDContext(ctx, &runner.GetProjectProjectIDRunnersRunnerIDParams{
 		ProjectID: state.ProjectID.ValueInt64(),
 		RunnerID:  state.ID.ValueInt64(),
 	}, nil)
@@ -205,7 +205,7 @@ func (r *projectRunnerResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	_, err := r.client.Runner.PutProjectProjectIDRunnersRunnerID(&runner.PutProjectProjectIDRunnersRunnerIDParams{
+	_, err := r.client.Runner.PutProjectProjectIDRunnersRunnerIDContext(ctx, &runner.PutProjectProjectIDRunnersRunnerIDParams{
 		ProjectID: plan.ProjectID.ValueInt64(),
 		RunnerID:  plan.ID.ValueInt64(),
 		Runner:    request,
@@ -218,7 +218,7 @@ func (r *projectRunnerResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	response, err := r.client.Runner.GetProjectProjectIDRunnersRunnerID(&runner.GetProjectProjectIDRunnersRunnerIDParams{
+	response, err := r.client.Runner.GetProjectProjectIDRunnersRunnerIDContext(ctx, &runner.GetProjectProjectIDRunnersRunnerIDParams{
 		ProjectID: plan.ProjectID.ValueInt64(),
 		RunnerID:  plan.ID.ValueInt64(),
 	}, nil)
@@ -230,7 +230,7 @@ func (r *projectRunnerResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	if err := r.ensureActive(plan.ProjectID.ValueInt64(), plan.ID.ValueInt64(), plan.Active.ValueBool(), response.Payload.Active); err != nil {
+	if err := r.ensureActive(ctx, plan.ProjectID.ValueInt64(), plan.ID.ValueInt64(), plan.Active.ValueBool(), response.Payload.Active); err != nil {
 		resp.Diagnostics.AddError(
 			"Error Setting SemaphoreUI Project Runner Active State",
 			"Could not set project runner active state, unexpected error: "+err.Error(),
@@ -255,7 +255,7 @@ func (r *projectRunnerResource) Delete(ctx context.Context, req resource.DeleteR
 		return
 	}
 
-	_, err := r.client.Runner.DeleteProjectProjectIDRunnersRunnerID(&runner.DeleteProjectProjectIDRunnersRunnerIDParams{
+	_, err := r.client.Runner.DeleteProjectProjectIDRunnersRunnerIDContext(ctx, &runner.DeleteProjectProjectIDRunnersRunnerIDParams{
 		ProjectID: state.ProjectID.ValueInt64(),
 		RunnerID:  state.ID.ValueInt64(),
 	}, nil)
@@ -278,7 +278,7 @@ func (r *projectRunnerResource) ImportState(ctx context.Context, req resource.Im
 		return
 	}
 
-	response, err := r.client.Runner.GetProjectProjectIDRunnersRunnerID(&runner.GetProjectProjectIDRunnersRunnerIDParams{
+	response, err := r.client.Runner.GetProjectProjectIDRunnersRunnerIDContext(ctx, &runner.GetProjectProjectIDRunnersRunnerIDParams{
 		ProjectID: fields["project"],
 		RunnerID:  fields["runner"],
 	}, nil)

@@ -55,7 +55,7 @@ func (d *projectEnvironmentDataSource) Read(ctx context.Context, req datasource.
 		return
 	}
 
-	response, err := d.client.VariableGroup.GetProjectProjectIDEnvironmentEnvironmentID(&variable_group.GetProjectProjectIDEnvironmentEnvironmentIDParams{
+	response, err := d.client.VariableGroup.GetProjectProjectIDEnvironmentEnvironmentIDContext(ctx, &variable_group.GetProjectProjectIDEnvironmentEnvironmentIDParams{
 		ProjectID:     config.ProjectID.ValueInt64(),
 		EnvironmentID: config.ID.ValueInt64(),
 	}, nil)

@@ -540,7 +540,7 @@ func (r *projectTemplateResource) Create(ctx context.Context, req resource.Creat
 	}
 
 	// Create response doesn't fully capture the model, so we need to read it back
-	response, err := r.client.Template.GetProjectProjectIDTemplatesTemplateID(&template.GetProjectProjectIDTemplatesTemplateIDParams{
+	response, err := r.client.Template.GetProjectProjectIDTemplatesTemplateIDContext(ctx, &template.GetProjectProjectIDTemplatesTemplateIDParams{
 		ProjectID:  plan.ProjectID.ValueInt64(),
 		TemplateID: createdID,
 	}, nil)
@@ -573,7 +573,7 @@ func (r *projectTemplateResource) Read(ctx context.Context, req resource.ReadReq
 		return
 	}
 
-	response, err := r.client.Template.GetProjectProjectIDTemplatesTemplateID(&template.GetProjectProjectIDTemplatesTemplateIDParams{
+	response, err := r.client.Template.GetProjectProjectIDTemplatesTemplateIDContext(ctx, &template.GetProjectProjectIDTemplatesTemplateIDParams{
 		ProjectID:  state.ProjectID.ValueInt64(),
 		TemplateID: state.ID.ValueInt64(),
 	}, nil)
@@ -639,7 +639,7 @@ func (r *projectTemplateResource) Update(ctx context.Context, req resource.Updat
 		return
 	}
 
-	response, err := r.client.Template.GetProjectProjectIDTemplatesTemplateID(&template.GetProjectProjectIDTemplatesTemplateIDParams{
+	response, err := r.client.Template.GetProjectProjectIDTemplatesTemplateIDContext(ctx, &template.GetProjectProjectIDTemplatesTemplateIDParams{
 		ProjectID:  plan.ProjectID.ValueInt64(),
 		TemplateID: plan.ID.ValueInt64(),
 	}, nil)
@@ -670,7 +670,7 @@ func (r *projectTemplateResource) Delete(ctx context.Context, req resource.Delet
 		return
 	}
 
-	_, err := r.client.Template.DeleteProjectProjectIDTemplatesTemplateID(&template.DeleteProjectProjectIDTemplatesTemplateIDParams{
+	_, err := r.client.Template.DeleteProjectProjectIDTemplatesTemplateIDContext(ctx, &template.DeleteProjectProjectIDTemplatesTemplateIDParams{
 		ProjectID:  state.ProjectID.ValueInt64(),
 		TemplateID: state.ID.ValueInt64(),
 	}, nil)
@@ -693,7 +693,7 @@ func (r *projectTemplateResource) ImportState(ctx context.Context, req resource.
 		return
 	}
 
-	response, err := r.client.Template.GetProjectProjectIDTemplatesTemplateID(&template.GetProjectProjectIDTemplatesTemplateIDParams{
+	response, err := r.client.Template.GetProjectProjectIDTemplatesTemplateIDContext(ctx, &template.GetProjectProjectIDTemplatesTemplateIDParams{
 		ProjectID:  fields["project"],
 		TemplateID: fields["template"],
 	}, nil)

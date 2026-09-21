@@ -88,7 +88,7 @@ func (r *projectResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	//Create new project
-	response, err := r.client.Project.PostProjects(&project.PostProjectsParams{Project: &request}, nil)
+	response, err := r.client.Project.PostProjectsContext(ctx, &project.PostProjectsParams{Project: &request}, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Creating Semaphore Project",
@@ -116,7 +116,7 @@ func (r *projectResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	response, err := r.client.Project.GetProjectProjectID(&project.GetProjectProjectIDParams{ProjectID: state.ID.ValueInt64()}, nil)
+	response, err := r.client.Project.GetProjectProjectIDContext(ctx, &project.GetProjectProjectIDParams{ProjectID: state.ID.ValueInt64()}, nil)
 	if resourceNotFound(err) {
 		resp.State.RemoveResource(ctx)
 		return
@@ -159,7 +159,7 @@ func (r *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 	//request.Type = plan.Type.ValueString()
 
 	// Update existing project
-	_, err := r.client.Project.PutProjectProjectID(&project.PutProjectProjectIDParams{ProjectID: plan.ID.ValueInt64(), Project: request}, nil)
+	_, err := r.client.Project.PutProjectProjectIDContext(ctx, &project.PutProjectProjectIDParams{ProjectID: plan.ID.ValueInt64(), Project: request}, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Updating Semaphore Project",
@@ -169,7 +169,7 @@ func (r *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 	}
 
 	// Fetch updated project as PutProjectProjectID does not return updated project
-	response, err := r.client.Project.GetProjectProjectID(&project.GetProjectProjectIDParams{ProjectID: plan.ID.ValueInt64()}, nil)
+	response, err := r.client.Project.GetProjectProjectIDContext(ctx, &project.GetProjectProjectIDParams{ProjectID: plan.ID.ValueInt64()}, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Semaphore Project",
@@ -198,7 +198,7 @@ func (r *projectResource) Delete(ctx context.Context, req resource.DeleteRequest
 	}
 
 	// Delete existing order
-	_, err := r.client.Project.DeleteProjectProjectID(&project.DeleteProjectProjectIDParams{ProjectID: state.ID.ValueInt64()}, nil)
+	_, err := r.client.Project.DeleteProjectProjectIDContext(ctx, &project.DeleteProjectProjectIDParams{ProjectID: state.ID.ValueInt64()}, nil)
 	if err != nil && !resourceNotFound(err) {
 		resp.Diagnostics.AddError(
 			"Error Deleting Semaphore Project",

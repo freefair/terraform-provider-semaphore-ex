@@ -82,7 +82,7 @@ func (r *projectRepositoryResource) Create(ctx context.Context, req resource.Cre
 		return
 	}
 
-	response, err := r.client.Repository.PostProjectProjectIDRepositories(&repository.PostProjectProjectIDRepositoriesParams{
+	response, err := r.client.Repository.PostProjectProjectIDRepositoriesContext(ctx, &repository.PostProjectProjectIDRepositoriesParams{
 		ProjectID:  plan.ProjectID.ValueInt64(),
 		Repository: convertProjectRepositoryModelToRepositoryRequest(plan),
 	}, nil)
@@ -111,7 +111,7 @@ func (r *projectRepositoryResource) Read(ctx context.Context, req resource.ReadR
 		return
 	}
 
-	response, err := r.client.Repository.GetProjectProjectIDRepositoriesRepositoryID(&repository.GetProjectProjectIDRepositoriesRepositoryIDParams{
+	response, err := r.client.Repository.GetProjectProjectIDRepositoriesRepositoryIDContext(ctx, &repository.GetProjectProjectIDRepositoriesRepositoryIDParams{
 		ProjectID:    state.ProjectID.ValueInt64(),
 		RepositoryID: state.ID.ValueInt64(),
 	}, nil)
@@ -144,7 +144,7 @@ func (r *projectRepositoryResource) Update(ctx context.Context, req resource.Upd
 		return
 	}
 
-	_, err := r.client.Repository.PutProjectProjectIDRepositoriesRepositoryID(&repository.PutProjectProjectIDRepositoriesRepositoryIDParams{
+	_, err := r.client.Repository.PutProjectProjectIDRepositoriesRepositoryIDContext(ctx, &repository.PutProjectProjectIDRepositoriesRepositoryIDParams{
 		ProjectID:    plan.ProjectID.ValueInt64(),
 		RepositoryID: plan.ID.ValueInt64(),
 		Repository:   convertProjectRepositoryModelToRepositoryRequest(plan),
@@ -157,7 +157,7 @@ func (r *projectRepositoryResource) Update(ctx context.Context, req resource.Upd
 		return
 	}
 
-	response, err := r.client.Repository.GetProjectProjectIDRepositoriesRepositoryID(&repository.GetProjectProjectIDRepositoriesRepositoryIDParams{
+	response, err := r.client.Repository.GetProjectProjectIDRepositoriesRepositoryIDContext(ctx, &repository.GetProjectProjectIDRepositoriesRepositoryIDParams{
 		ProjectID:    plan.ProjectID.ValueInt64(),
 		RepositoryID: plan.ID.ValueInt64(),
 	}, nil)
@@ -184,7 +184,7 @@ func (r *projectRepositoryResource) Delete(ctx context.Context, req resource.Del
 		return
 	}
 
-	_, err := r.client.Repository.DeleteProjectProjectIDRepositoriesRepositoryID(&repository.DeleteProjectProjectIDRepositoriesRepositoryIDParams{
+	_, err := r.client.Repository.DeleteProjectProjectIDRepositoriesRepositoryIDContext(ctx, &repository.DeleteProjectProjectIDRepositoriesRepositoryIDParams{
 		ProjectID:    state.ProjectID.ValueInt64(),
 		RepositoryID: state.ID.ValueInt64(),
 	}, nil)
@@ -207,7 +207,7 @@ func (r *projectRepositoryResource) ImportState(ctx context.Context, req resourc
 		return
 	}
 
-	response, err := r.client.Repository.GetProjectProjectIDRepositoriesRepositoryID(&repository.GetProjectProjectIDRepositoriesRepositoryIDParams{
+	response, err := r.client.Repository.GetProjectProjectIDRepositoriesRepositoryIDContext(ctx, &repository.GetProjectProjectIDRepositoriesRepositoryIDParams{
 		ProjectID:    fields["project"],
 		RepositoryID: fields["repository"],
 	}, nil)

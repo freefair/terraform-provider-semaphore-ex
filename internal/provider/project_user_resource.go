@@ -49,8 +49,8 @@ func (r *projectUserResource) Schema(ctx context.Context, _ resource.SchemaReque
 	resp.Schema = ProjectUserSchema().GetResource(ctx)
 }
 
-func (r *projectUserResource) getProjectUserModelFromAPI(projectId types.Int64, userId types.Int64) (*ProjectUserModel, error) {
-	payload, err := r.client.Project.GetProjectProjectIDUsers(&project.GetProjectProjectIDUsersParams{ProjectID: projectId.ValueInt64()}, nil)
+func (r *projectUserResource) getProjectUserModelFromAPI(ctx context.Context, projectId types.Int64, userId types.Int64) (*ProjectUserModel, error) {
+	payload, err := r.client.Project.GetProjectProjectIDUsersContext(ctx, &project.GetProjectProjectIDUsersParams{ProjectID: projectId.ValueInt64()}, nil)
 	if err != nil {
 		return nil, fmt.Errorf("could not read Users for project ID %d: %w", projectId.ValueInt64(), err)
 	}
@@ -84,8 +84,8 @@ func (r *projectUserResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	//Create new projectUser
-	_, err := r.client.Project.PostProjectProjectIDUsers(
-		&project.PostProjectProjectIDUsersParams{
+	_, err := r.client.Project.PostProjectProjectIDUsersContext(
+		ctx, &project.PostProjectProjectIDUsersParams{
 			ProjectID: plan.ProjectID.ValueInt64(),
 			User: project.PostProjectProjectIDUsersBody{
 				Role:   plan.Role.ValueString(),
@@ -101,7 +101,7 @@ func (r *projectUserResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	// Fetch updated values as PostProjectProjectIDUsers does not return updated projectUser
-	user, err := r.getProjectUserModelFromAPI(plan.ProjectID, plan.UserID)
+	user, err := r.getProjectUserModelFromAPI(ctx, plan.ProjectID, plan.UserID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Semaphore Project Users",
@@ -127,7 +127,7 @@ func (r *projectUserResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	// Get refreshed value from API
-	user, err := r.getProjectUserModelFromAPI(state.ProjectID, state.UserID)
+	user, err := r.getProjectUserModelFromAPI(ctx, state.ProjectID, state.UserID)
 	if resourceNotFound(err) {
 		resp.State.RemoveResource(ctx)
 		return
@@ -162,8 +162,8 @@ func (r *projectUserResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	// Update existing resource
-	_, err := r.client.Project.PutProjectProjectIDUsersUserID(
-		&project.PutProjectProjectIDUsersUserIDParams{
+	_, err := r.client.Project.PutProjectProjectIDUsersUserIDContext(
+		ctx, &project.PutProjectProjectIDUsersUserIDParams{
 			ProjectID: plan.ProjectID.ValueInt64(),
 			UserID:    plan.UserID.ValueInt64(),
 			ProjectUser: project.PutProjectProjectIDUsersUserIDBody{
@@ -180,7 +180,7 @@ func (r *projectUserResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	// Fetch updated values as PutProjectProjectIDUsersUserID does not return updated projectUser
-	user, err := r.getProjectUserModelFromAPI(plan.ProjectID, plan.UserID)
+	user, err := r.getProjectUserModelFromAPI(ctx, plan.ProjectID, plan.UserID)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Semaphore Project Users",
@@ -205,7 +205,7 @@ func (r *projectUserResource) Delete(ctx context.Context, req resource.DeleteReq
 	}
 
 	// Delete existing resource
-	_, err := r.client.Project.DeleteProjectProjectIDUsersUserID(&project.DeleteProjectProjectIDUsersUserIDParams{
+	_, err := r.client.Project.DeleteProjectProjectIDUsersUserIDContext(ctx, &project.DeleteProjectProjectIDUsersUserIDParams{
 		ProjectID: state.ProjectID.ValueInt64(),
 		UserID:    state.UserID.ValueInt64(),
 	}, nil)
@@ -228,7 +228,7 @@ func (r *projectUserResource) ImportState(ctx context.Context, req resource.Impo
 		return
 	}
 
-	user, err := r.getProjectUserModelFromAPI(types.Int64Value(fields["project"]), types.Int64Value(fields["user"]))
+	user, err := r.getProjectUserModelFromAPI(ctx, types.Int64Value(fields["project"]), types.Int64Value(fields["user"]))
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Importing Semaphore Project User",

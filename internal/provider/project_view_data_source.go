@@ -48,8 +48,8 @@ func (d *projectViewDataSource) Schema(ctx context.Context, _ datasource.SchemaR
 	resp.Schema = ProjectViewSchema().GetDataSource(ctx)
 }
 
-func (d *projectViewDataSource) GetViewModelByTitle(projectID int64, title types.String) (*ProjectViewModel, error) {
-	payload, err := d.client.Project.GetProjectProjectIDViews(&project.GetProjectProjectIDViewsParams{
+func (d *projectViewDataSource) GetViewModelByTitle(ctx context.Context, projectID int64, title types.String) (*ProjectViewModel, error) {
+	payload, err := d.client.Project.GetProjectProjectIDViewsContext(ctx, &project.GetProjectProjectIDViewsParams{
 		ProjectID: projectID,
 	}, nil)
 	if err != nil {
@@ -74,7 +74,7 @@ func (d *projectViewDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 	var model ProjectViewModel
 	if !config.ID.IsNull() && !config.ID.IsUnknown() {
-		response, err := d.client.Project.GetProjectProjectIDViewsViewID(&project.GetProjectProjectIDViewsViewIDParams{
+		response, err := d.client.Project.GetProjectProjectIDViewsViewIDContext(ctx, &project.GetProjectProjectIDViewsViewIDParams{
 			ProjectID: config.ProjectID.ValueInt64(),
 			ViewID:    config.ID.ValueInt64(),
 		}, nil)
@@ -87,7 +87,7 @@ func (d *projectViewDataSource) Read(ctx context.Context, req datasource.ReadReq
 		}
 		model = convertViewResponseToProjectViewModel(response.Payload)
 	} else if !config.Title.IsNull() && !config.Title.IsUnknown() {
-		view, err := d.GetViewModelByTitle(config.ProjectID.ValueInt64(), config.Title)
+		view, err := d.GetViewModelByTitle(ctx, config.ProjectID.ValueInt64(), config.Title)
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error Reading SemaphoreUI Project View",

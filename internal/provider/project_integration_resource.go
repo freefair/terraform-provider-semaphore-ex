@@ -88,7 +88,7 @@ func (r *projectIntegrationResource) Create(ctx context.Context, req resource.Cr
 		return
 	}
 
-	response, err := r.client.Integration.PostProjectProjectIDIntegrations(&integration.PostProjectProjectIDIntegrationsParams{
+	response, err := r.client.Integration.PostProjectProjectIDIntegrationsContext(ctx, &integration.PostProjectProjectIDIntegrationsParams{
 		ProjectID:   plan.ProjectID.ValueInt64(),
 		Integration: convertProjectIntegrationModelToIntegrationRequest(ctx, plan),
 	}, nil)
@@ -110,7 +110,7 @@ func (r *projectIntegrationResource) Read(ctx context.Context, req resource.Read
 		return
 	}
 
-	response, err := r.client.Integration.GetProjectProjectIDIntegrationsIntegrationID(&integration.GetProjectProjectIDIntegrationsIntegrationIDParams{
+	response, err := r.client.Integration.GetProjectProjectIDIntegrationsIntegrationIDContext(ctx, &integration.GetProjectProjectIDIntegrationsIntegrationIDParams{
 		ProjectID:     state.ProjectID.ValueInt64(),
 		IntegrationID: state.ID.ValueInt64(),
 	}, nil)
@@ -136,7 +136,7 @@ func (r *projectIntegrationResource) Update(ctx context.Context, req resource.Up
 		return
 	}
 
-	_, err := r.client.Integration.PutProjectProjectIDIntegrationsIntegrationID(&integration.PutProjectProjectIDIntegrationsIntegrationIDParams{
+	_, err := r.client.Integration.PutProjectProjectIDIntegrationsIntegrationIDContext(ctx, &integration.PutProjectProjectIDIntegrationsIntegrationIDParams{
 		ProjectID:     plan.ProjectID.ValueInt64(),
 		IntegrationID: plan.ID.ValueInt64(),
 		Integration:   convertProjectIntegrationModelToIntegrationRequest(ctx, plan),
@@ -149,7 +149,7 @@ func (r *projectIntegrationResource) Update(ctx context.Context, req resource.Up
 		return
 	}
 
-	response, err := r.client.Integration.GetProjectProjectIDIntegrationsIntegrationID(&integration.GetProjectProjectIDIntegrationsIntegrationIDParams{
+	response, err := r.client.Integration.GetProjectProjectIDIntegrationsIntegrationIDContext(ctx, &integration.GetProjectProjectIDIntegrationsIntegrationIDParams{
 		ProjectID:     plan.ProjectID.ValueInt64(),
 		IntegrationID: plan.ID.ValueInt64(),
 	}, nil)
@@ -171,7 +171,7 @@ func (r *projectIntegrationResource) Delete(ctx context.Context, req resource.De
 		return
 	}
 
-	_, err := r.client.Integration.DeleteProjectProjectIDIntegrationsIntegrationID(&integration.DeleteProjectProjectIDIntegrationsIntegrationIDParams{
+	_, err := r.client.Integration.DeleteProjectProjectIDIntegrationsIntegrationIDContext(ctx, &integration.DeleteProjectProjectIDIntegrationsIntegrationIDParams{
 		ProjectID:     state.ProjectID.ValueInt64(),
 		IntegrationID: state.ID.ValueInt64(),
 	}, nil)
@@ -194,7 +194,7 @@ func (r *projectIntegrationResource) ImportState(ctx context.Context, req resour
 		return
 	}
 
-	response, err := r.client.Integration.GetProjectProjectIDIntegrationsIntegrationID(&integration.GetProjectProjectIDIntegrationsIntegrationIDParams{
+	response, err := r.client.Integration.GetProjectProjectIDIntegrationsIntegrationIDContext(ctx, &integration.GetProjectProjectIDIntegrationsIntegrationIDParams{
 		ProjectID:     fields["project"],
 		IntegrationID: fields["integration"],
 	}, nil)

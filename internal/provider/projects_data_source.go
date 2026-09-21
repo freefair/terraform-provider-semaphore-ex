@@ -78,7 +78,7 @@ func (d *projectsDataSource) Schema(ctx context.Context, _ datasource.SchemaRequ
 func (d *projectsDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var state projectsDataSourceModel
 
-	response, err := d.client.Project.GetProjects(&project.GetProjectsParams{}, nil)
+	response, err := d.client.Project.GetProjectsContext(ctx, &project.GetProjectsParams{}, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Semaphore Projects",

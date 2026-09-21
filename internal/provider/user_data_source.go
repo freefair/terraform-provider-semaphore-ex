@@ -49,8 +49,8 @@ func (d *userDataSource) Schema(ctx context.Context, _ datasource.SchemaRequest,
 	resp.Schema = userSchema().GetDataSource(ctx)
 }
 
-func (d *userDataSource) GetUserModelByUsername(username types.String) (*UserModel, error) {
-	payload, err := d.client.User.GetUsers(&user.GetUsersParams{}, nil)
+func (d *userDataSource) GetUserModelByUsername(ctx context.Context, username types.String) (*UserModel, error) {
+	payload, err := d.client.User.GetUsersContext(ctx, &user.GetUsersParams{}, nil)
 	if err != nil {
 		return nil, fmt.Errorf("could not read Users: %s", err.Error())
 	}
@@ -64,8 +64,8 @@ func (d *userDataSource) GetUserModelByUsername(username types.String) (*UserMod
 	return nil, fmt.Errorf("user with username %s not found", username.ValueString())
 }
 
-func (d *userDataSource) GetUserModelByEmail(email types.String) (*UserModel, error) {
-	payload, err := d.client.User.GetUsers(&user.GetUsersParams{}, nil)
+func (d *userDataSource) GetUserModelByEmail(ctx context.Context, email types.String) (*UserModel, error) {
+	payload, err := d.client.User.GetUsersContext(ctx, &user.GetUsersParams{}, nil)
 	if err != nil {
 		return nil, fmt.Errorf("could not read Users: %s", err.Error())
 	}
@@ -88,7 +88,7 @@ func (d *userDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 
 	var state UserModel
 	if !config.ID.IsNull() && !config.ID.IsUnknown() {
-		response, err := d.client.User.GetUsersUserID(&user.GetUsersUserIDParams{
+		response, err := d.client.User.GetUsersUserIDContext(ctx, &user.GetUsersUserIDParams{
 			UserID: config.ID.ValueInt64(),
 		}, nil)
 		if err != nil {
@@ -100,7 +100,7 @@ func (d *userDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		}
 		state = convertResponsePayloadToUserModel(response.Payload, UserModel{Password: types.StringValue("")})
 	} else if !config.Username.IsNull() && !config.Username.IsUnknown() {
-		u, err := d.GetUserModelByUsername(config.Username)
+		u, err := d.GetUserModelByUsername(ctx, config.Username)
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error Reading Semaphore User",
@@ -110,7 +110,7 @@ func (d *userDataSource) Read(ctx context.Context, req datasource.ReadRequest, r
 		}
 		state = *u
 	} else if !config.Email.IsNull() && !config.Email.IsUnknown() {
-		u, err := d.GetUserModelByEmail(config.Email)
+		u, err := d.GetUserModelByEmail(ctx, config.Email)
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error Reading Semaphore User",

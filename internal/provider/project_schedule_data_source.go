@@ -54,7 +54,7 @@ func (d *projectScheduleDataSource) Read(ctx context.Context, req datasource.Rea
 		return
 	}
 
-	response, err := d.client.Schedule.GetProjectProjectIDSchedulesScheduleID(&schedule.GetProjectProjectIDSchedulesScheduleIDParams{
+	response, err := d.client.Schedule.GetProjectProjectIDSchedulesScheduleIDContext(ctx, &schedule.GetProjectProjectIDSchedulesScheduleIDParams{
 		ProjectID:  config.ProjectID.ValueInt64(),
 		ScheduleID: config.ID.ValueInt64(),
 	}, nil)

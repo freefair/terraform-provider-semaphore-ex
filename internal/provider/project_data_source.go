@@ -48,8 +48,8 @@ func (d *projectDataSource) Schema(ctx context.Context, _ datasource.SchemaReque
 	resp.Schema = ProjectSchema().GetDataSource(ctx)
 }
 
-func (d *projectDataSource) GetProjectByName(name string) (*ProjectModel, error) {
-	response, err := d.client.Project.GetProjects(&project.GetProjectsParams{}, nil)
+func (d *projectDataSource) GetProjectByName(ctx context.Context, name string) (*ProjectModel, error) {
+	response, err := d.client.Project.GetProjectsContext(ctx, &project.GetProjectsParams{}, nil)
 	if err != nil {
 		return nil, fmt.Errorf("could not read Projects: %s", err.Error())
 	}
@@ -79,7 +79,7 @@ func (d *projectDataSource) Read(ctx context.Context, req datasource.ReadRequest
 
 	var model ProjectModel
 	if !config.ID.IsNull() && !config.ID.IsUnknown() {
-		response, err := d.client.Project.GetProjectProjectID(&project.GetProjectProjectIDParams{
+		response, err := d.client.Project.GetProjectProjectIDContext(ctx, &project.GetProjectProjectIDParams{
 			ProjectID: config.ID.ValueInt64(),
 		}, nil)
 		if err != nil {
@@ -91,7 +91,7 @@ func (d *projectDataSource) Read(ctx context.Context, req datasource.ReadRequest
 		}
 		model = convertProjectResponseToProjectModel(response.Payload)
 	} else if !config.Name.IsUnknown() && !config.Name.IsNull() {
-		proj, err := d.GetProjectByName(config.Name.ValueString())
+		proj, err := d.GetProjectByName(ctx, config.Name.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error Reading Semaphore Project",

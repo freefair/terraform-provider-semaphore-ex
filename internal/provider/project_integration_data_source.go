@@ -45,7 +45,7 @@ func (d *projectIntegrationDataSource) Schema(ctx context.Context, _ datasource.
 }
 
 func (d *projectIntegrationDataSource) GetIntegrationByName(ctx context.Context, projectID int64, name string) (*ProjectIntegrationModel, error) {
-	response, err := d.client.Integration.GetProjectProjectIDIntegrations(&integration.GetProjectProjectIDIntegrationsParams{
+	response, err := d.client.Integration.GetProjectProjectIDIntegrationsContext(ctx, &integration.GetProjectProjectIDIntegrationsParams{
 		ProjectID: projectID,
 	}, nil)
 	if err != nil {
@@ -69,7 +69,7 @@ func (d *projectIntegrationDataSource) Read(ctx context.Context, req datasource.
 
 	var model ProjectIntegrationModel
 	if !config.ID.IsUnknown() && !config.ID.IsNull() {
-		response, err := d.client.Integration.GetProjectProjectIDIntegrationsIntegrationID(&integration.GetProjectProjectIDIntegrationsIntegrationIDParams{
+		response, err := d.client.Integration.GetProjectProjectIDIntegrationsIntegrationIDContext(ctx, &integration.GetProjectProjectIDIntegrationsIntegrationIDParams{
 			ProjectID:     config.ProjectID.ValueInt64(),
 			IntegrationID: config.ID.ValueInt64(),
 		}, nil)

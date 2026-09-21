@@ -58,8 +58,8 @@ func (r *integrationAliasResource) Create(ctx context.Context, req resource.Crea
 
 	var payload *models.IntegrationAlias
 	if !plan.IntegrationID.IsNull() && !plan.IntegrationID.IsUnknown() {
-		response, err := r.client.Integration.PostProjectProjectIDIntegrationsIntegrationIDAliases(
-			&integration.PostProjectProjectIDIntegrationsIntegrationIDAliasesParams{
+		response, err := r.client.Integration.PostProjectProjectIDIntegrationsIntegrationIDAliasesContext(
+			ctx, &integration.PostProjectProjectIDIntegrationsIntegrationIDAliasesParams{
 				ProjectID:     plan.ProjectID.ValueInt64(),
 				IntegrationID: plan.IntegrationID.ValueInt64(),
 			}, nil)
@@ -72,8 +72,8 @@ func (r *integrationAliasResource) Create(ctx context.Context, req resource.Crea
 		}
 		payload = response.Payload
 	} else {
-		response, err := r.client.Integration.PostProjectProjectIDIntegrationsAliases(
-			&integration.PostProjectProjectIDIntegrationsAliasesParams{
+		response, err := r.client.Integration.PostProjectProjectIDIntegrationsAliasesContext(
+			ctx, &integration.PostProjectProjectIDIntegrationsAliasesParams{
 				ProjectID: plan.ProjectID.ValueInt64(),
 			}, nil)
 		if err != nil {
@@ -93,10 +93,10 @@ func (r *integrationAliasResource) Create(ctx context.Context, req resource.Crea
 
 // findAlias looks up an alias by ID in the appropriate scope's list (the
 // API doesn't expose a GET-by-id, only list endpoints).
-func (r *integrationAliasResource) findAlias(projectID, integrationID, aliasID int64) (*models.IntegrationAlias, error) {
+func (r *integrationAliasResource) findAlias(ctx context.Context, projectID, integrationID, aliasID int64) (*models.IntegrationAlias, error) {
 	if integrationID != 0 {
-		response, err := r.client.Integration.GetProjectProjectIDIntegrationsIntegrationIDAliases(
-			&integration.GetProjectProjectIDIntegrationsIntegrationIDAliasesParams{
+		response, err := r.client.Integration.GetProjectProjectIDIntegrationsIntegrationIDAliasesContext(
+			ctx, &integration.GetProjectProjectIDIntegrationsIntegrationIDAliasesParams{
 				ProjectID:     projectID,
 				IntegrationID: integrationID,
 			}, nil)
@@ -111,8 +111,8 @@ func (r *integrationAliasResource) findAlias(projectID, integrationID, aliasID i
 		return nil, nil
 	}
 
-	response, err := r.client.Integration.GetProjectProjectIDIntegrationsAliases(
-		&integration.GetProjectProjectIDIntegrationsAliasesParams{
+	response, err := r.client.Integration.GetProjectProjectIDIntegrationsAliasesContext(
+		ctx, &integration.GetProjectProjectIDIntegrationsAliasesParams{
 			ProjectID: projectID,
 		}, nil)
 	if err != nil {
@@ -133,7 +133,7 @@ func (r *integrationAliasResource) Read(ctx context.Context, req resource.ReadRe
 		return
 	}
 
-	alias, err := r.findAlias(state.ProjectID.ValueInt64(), state.IntegrationID.ValueInt64(), state.ID.ValueInt64())
+	alias, err := r.findAlias(ctx, state.ProjectID.ValueInt64(), state.IntegrationID.ValueInt64(), state.ID.ValueInt64())
 	if resourceNotFound(err) {
 		resp.State.RemoveResource(ctx)
 		return
@@ -172,8 +172,8 @@ func (r *integrationAliasResource) Delete(ctx context.Context, req resource.Dele
 	}
 
 	if !state.IntegrationID.IsNull() && state.IntegrationID.ValueInt64() != 0 {
-		_, err := r.client.Integration.DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasID(
-			&integration.DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDParams{
+		_, err := r.client.Integration.DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDContext(
+			ctx, &integration.DeleteProjectProjectIDIntegrationsIntegrationIDAliasesAliasIDParams{
 				ProjectID:     state.ProjectID.ValueInt64(),
 				IntegrationID: state.IntegrationID.ValueInt64(),
 				AliasID:       state.ID.ValueInt64(),
@@ -187,8 +187,8 @@ func (r *integrationAliasResource) Delete(ctx context.Context, req resource.Dele
 		return
 	}
 
-	_, err := r.client.Integration.DeleteProjectProjectIDIntegrationsAliasesAliasID(
-		&integration.DeleteProjectProjectIDIntegrationsAliasesAliasIDParams{
+	_, err := r.client.Integration.DeleteProjectProjectIDIntegrationsAliasesAliasIDContext(
+		ctx, &integration.DeleteProjectProjectIDIntegrationsAliasesAliasIDParams{
 			ProjectID: state.ProjectID.ValueInt64(),
 			AliasID:   state.ID.ValueInt64(),
 		}, nil)
@@ -224,7 +224,7 @@ func (r *integrationAliasResource) ImportState(ctx context.Context, req resource
 		state.IntegrationID = types.Int64Null()
 	}
 
-	alias, err := r.findAlias(state.ProjectID.ValueInt64(), state.IntegrationID.ValueInt64(), state.ID.ValueInt64())
+	alias, err := r.findAlias(ctx, state.ProjectID.ValueInt64(), state.IntegrationID.ValueInt64(), state.ID.ValueInt64())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading SemaphoreUI Integration Alias",

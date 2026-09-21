@@ -78,6 +78,6 @@ func TestCoverageDuplicateProjectNameFailsLookup(t *testing.T) {
 	}))
 	defer server.Close()
 	d := &projectDataSource{client: newEXTestClient(t, server.URL)}
-	_, err := d.GetProjectByName("same")
+	_, err := d.GetProjectByName(context.Background(), "same")
 	require.Error(t, err)
 }

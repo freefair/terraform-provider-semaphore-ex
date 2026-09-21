@@ -102,7 +102,7 @@ func (r *userResource) Create(ctx context.Context, req resource.CreateRequest, r
 	var payload = convertUserModelToUserRequest(plan)
 
 	//Create new user
-	response, err := r.client.User.PostUsers(&user.PostUsersParams{User: payload}, nil)
+	response, err := r.client.User.PostUsersContext(ctx, &user.PostUsersParams{User: payload}, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Creating SemaphoreUI User",
@@ -133,7 +133,7 @@ func (r *userResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 	}
 
 	// Get refreshed value from API
-	response, err := r.client.User.GetUsersUserID(&user.GetUsersUserIDParams{UserID: state.ID.ValueInt64()}, nil)
+	response, err := r.client.User.GetUsersUserIDContext(ctx, &user.GetUsersUserIDParams{UserID: state.ID.ValueInt64()}, nil)
 	if resourceNotFound(err) {
 		resp.State.RemoveResource(ctx)
 		return
@@ -171,7 +171,7 @@ func (r *userResource) Update(ctx context.Context, req resource.UpdateRequest, r
 	var payload = convertUserModelToUserPutRequest(plan)
 
 	// Update existing resource
-	_, err := r.client.User.PutUsersUserID(&user.PutUsersUserIDParams{UserID: plan.ID.ValueInt64(), User: payload}, nil)
+	_, err := r.client.User.PutUsersUserIDContext(ctx, &user.PutUsersUserIDParams{UserID: plan.ID.ValueInt64(), User: payload}, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Updating Semaphore User",
@@ -184,7 +184,7 @@ func (r *userResource) Update(ctx context.Context, req resource.UpdateRequest, r
 	var prevPassword types.String
 	req.State.GetAttribute(ctx, path.Root("password"), &prevPassword)
 	if plan.Password != prevPassword {
-		_, err := r.client.User.PostUsersUserIDPassword(&user.PostUsersUserIDPasswordParams{UserID: plan.ID.ValueInt64(), Password: user.PostUsersUserIDPasswordBody{Password: strfmt.Password(plan.Password.ValueString())}}, nil)
+		_, err := r.client.User.PostUsersUserIDPasswordContext(ctx, &user.PostUsersUserIDPasswordParams{UserID: plan.ID.ValueInt64(), Password: user.PostUsersUserIDPasswordBody{Password: strfmt.Password(plan.Password.ValueString())}}, nil)
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error Updating Semaphore User Password",
@@ -194,7 +194,7 @@ func (r *userResource) Update(ctx context.Context, req resource.UpdateRequest, r
 	}
 
 	// Fetch updated values as PutUsersUserIDParams does not return updated user
-	response, err := r.client.User.GetUsersUserID(&user.GetUsersUserIDParams{UserID: plan.ID.ValueInt64()}, nil)
+	response, err := r.client.User.GetUsersUserIDContext(ctx, &user.GetUsersUserIDParams{UserID: plan.ID.ValueInt64()}, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Semaphore User",
@@ -223,7 +223,7 @@ func (r *userResource) Delete(ctx context.Context, req resource.DeleteRequest, r
 	}
 
 	// Delete existing resource
-	_, err := r.client.User.DeleteUsersUserID(&user.DeleteUsersUserIDParams{UserID: state.ID.ValueInt64()}, nil)
+	_, err := r.client.User.DeleteUsersUserIDContext(ctx, &user.DeleteUsersUserIDParams{UserID: state.ID.ValueInt64()}, nil)
 	if err != nil && !resourceNotFound(err) {
 		resp.Diagnostics.AddError(
 			"Error Deleting Semaphore User",

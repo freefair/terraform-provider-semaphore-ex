@@ -48,8 +48,8 @@ func (d *projectInventoryDataSource) Schema(ctx context.Context, _ datasource.Sc
 	resp.Schema = ProjectInventorySchema().GetDataSource(ctx)
 }
 
-func (d *projectInventoryDataSource) GetInventoryByName(projectID int64, name string) (*ProjectInventoryModel, error) {
-	response, err := d.client.Inventory.GetProjectProjectIDInventory(&inventory.GetProjectProjectIDInventoryParams{
+func (d *projectInventoryDataSource) GetInventoryByName(ctx context.Context, projectID int64, name string) (*ProjectInventoryModel, error) {
+	response, err := d.client.Inventory.GetProjectProjectIDInventoryContext(ctx, &inventory.GetProjectProjectIDInventoryParams{
 		ProjectID: projectID,
 	}, nil)
 	if err != nil {
@@ -73,7 +73,7 @@ func (d *projectInventoryDataSource) Read(ctx context.Context, req datasource.Re
 
 	var model ProjectInventoryModel
 	if !config.ID.IsUnknown() && !config.ID.IsNull() {
-		response, err := d.client.Inventory.GetProjectProjectIDInventoryInventoryID(&inventory.GetProjectProjectIDInventoryInventoryIDParams{
+		response, err := d.client.Inventory.GetProjectProjectIDInventoryInventoryIDContext(ctx, &inventory.GetProjectProjectIDInventoryInventoryIDParams{
 			ProjectID:   config.ProjectID.ValueInt64(),
 			InventoryID: config.ID.ValueInt64(),
 		}, nil)
@@ -86,7 +86,7 @@ func (d *projectInventoryDataSource) Read(ctx context.Context, req datasource.Re
 		}
 		model = convertInventoryResponseToProjectInventoryModel(response.Payload)
 	} else if !config.Name.IsUnknown() && !config.Name.IsNull() {
-		inventory, err := d.GetInventoryByName(config.ProjectID.ValueInt64(), config.Name.ValueString())
+		inventory, err := d.GetInventoryByName(ctx, config.ProjectID.ValueInt64(), config.Name.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error Reading Semaphore Project Inventory",

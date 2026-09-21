@@ -63,8 +63,8 @@ func convertResponseToExternalUserModel(user *models.User) ExternalUserModel {
 	}
 }
 
-func (r *externalUserDataSource) GetExternalUserByUsername(username string) (*ExternalUserModel, error) {
-	response, err := r.client.User.GetUsers(&user.GetUsersParams{}, nil)
+func (r *externalUserDataSource) GetExternalUserByUsername(ctx context.Context, username string) (*ExternalUserModel, error) {
+	response, err := r.client.User.GetUsersContext(ctx, &user.GetUsersParams{}, nil)
 	if err != nil {
 		return nil, fmt.Errorf("could not get users: %s", err.Error())
 	}
@@ -88,7 +88,7 @@ func (d *externalUserDataSource) Read(ctx context.Context, req datasource.ReadRe
 	}
 
 	// Lookup user by username
-	externalUser, err := d.GetExternalUserByUsername(config.Username.ValueString())
+	externalUser, err := d.GetExternalUserByUsername(ctx, config.Username.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError("Error Reading SemaphoreUI User", err.Error()+". Manage external users with semaphore_ex_user and external = true; data sources do not create users.")
 		return

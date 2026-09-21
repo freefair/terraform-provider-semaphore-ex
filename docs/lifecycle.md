@@ -132,3 +132,9 @@ Use the matching runner data source for durable runner configuration.
 The registry parity test fails when a readable resource is added without its data source.
 See [ADR 0008](adr/0008-confirm-absence-and-adopt-imported-keepers.md) for the absence and keeper-adoption contracts.
 See [ADR 0007](adr/0007-complete-resource-lifecycle.md) for design choices and boundaries.
+
+Generated API operations receive the Terraform request context directly. Cancellation
+and deadlines therefore stop in-flight reads and prevent canceled operations from
+starting another API request. Native EX requests use the same configured transport
+and context. An interrupted write still follows normal Terraform recovery: refresh
+or import the remote object if the server accepted it before cancellation.

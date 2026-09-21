@@ -123,7 +123,7 @@ func (r *projectScheduleResource) Create(ctx context.Context, req resource.Creat
 		return
 	}
 
-	response, err := r.client.Schedule.PostProjectProjectIDSchedules(&schedule.PostProjectProjectIDSchedulesParams{
+	response, err := r.client.Schedule.PostProjectProjectIDSchedulesContext(ctx, &schedule.PostProjectProjectIDSchedulesParams{
 		ProjectID: plan.ProjectID.ValueInt64(),
 		Schedule:  convertProjectScheduleModelToRepositorySchedule(plan),
 	}, nil)
@@ -151,7 +151,7 @@ func (r *projectScheduleResource) Read(ctx context.Context, req resource.ReadReq
 		return
 	}
 
-	response, err := r.client.Schedule.GetProjectProjectIDSchedulesScheduleID(&schedule.GetProjectProjectIDSchedulesScheduleIDParams{
+	response, err := r.client.Schedule.GetProjectProjectIDSchedulesScheduleIDContext(ctx, &schedule.GetProjectProjectIDSchedulesScheduleIDParams{
 		ProjectID:  state.ProjectID.ValueInt64(),
 		ScheduleID: state.ID.ValueInt64(),
 	}, nil)
@@ -184,7 +184,7 @@ func (r *projectScheduleResource) Update(ctx context.Context, req resource.Updat
 		return
 	}
 
-	_, _, err := r.client.Schedule.PutProjectProjectIDSchedulesScheduleID(&schedule.PutProjectProjectIDSchedulesScheduleIDParams{
+	_, _, err := r.client.Schedule.PutProjectProjectIDSchedulesScheduleIDContext(ctx, &schedule.PutProjectProjectIDSchedulesScheduleIDParams{
 		ProjectID:  plan.ProjectID.ValueInt64(),
 		ScheduleID: plan.ID.ValueInt64(),
 		Schedule:   convertProjectScheduleModelToRepositorySchedule(plan),
@@ -197,7 +197,7 @@ func (r *projectScheduleResource) Update(ctx context.Context, req resource.Updat
 		return
 	}
 
-	response, err := r.client.Schedule.GetProjectProjectIDSchedulesScheduleID(&schedule.GetProjectProjectIDSchedulesScheduleIDParams{
+	response, err := r.client.Schedule.GetProjectProjectIDSchedulesScheduleIDContext(ctx, &schedule.GetProjectProjectIDSchedulesScheduleIDParams{
 		ProjectID:  plan.ProjectID.ValueInt64(),
 		ScheduleID: plan.ID.ValueInt64(),
 	}, nil)
@@ -224,7 +224,7 @@ func (r *projectScheduleResource) Delete(ctx context.Context, req resource.Delet
 		return
 	}
 
-	_, err := r.client.Schedule.DeleteProjectProjectIDSchedulesScheduleID(&schedule.DeleteProjectProjectIDSchedulesScheduleIDParams{
+	_, err := r.client.Schedule.DeleteProjectProjectIDSchedulesScheduleIDContext(ctx, &schedule.DeleteProjectProjectIDSchedulesScheduleIDParams{
 		ProjectID:  state.ProjectID.ValueInt64(),
 		ScheduleID: state.ID.ValueInt64(),
 	}, nil)
@@ -251,7 +251,7 @@ func (r *projectScheduleResource) ImportState(ctx context.Context, req resource.
 		return
 	}
 
-	response, err := r.client.Schedule.GetProjectProjectIDSchedulesScheduleID(&schedule.GetProjectProjectIDSchedulesScheduleIDParams{
+	response, err := r.client.Schedule.GetProjectProjectIDSchedulesScheduleIDContext(ctx, &schedule.GetProjectProjectIDSchedulesScheduleIDParams{
 		ProjectID:  fields["project"],
 		ScheduleID: fields["schedule"],
 	}, nil)

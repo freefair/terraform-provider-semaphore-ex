@@ -124,7 +124,7 @@ func (r *runnerResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	response, err := r.client.Runner.PostRunners(&runner.PostRunnersParams{
+	response, err := r.client.Runner.PostRunnersContext(ctx, &runner.PostRunnersParams{
 		Runner: request,
 	}, nil)
 	if err != nil {
@@ -135,7 +135,7 @@ func (r *runnerResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	if err := r.ensureActive(response.Payload.ID, plan.Active.ValueBool(), response.Payload.Active); err != nil {
+	if err := r.ensureActive(ctx, response.Payload.ID, plan.Active.ValueBool(), response.Payload.Active); err != nil {
 		resp.Diagnostics.AddError(
 			"Error Setting SemaphoreUI Runner Active State",
 			"Could not set runner active state, unexpected error: "+err.Error(),
@@ -158,11 +158,11 @@ func (r *runnerResource) Create(ctx context.Context, req resource.CreateRequest,
 // ensureActive sets the runner active state via the dedicated endpoint when the
 // current state differs from the desired one. Some SemaphoreUI versions ignore
 // the `active` field on create/update and only honor this endpoint.
-func (r *runnerResource) ensureActive(runnerID int64, desired, current bool) error {
+func (r *runnerResource) ensureActive(ctx context.Context, runnerID int64, desired, current bool) error {
 	if desired == current {
 		return nil
 	}
-	_, err := r.client.Runner.PostRunnersRunnerIDActive(&runner.PostRunnersRunnerIDActiveParams{
+	_, err := r.client.Runner.PostRunnersRunnerIDActiveContext(ctx, &runner.PostRunnersRunnerIDActiveParams{
 		RunnerID: runnerID,
 		Active:   &models.RunnerActive{Active: desired},
 	}, nil)
@@ -176,7 +176,7 @@ func (r *runnerResource) Read(ctx context.Context, req resource.ReadRequest, res
 		return
 	}
 
-	response, err := r.client.Runner.GetRunnersRunnerID(&runner.GetRunnersRunnerIDParams{
+	response, err := r.client.Runner.GetRunnersRunnerIDContext(ctx, &runner.GetRunnersRunnerIDParams{
 		RunnerID: state.ID.ValueInt64(),
 	}, nil)
 	if err != nil {
@@ -220,7 +220,7 @@ func (r *runnerResource) Update(ctx context.Context, req resource.UpdateRequest,
 		return
 	}
 
-	_, err := r.client.Runner.PutRunnersRunnerID(&runner.PutRunnersRunnerIDParams{
+	_, err := r.client.Runner.PutRunnersRunnerIDContext(ctx, &runner.PutRunnersRunnerIDParams{
 		RunnerID: plan.ID.ValueInt64(),
 		Runner:   request,
 	}, nil)
@@ -232,7 +232,7 @@ func (r *runnerResource) Update(ctx context.Context, req resource.UpdateRequest,
 		return
 	}
 
-	response, err := r.client.Runner.GetRunnersRunnerID(&runner.GetRunnersRunnerIDParams{
+	response, err := r.client.Runner.GetRunnersRunnerIDContext(ctx, &runner.GetRunnersRunnerIDParams{
 		RunnerID: plan.ID.ValueInt64(),
 	}, nil)
 	if err != nil {
@@ -243,7 +243,7 @@ func (r *runnerResource) Update(ctx context.Context, req resource.UpdateRequest,
 		return
 	}
 
-	if err := r.ensureActive(plan.ID.ValueInt64(), plan.Active.ValueBool(), response.Payload.Active); err != nil {
+	if err := r.ensureActive(ctx, plan.ID.ValueInt64(), plan.Active.ValueBool(), response.Payload.Active); err != nil {
 		resp.Diagnostics.AddError(
 			"Error Setting SemaphoreUI Runner Active State",
 			"Could not set runner active state, unexpected error: "+err.Error(),
@@ -268,7 +268,7 @@ func (r *runnerResource) Delete(ctx context.Context, req resource.DeleteRequest,
 		return
 	}
 
-	_, err := r.client.Runner.DeleteRunnersRunnerID(&runner.DeleteRunnersRunnerIDParams{
+	_, err := r.client.Runner.DeleteRunnersRunnerIDContext(ctx, &runner.DeleteRunnersRunnerIDParams{
 		RunnerID: state.ID.ValueInt64(),
 	}, nil)
 	if err != nil && !isRunnerNotFound(err) {
@@ -290,7 +290,7 @@ func (r *runnerResource) ImportState(ctx context.Context, req resource.ImportSta
 		return
 	}
 
-	response, err := r.client.Runner.GetRunnersRunnerID(&runner.GetRunnersRunnerIDParams{
+	response, err := r.client.Runner.GetRunnersRunnerIDContext(ctx, &runner.GetRunnersRunnerIDParams{
 		RunnerID: fields["runner"],
 	}, nil)
 	if err != nil {

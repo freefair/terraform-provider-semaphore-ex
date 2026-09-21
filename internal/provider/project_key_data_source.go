@@ -49,8 +49,8 @@ func (d *projectKeyDataSource) Schema(ctx context.Context, _ datasource.SchemaRe
 	resp.Schema = ProjectKeySchema().GetDataSource(ctx)
 }
 
-func (d *projectKeyDataSource) GetKeyByName(projectID int64, name string) (*ProjectKeyModel, error) {
-	response, err := d.client.KeyStore.GetProjectProjectIDKeys(&key_store.GetProjectProjectIDKeysParams{
+func (d *projectKeyDataSource) GetKeyByName(ctx context.Context, projectID int64, name string) (*ProjectKeyModel, error) {
+	response, err := d.client.KeyStore.GetProjectProjectIDKeysContext(ctx, &key_store.GetProjectProjectIDKeysParams{
 		ProjectID: projectID,
 	}, nil)
 	if err != nil {
@@ -86,8 +86,8 @@ func (d *projectKeyDataSource) GetKeyByName(projectID int64, name string) (*Proj
 	return nil, fmt.Errorf("project key with name %s not found", name)
 }
 
-func (d *projectKeyDataSource) GetKeyByID(projectID int64, ID int64) (*ProjectKeyModel, error) {
-	response, err := d.client.KeyStore.GetProjectProjectIDKeys(&key_store.GetProjectProjectIDKeysParams{
+func (d *projectKeyDataSource) GetKeyByID(ctx context.Context, projectID int64, ID int64) (*ProjectKeyModel, error) {
+	response, err := d.client.KeyStore.GetProjectProjectIDKeysContext(ctx, &key_store.GetProjectProjectIDKeysParams{
 		ProjectID: projectID,
 	}, nil)
 	if err != nil {
@@ -132,7 +132,7 @@ func (d *projectKeyDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	var model ProjectKeyModel
 	if !config.ID.IsUnknown() && !config.ID.IsNull() {
-		key, err := d.GetKeyByID(config.ProjectID.ValueInt64(), config.ID.ValueInt64())
+		key, err := d.GetKeyByID(ctx, config.ProjectID.ValueInt64(), config.ID.ValueInt64())
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error Reading SemaphoreUI Project Key",
@@ -142,7 +142,7 @@ func (d *projectKeyDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		}
 		model = *key
 	} else if !config.Name.IsUnknown() && !config.Name.IsNull() {
-		key, err := d.GetKeyByName(config.ProjectID.ValueInt64(), config.Name.ValueString())
+		key, err := d.GetKeyByName(ctx, config.ProjectID.ValueInt64(), config.Name.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error Reading SemaphoreUI Project Key",

@@ -53,7 +53,7 @@ func (d *projectRunnerDataSource) Read(ctx context.Context, req datasource.ReadR
 	}
 
 	if !config.ID.IsNull() && !config.ID.IsUnknown() {
-		response, err := d.client.Runner.GetProjectProjectIDRunnersRunnerID(&runner.GetProjectProjectIDRunnersRunnerIDParams{
+		response, err := d.client.Runner.GetProjectProjectIDRunnersRunnerIDContext(ctx, &runner.GetProjectProjectIDRunnersRunnerIDParams{
 			ProjectID: config.ProjectID.ValueInt64(),
 			RunnerID:  config.ID.ValueInt64(),
 		}, nil)
@@ -73,7 +73,7 @@ func (d *projectRunnerDataSource) Read(ctx context.Context, req datasource.ReadR
 		return
 	}
 
-	response, err := d.client.Runner.GetProjectProjectIDRunners(&runner.GetProjectProjectIDRunnersParams{
+	response, err := d.client.Runner.GetProjectProjectIDRunnersContext(ctx, &runner.GetProjectProjectIDRunnersParams{
 		ProjectID: config.ProjectID.ValueInt64(),
 	}, nil)
 	if err != nil {

@@ -49,8 +49,8 @@ func (d *projectTemplateDataSource) Schema(ctx context.Context, _ datasource.Sch
 	resp.Schema = ProjectTemplateSchema().GetDataSource(ctx)
 }
 
-func (d *projectTemplateDataSource) GetTemplateByName(projectID int64, name string) (*models.Template, error) {
-	response, err := d.client.Template.GetProjectProjectIDTemplates(&template.GetProjectProjectIDTemplatesParams{
+func (d *projectTemplateDataSource) GetTemplateByName(ctx context.Context, projectID int64, name string) (*models.Template, error) {
+	response, err := d.client.Template.GetProjectProjectIDTemplatesContext(ctx, &template.GetProjectProjectIDTemplatesParams{
 		ProjectID: projectID,
 	}, nil)
 	if err != nil {
@@ -73,7 +73,7 @@ func (d *projectTemplateDataSource) Read(ctx context.Context, req datasource.Rea
 
 	var model ProjectTemplateModel
 	if !config.ID.IsUnknown() && !config.ID.IsNull() {
-		response, err := d.client.Template.GetProjectProjectIDTemplatesTemplateID(&template.GetProjectProjectIDTemplatesTemplateIDParams{
+		response, err := d.client.Template.GetProjectProjectIDTemplatesTemplateIDContext(ctx, &template.GetProjectProjectIDTemplatesTemplateIDParams{
 			ProjectID:  config.ProjectID.ValueInt64(),
 			TemplateID: config.ID.ValueInt64(),
 		}, nil)
@@ -86,7 +86,7 @@ func (d *projectTemplateDataSource) Read(ctx context.Context, req datasource.Rea
 		}
 		model = convertTemplateResponseToProjectTemplateModel(ctx, response.Payload, &config)
 	} else if !config.Name.IsUnknown() && !config.Name.IsNull() {
-		template, err := d.GetTemplateByName(config.ProjectID.ValueInt64(), config.Name.ValueString())
+		template, err := d.GetTemplateByName(ctx, config.ProjectID.ValueInt64(), config.Name.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error Reading SemaphoreUI Project Template",

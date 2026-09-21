@@ -31,7 +31,7 @@ func (d *integrationAliasDataSource) Read(ctx context.Context, req datasource.Re
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	alias, err := d.findAlias(config.ProjectID.ValueInt64(), config.IntegrationID.ValueInt64(), config.ID.ValueInt64())
+	alias, err := d.findAlias(ctx, config.ProjectID.ValueInt64(), config.IntegrationID.ValueInt64(), config.ID.ValueInt64())
 	if err != nil {
 		resp.Diagnostics.AddError("Error Reading Integration Alias", err.Error())
 		return

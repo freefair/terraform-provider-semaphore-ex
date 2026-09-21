@@ -48,8 +48,8 @@ func (d *projectRepositoryDataSource) Schema(ctx context.Context, _ datasource.S
 	resp.Schema = ProjectRepositorySchema().GetDataSource(ctx)
 }
 
-func (d *projectRepositoryDataSource) GetRepositoryByName(projectID int64, name string) (*ProjectRepositoryModel, error) {
-	response, err := d.client.Repository.GetProjectProjectIDRepositories(&repository.GetProjectProjectIDRepositoriesParams{
+func (d *projectRepositoryDataSource) GetRepositoryByName(ctx context.Context, projectID int64, name string) (*ProjectRepositoryModel, error) {
+	response, err := d.client.Repository.GetProjectProjectIDRepositoriesContext(ctx, &repository.GetProjectProjectIDRepositoriesParams{
 		ProjectID: projectID,
 	}, nil)
 	if err != nil {
@@ -73,7 +73,7 @@ func (d *projectRepositoryDataSource) Read(ctx context.Context, req datasource.R
 
 	var model ProjectRepositoryModel
 	if !config.ID.IsUnknown() && !config.ID.IsNull() {
-		response, err := d.client.Repository.GetProjectProjectIDRepositoriesRepositoryID(&repository.GetProjectProjectIDRepositoriesRepositoryIDParams{
+		response, err := d.client.Repository.GetProjectProjectIDRepositoriesRepositoryIDContext(ctx, &repository.GetProjectProjectIDRepositoriesRepositoryIDParams{
 			ProjectID:    config.ProjectID.ValueInt64(),
 			RepositoryID: config.ID.ValueInt64(),
 		}, nil)
@@ -86,7 +86,7 @@ func (d *projectRepositoryDataSource) Read(ctx context.Context, req datasource.R
 		}
 		model = convertRepositoryResponseToProjectRepositoryModel(response.Payload)
 	} else if !config.Name.IsUnknown() && !config.Name.IsNull() {
-		repo, err := d.GetRepositoryByName(config.ProjectID.ValueInt64(), config.Name.ValueString())
+		repo, err := d.GetRepositoryByName(ctx, config.ProjectID.ValueInt64(), config.Name.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError(
 				"Error Reading SemaphoreUI Project Repository",
