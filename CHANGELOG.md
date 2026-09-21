@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/freefair/terraform-provider-semaphore-ex/compare/v1.0.2...v1.0.3) (2026-09-21)
+
+
+### Bug Fixes
+
+* **provider:** preserve unknown values during validation ([8d47999](https://github.com/freefair/terraform-provider-semaphore-ex/commit/8d47999ad16fd183d2e0c330045a6e4002677f32))
+
 ## [1.0.2](https://github.com/freefair/terraform-provider-semaphore-ex/compare/v1.0.1...v1.0.2) (2026-09-19)
 
 
