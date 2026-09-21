@@ -22,18 +22,3 @@ jobs:
       publish: false
       checks_completed: true
     secrets: inherit
-
-  release-please:
-    needs: checks
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-    steps:
-      - uses: googleapis/release-please-action@v5
-        id: release
-        with:
-          release-type: go
-          skip-github-release: true
-          token: ${{ secrets.GITHUB_TOKEN }}

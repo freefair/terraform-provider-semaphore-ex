@@ -8,8 +8,10 @@ These CI bundles are useful for testing and are not published as stable versions
 
 Pushing an existing-source version tag such as `v1.2.3` runs checks against that exact ref, builds and verifies its bundle, then publishes a GitHub Release automatically.
 The tagged commit must belong to `main` history.
-Release Please prepares version/changelog pull requests; it does not create tags or publish incomplete releases.
-Merge its PR, choose the release version, and push the corresponding tag to publish.
+Prepare the exact version explicitly selected by the owner directly on `main`.
+Update version references, verify and commit the changes, then push `main` and the approved version tag.
+Maintain release notes and version history exclusively in GitHub Releases.
+Release preparation uses no pull requests; the workflow does not generate them.
 
 The **Signed Registry artifacts** workflow also accepts an existing version tag through manual dispatch for recovery.
 Leaving the tag empty produces a signed snapshot of the selected main-history commit.

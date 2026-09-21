@@ -45,3 +45,9 @@ Existing released assets are not overwritten; reruns must match their bytes or f
 5. Validate workflow syntax, build a full local bundle with a disposable RSA test key, verify tamper rejection and Terraform startup, review the diff, and commit.
 
 The disposable local signing key is verification material only and is never promoted to a release identity.
+
+## Release preparation policy
+
+ADR 0009 supersedes the release-PR preparation described above. Version metadata
+is committed directly on main; the signed tag build and verification gates remain
+in effect.

@@ -6,7 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Terraform provider for [SemaphoreUI](https://semaphoreui.com/), built on the terraform-plugin-framework (not the legacy SDKv2). Targets provider source `freefair/semaphore-ex` with resource prefix `semaphore_ex_`. Registry publication is a separate release step.
 
-Conventional Commits drive release-please (CHANGELOG.md + version bumps), so commit messages matter.
+Use Conventional Commits. Prepare releases directly on `main`, without release pull requests.
+Dennis supplies or explicitly approves the exact version; a generic release request does not select a version.
+Update version references on main, then publish the approved tag through the signed artifact workflow.
+Keep release notes and version history in GitHub Releases.
 
 ## Common commands
 
@@ -157,7 +160,9 @@ The Semaphore API does not honor type changes on secret update operations — on
 ## Signed Registry builds
 
 `main` CI checks produce signed prerelease bundles; `v*` tags on main-history commits build and publish exact-version assets after verification.
-Release Please prepares version/changelog PRs only, avoiding token-suppressed release workflows and incomplete public releases.
+Release preparation happens directly on `main`; automatic release PR creation is disabled.
+Publish release notes through GitHub Releases, the canonical version history.
+Use only the exact version Dennis explicitly specifies.
 The artifact workflow is reusable and manually dispatchable for existing tags.
 Use the `FREEFAIR_TERRAFORM_PRIVATE_KEY`, `FREEFAIR_TERRAFORM_PASSPHRASE`, and `FREEFAIR_TERRAFORM_PUBLIC_KEY` organization secrets without reading private values.
 Require the Registry signing key ID `719010B911115D8E`; verify against the separately configured public key.

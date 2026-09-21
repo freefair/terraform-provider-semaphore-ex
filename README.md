@@ -7,7 +7,7 @@ This fork derives from the Semaphore UI provider and targets the EX API contract
 ## Quick Start
 
 Prerequisites: Semaphore EX `v2.20.0-ex.2` or a compatible newer server, its API token, and Terraform `1.15.2` or newer.
-Provider `v1.0.2` includes the native EX resources and task SSH-key selection.
+Provider `v1.0.4` includes resource lifecycle coverage, legacy-provider migration, integration-alias lookup, guarded project-absence handling and safe keeper adoption after token import.
 
 Create `main.tf`:
 
@@ -17,7 +17,7 @@ terraform {
   required_providers {
     semaphore = {
       source  = "freefair/semaphore-ex"
-      version = "= 1.0.2"
+      version = "= 1.0.4"
     }
   }
 }
@@ -124,7 +124,8 @@ Keep API tokens in the environment or a secret manager, and protect Terraform st
 Existing `SEMAPHOREUI_API_BASE_URL`, `SEMAPHOREUI_API_TOKEN` and `SEMAPHOREUI_TLS_SKIP_VERIFY` environment names remain supported.
 TLS verification is enabled by default.
 
-Conventional Commits drive release-please version/changelog PRs.
+Releases use the owner's explicitly selected version and are prepared directly on `main`.
+Release notes and version history are maintained in [GitHub Releases](https://github.com/freefair/terraform-provider-semaphore-ex/releases).
 Main CI produces signed downloadable bundles; pushed version tags automatically publish verified `terraform-provider-semaphore-ex` ZIPs, a Registry manifest, checksums and a detached GPG signature.
 The workflows use the existing Freefair organization signing secrets.
 See [signed builds and Registry publication](docs/releases.md) for artifact verification, tag releases and initial Registry onboarding.

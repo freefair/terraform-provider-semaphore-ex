@@ -78,10 +78,8 @@ The failing-test-first requirement does **not** apply to:
 
 ## Commit messages
 
-Releases are managed by
-[release-please](https://github.com/googleapis/release-please), which
-parses [Conventional Commit](https://www.conventionalcommits.org/)
-messages to compute version bumps and assemble the changelog. The
+Use [Conventional Commit](https://www.conventionalcommits.org/)
+messages to describe changes consistently. The
 GitHub Actions title check (`amannn/action-semantic-pull-request`)
 enforces the format on every PR.
 
@@ -151,5 +149,6 @@ under this repo's [LICENSE](LICENSE).
 ## Signed build and release workflows
 
 Main CI uploads a signed prerelease bundle after checks pass.
-Release Please maintains version/changelog PRs; after merging one, push the chosen `v<version>` tag to build and automatically publish the checked release assets.
+Prepare the owner's explicitly selected version directly on `main`, then push its `v<version>` tag to build and automatically publish the checked release assets.
+Keep release notes and version history in GitHub Releases. Release preparation uses no pull requests.
 See [Registry releases](docs/releases.md) for signing secret names, artifact verification, and manual recovery for an existing tag.
