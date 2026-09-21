@@ -19,14 +19,23 @@ variable "preflight_token" {
   ephemeral = true
 }
 
+variable "survey_secrets" {
+  type      = map(string)
+  sensitive = true
+  ephemeral = true
+  default   = {}
+}
+
 action "semaphore_ex_project_task_start" "deploy" {
   config {
     project_id  = 1
     template_id = 2
     # Select no non-always keys for this run; omit to inherit.
-    ssh_keys              = []
-    environment           = { release = "2026.09.16", maintenance = false }
-    arguments             = ["--limit", "web"]
+    ssh_keys    = []
+    environment = { release = "2026.09.16", maintenance = false }
+    # The template must allow a limit override.
+    params                = { limit = ["web"] }
+    secret                = var.survey_secrets
     preflight_fingerprint = "reviewed-fingerprint"
     preflight_token       = var.preflight_token
   }
@@ -47,16 +56,41 @@ action "semaphore_ex_project_task_start" "deploy" {
 > **NOTE**: [Write-only arguments](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments) are supported in Terraform 1.11 and later.
 
 - `arguments` (Dynamic) Optional native HCL list or object of command-line arguments. It is JSON-encoded because the Semaphore task API expects an arguments JSON string.
+- `build_task_id` (Number) Build task supplying the version for a deployment.
+- `commit_hash` (String) Repository commit to check out; requires template allow_override_branch_in_task.
 - `environment` (Dynamic) Optional native HCL environment object. It is JSON-encoded because the Semaphore task API stores environment overrides as a JSON string.
-- `git_branch` (String) Optional repository branch override.
+- `git_branch` (String) Optional repository branch override; requires template allow_override_branch_in_task.
 - `inventory_id` (Number) Optional inventory override.
 - `message` (String) Optional task message.
+- `params` (Attributes) Typed per-run parameters, distinct from template settings. Only parameters for the selected application's family are accepted. (see [below for nested schema](#nestedatt--params))
 - `playbook` (String) Optional playbook override.
 - `preflight_fingerprint` (String) Exact fingerprint from a separately performed task preflight. The provider never obtains one automatically.
 - `preflight_token` (String, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) Write-only review token paired with preflight_fingerprint. Supply it from an ephemeral input; the provider never reads or returns it.
+- `secret` (Dynamic, [Write-only](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments)) Write-only native HCL object of survey secret values. JSON-encoded for the server and never included in progress output. Use an ephemeral input.
 - `ssh_keys` (Attributes List) Optional explicit SSH key selection. Omit to inherit; use an empty list to select no non-always keys. The server validates key ownership and any required host routing. (see [below for nested schema](#nestedatt--ssh_keys))
 - `template_id` (Number) Template to run. Set template_id or template_name.
 - `template_name` (String) Template name to run when template_id is omitted.
+- `version` (String) Requested version metadata. Build templates derive their next version on the server.
+
+<a id="nestedatt--params"></a>
+### Nested Schema for `params`
+
+Optional:
+
+- `auto_approve` (Boolean) Request Terraform auto-approval when the template permits it; a forced template default cannot be disabled per run.
+- `debug` (Boolean) Enable Ansible verbosity; requires template allow_debug.
+- `debug_level` (Number) Ansible verbosity 0–6. A positive value requires debug = true.
+- `destroy` (Boolean) Request Terraform destroy mode. The backend does not independently enforce the template's UI allow_destroy flag.
+- `diff` (Boolean) Request Ansible diffs; rejected when the template hides them.
+- `dry_run` (Boolean) Request Ansible check mode; rejected when the template hides it.
+- `limit` (List of String) Per-run Ansible override. Requires the matching template allow_override flag; [] explicitly clears the default.
+- `plan` (Boolean) Run Terraform plan only.
+- `reconfigure` (Boolean) Reconfigure the Terraform backend during initialization.
+- `skip_galaxy_install` (Boolean) Override Galaxy installation; requires the template override flag.
+- `skip_tags` (List of String) Per-run Ansible override. Requires the matching template allow_override flag; [] explicitly clears the default.
+- `tags` (List of String) Per-run Ansible override. Requires the matching template allow_override flag; [] explicitly clears the default.
+- `upgrade` (Boolean) Upgrade Terraform initialization dependencies.
+
 
 <a id="nestedatt--ssh_keys"></a>
 ### Nested Schema for `ssh_keys`

@@ -107,13 +107,19 @@ func (a *exRuntimeAction) attributes() map[string]schema.Attribute {
 	switch a.kind {
 	case exRuntimeTaskStart:
 		return map[string]schema.Attribute{
+			"params":        taskStartParamsAttribute(),
+			"version":       schema.StringAttribute{Optional: true, MarkdownDescription: "Requested version metadata. Build templates derive their next version on the server."},
+			"build_task_id": schema.Int64Attribute{Optional: true, Validators: []validator.Int64{int64validator.AtLeast(1)}, MarkdownDescription: "Build task supplying the version for a deployment."},
+			"commit_hash":   schema.StringAttribute{Optional: true, MarkdownDescription: "Repository commit to check out; requires template allow_override_branch_in_task."},
+			"secret":        schema.DynamicAttribute{Optional: true, WriteOnly: true, MarkdownDescription: "Write-only native HCL object of survey secret values. JSON-encoded for the server and never included in progress output. Use an ephemeral input."},
+
 			"project_id":            runtimeProjectAttribute(),
 			"template_id":           schema.Int64Attribute{Optional: true, MarkdownDescription: "Template to run. Set template_id or template_name."},
 			"template_name":         schema.StringAttribute{Optional: true, MarkdownDescription: "Template name to run when template_id is omitted."},
 			"playbook":              schema.StringAttribute{Optional: true, MarkdownDescription: "Optional playbook override."},
 			"environment":           schema.DynamicAttribute{Optional: true, MarkdownDescription: "Optional native HCL environment object. It is JSON-encoded because the Semaphore task API stores environment overrides as a JSON string."},
 			"arguments":             schema.DynamicAttribute{Optional: true, MarkdownDescription: "Optional native HCL list or object of command-line arguments. It is JSON-encoded because the Semaphore task API expects an arguments JSON string."},
-			"git_branch":            schema.StringAttribute{Optional: true, MarkdownDescription: "Optional repository branch override."},
+			"git_branch":            schema.StringAttribute{Optional: true, MarkdownDescription: "Optional repository branch override; requires template allow_override_branch_in_task."},
 			"inventory_id":          schema.Int64Attribute{Optional: true, MarkdownDescription: "Optional inventory override.", Validators: []validator.Int64{int64validator.AtLeast(1)}},
 			"ssh_keys":              runtimeSSHKeyBindingsAttribute(),
 			"message":               schema.StringAttribute{Optional: true, MarkdownDescription: "Optional task message."},
@@ -182,6 +188,12 @@ func (a *exRuntimeAction) Invoke(ctx context.Context, req action.InvokeRequest, 
 }
 
 type exRuntimeTaskStartModel struct {
+	Params      types.Object  `tfsdk:"params"`
+	Version     types.String  `tfsdk:"version"`
+	BuildTaskID types.Int64   `tfsdk:"build_task_id"`
+	CommitHash  types.String  `tfsdk:"commit_hash"`
+	Secret      types.Dynamic `tfsdk:"secret"`
+
 	ProjectID            types.Int64   `tfsdk:"project_id"`
 	TemplateID           types.Int64   `tfsdk:"template_id"`
 	TemplateName         types.String  `tfsdk:"template_name"`
@@ -202,18 +214,49 @@ func (a *exRuntimeAction) invokeTaskStart(ctx context.Context, req action.Invoke
 	if resp.Diagnostics.HasError() || !runtimePositive(resp, "project_id", config.ProjectID) {
 		return
 	}
-	if config.TemplateID.IsUnknown() || config.TemplateName.IsUnknown() || (config.TemplateID.IsNull() && config.TemplateName.IsNull()) || (!config.TemplateID.IsNull() && config.TemplateID.ValueInt64() < 1) {
-		resp.Diagnostics.AddError("Invalid Task Template", "Set template_id to a known positive integer or set template_name.")
+	templateID, err := taskStartTemplateID(ctx, a.client, config.ProjectID.ValueInt64(), config.TemplateID, config.TemplateName)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Task Template", err.Error())
 		return
 	}
-	body := map[string]any{}
-	if !config.TemplateID.IsNull() {
-		body["template_id"] = config.TemplateID.ValueInt64()
+	body := map[string]any{"template_id": templateID}
+	overrides := map[string]bool{}
+	if config.GitBranch.ValueString() != "" {
+		overrides["git_branch"] = true
 	}
-	if !config.TemplateName.IsNull() {
-		body["template_name"] = config.TemplateName.ValueString()
+	if config.CommitHash.ValueString() != "" {
+		overrides["commit_hash"] = true
 	}
-	for key, value := range map[string]types.String{"playbook": config.Playbook, "git_branch": config.GitBranch, "message": config.Message} {
+	if !config.Arguments.IsNull() {
+		overrides["arguments"] = true
+	}
+	if !config.InventoryID.IsNull() {
+		overrides["inventory_id"] = true
+	}
+	parameters, err := taskStartParameters(ctx, a.client, config.ProjectID.ValueInt64(), templateID, config.Params, overrides)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Task Parameters", err.Error())
+		return
+	}
+	if parameters != nil {
+		body["params"] = parameters
+	}
+	if !config.BuildTaskID.IsNull() {
+		if !runtimePositive(resp, "build_task_id", config.BuildTaskID) {
+			return
+		}
+		body["build_task_id"] = config.BuildTaskID.ValueInt64()
+	}
+	if !taskSecretObject(config.Secret) {
+		resp.Diagnostics.AddError("Invalid Task Secrets", "secret must be a known native HCL object.")
+		return
+	}
+	if secret, ok := runtimeJSONString(ctx, resp, "secret", config.Secret); !ok {
+		return
+	} else if secret != nil {
+		body["secret"] = *secret
+	}
+	for key, value := range map[string]types.String{"playbook": config.Playbook, "git_branch": config.GitBranch, "message": config.Message, "version": config.Version, "commit_hash": config.CommitHash} {
 		if value.IsUnknown() {
 			resp.Diagnostics.AddError("Unknown Task Input", key+" must be known before invocation.")
 			return

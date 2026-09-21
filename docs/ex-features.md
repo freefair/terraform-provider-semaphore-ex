@@ -258,3 +258,24 @@ The singleton import ID is `runtime_secrets`. Destroy removes Terraform ownershi
 and leaves the global server setting intact. To change the setting, configure the
 intended state explicitly and apply before removing ownership. Omitting `expires_at`
 clears the configured expiry. Administrator authorization is enforced by the server.
+
+## Complete task invocation inputs
+
+`semaphore_ex_project_task_start` accepts typed `params` for Ansible and
+Terraform-family runs, plus `version`, `build_task_id`, and `commit_hash`.
+`secret` is a write-only native HCL object for survey secrets; use ephemeral inputs.
+The provider does not return secret values in progress messages.
+
+Template selection requires exactly one ID or exact unique name. Invocation checks
+reject wrong application-family parameters and overrides the server would suppress:
+Ansible limit/tags/skip-tags/Galaxy/debug/check/diff controls, branch or commit pins,
+extra arguments, inventory selection, and Terraform automatic approval. A template
+that forces automatic approval cannot be changed to manual approval by a per-run
+false value. Terraform `plan = true` with `destroy = true` requests a destroy plan.
+
+Build templates compute their next version on the server; a supplied `version` is
+not a guarantee of the resulting build version. `allow_destroy` remains a backend
+UI option without independent server enforcement. Input validation is not a security
+boundary or a revision fence: the server still owns authorization, admission,
+preflight review proof, and execution. The provider never obtains review tokens
+or approves a preflight automatically.
