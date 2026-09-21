@@ -16,12 +16,14 @@ import (
 
 type (
 	ProjectEnvironmentModel struct {
-		ID          types.Int64        `tfsdk:"id"`
-		ProjectID   types.Int64        `tfsdk:"project_id"`
-		Name        types.String       `tfsdk:"name"`
-		Variables   *map[string]string `tfsdk:"variables"`
-		Environment *map[string]string `tfsdk:"environment"`
-		Secrets     types.List         `tfsdk:"secrets"`
+		VariablesJSON   types.String `tfsdk:"variables_json"`
+		EnvironmentJSON types.String `tfsdk:"environment_json"`
+		ID              types.Int64  `tfsdk:"id"`
+		ProjectID       types.Int64  `tfsdk:"project_id"`
+		Name            types.String `tfsdk:"name"`
+		Variables       types.Map    `tfsdk:"variables"`
+		Environment     types.Map    `tfsdk:"environment"`
+		Secrets         types.List   `tfsdk:"secrets"`
 
 		SecretStorage *ProjectEnvironmentSecretStorageModel `tfsdk:"secret_storage"`
 		SyncEnabled   types.Bool                            `tfsdk:"sync_enabled"`
@@ -71,6 +73,8 @@ func ProjectEnvironmentSchema() superschema.Schema {
 			MarkdownDescription: "data source allows you to read project environment details.",
 		},
 		Attributes: map[string]superschema.Attribute{
+			"variables_json":   environmentJSONAttribute("variables", false),
+			"environment_json": environmentJSONAttribute("environment", true),
 			"id": superschema.Int64Attribute{
 				Common: &schemaR.Int64Attribute{
 					MarkdownDescription: "The environment ID.",
@@ -105,11 +109,12 @@ func ProjectEnvironmentSchema() superschema.Schema {
 			},
 			"variables": superschema.MapAttribute{
 				Common: &schemaR.MapAttribute{
-					MarkdownDescription: "Extra variables. Passed to Ansible as extra variables (`--extra-vars`) and Terraform/OpenTofu as variables (`-var`).",
+					MarkdownDescription: "String-valued extra variables. Omission preserves existing values; configure {} to clear them. Use variables_json for typed or nested values. Passed to Ansible as extra variables (`--extra-vars`) and Terraform/OpenTofu as variables (`-var`).",
 					ElementType:         types.StringType,
 				},
 				Resource: &schemaR.MapAttribute{
 					Optional: true,
+					Computed: true,
 				},
 				DataSource: &schemaD.MapAttribute{
 					Computed: true,
@@ -117,11 +122,12 @@ func ProjectEnvironmentSchema() superschema.Schema {
 			},
 			"environment": superschema.MapAttribute{
 				Common: &schemaR.MapAttribute{
-					MarkdownDescription: "Environment variables.",
+					MarkdownDescription: "String-valued environment variables. Omission preserves existing values; configure {} to clear them. Use environment_json to retain other scalar JSON types.",
 					ElementType:         types.StringType,
 				},
 				Resource: &schemaR.MapAttribute{
 					Optional: true,
+					Computed: true,
 				},
 				DataSource: &schemaD.MapAttribute{
 					Computed: true,

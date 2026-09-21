@@ -49,7 +49,8 @@ func TestCoverageEnvironmentNullIsSafe(t *testing.T) {
 func TestCoverageExternalEnvironmentDeletionIsVisible(t *testing.T) {
 	ctx := context.Background()
 	previous := ProjectEnvironmentModel{Secrets: projectEnvironmentTestList(t, projectEnvironmentSecretAttributeTypes(), []ProjectEnvironmentSecretModel{{ID: types.Int64Value(1), Name: types.StringValue("removed"), Type: types.StringValue("var"), Value: types.StringValue("synthetic-value")}})}
-	current := convertEnvironmentResponseToProjectEnvironmentModel(ctx, &models.Environment{JSON: "{}", Env: "{}"}, &previous)
+	current, err := convertEnvironmentResponseToProjectEnvironmentModel(ctx, &models.Environment{JSON: "{}", Env: "{}"}, &previous)
+	require.NoError(t, err)
 	assert.True(t, current.Secrets.IsNull() || len(current.Secrets.Elements()) == 0, "externally deleted secret must disappear from state")
 }
 

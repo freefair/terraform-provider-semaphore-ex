@@ -79,3 +79,17 @@ Runner `token` and `private_key` outputs are removed: EX does not provide these 
 Create a runner inactive, obtain its one-time token through `semaphore_ex_runner_registration_token`, complete registration, then enable it.
 `registration_policy` accepts `standard` or `secure` and survives import and updates.
 Policy changes on registered runners remain subject to EX's lifecycle restrictions.
+
+## Environment variable representation
+
+The string-map inputs `variables` and `environment` retain their published types.
+Use `variables_json = jsonencode(...)` for typed or nested extra variables and
+`environment_json` for scalar environment values that are not strings. Configure
+one representation per collection. Data sources expose lossless JSON as well as
+string maps where the API values are representable.
+
+Both representations are recovered during import, so choosing JSON for an object
+whose values happen to be strings does not require rewriting the remote object.
+Omitted variable collections retain the server values; explicitly configure an
+empty map or `jsonencode({})` to clear a collection. This also protects imported
+and externally authored typed variables from unrelated resource updates.

@@ -122,6 +122,7 @@ func (r *projectEnvironmentResource) ModifyPlan(ctx context.Context, req resourc
 	if req.Plan.Raw.IsNull() {
 		return
 	}
+	planEnvironmentJSON(ctx, req, resp)
 	var syncPaths types.List
 	resp.Diagnostics.Append(req.Plan.GetAttribute(ctx, path.Root("sync_paths"), &syncPaths)...)
 	if resp.Diagnostics.HasError() || syncPaths.IsNull() || syncPaths.IsUnknown() || len(syncPaths.Elements()) == 0 {
@@ -216,7 +217,10 @@ func validateProjectEnvironmentConfig(ctx context.Context, config ProjectEnviron
 }
 
 func projectEnvironmentUpdateBody(ctx context.Context, plan, state ProjectEnvironmentModel) (map[string]any, error) {
-	request := convertProjectEnvironmentModelToEnvironmentRequest(ctx, plan, &state)
+	request, err := convertProjectEnvironmentModelToEnvironmentRequest(ctx, plan, &state)
+	if err != nil {
+		return nil, err
+	}
 	encoded, err := json.Marshal(request)
 	if err != nil {
 		return nil, fmt.Errorf("marshal environment update: %w", err)
@@ -232,7 +236,7 @@ func projectEnvironmentUpdateBody(ctx context.Context, plan, state ProjectEnviro
 	return body, nil
 }
 
-func convertProjectEnvironmentModelToEnvironmentRequest(ctx context.Context, env ProjectEnvironmentModel, prev *ProjectEnvironmentModel) *models.EnvironmentRequest {
+func convertProjectEnvironmentModelToEnvironmentRequest(ctx context.Context, env ProjectEnvironmentModel, prev *ProjectEnvironmentModel) (*models.EnvironmentRequest, error) {
 	model := models.EnvironmentRequest{
 		ProjectID: env.ProjectID.ValueInt64(),
 		Name:      env.Name.ValueString(),
@@ -241,19 +245,16 @@ func convertProjectEnvironmentModelToEnvironmentRequest(ctx context.Context, env
 		model.ID = env.ID.ValueInt64()
 	}
 
-	if env.Variables == nil {
-		model.JSON = "{}"
-	} else {
-		bytes, _ := json.Marshal(env.Variables)
-		model.JSON = string(bytes)
+	var err error
+	model.JSON, err = environmentRequestJSON(ctx, env.Variables, env.VariablesJSON, false)
+	if err != nil {
+		return nil, err
+	}
+	model.Env, err = environmentRequestJSON(ctx, env.Environment, env.EnvironmentJSON, true)
+	if err != nil {
+		return nil, err
 	}
 
-	if env.Environment == nil {
-		model.Env = "{}"
-	} else {
-		bytes, _ := json.Marshal(env.Environment)
-		model.Env = string(bytes)
-	}
 	if env.SecretStorage != nil {
 		if !env.SecretStorage.ID.IsNull() && !env.SecretStorage.ID.IsUnknown() {
 			storageID := env.SecretStorage.ID.ValueInt64()
@@ -362,7 +363,7 @@ func convertProjectEnvironmentModelToEnvironmentRequest(ctx context.Context, env
 
 	model.Secrets = secrets
 
-	return &model
+	return &model, nil
 }
 
 var _ sort.Interface = ByEnvironmentID{}
@@ -373,7 +374,7 @@ func (a ByEnvironmentID) Len() int           { return len(a) }
 func (a ByEnvironmentID) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByEnvironmentID) Less(i, j int) bool { return a[i].ID < a[j].ID }
 
-func convertEnvironmentResponseToProjectEnvironmentModel(ctx context.Context, environment *models.Environment, prev *ProjectEnvironmentModel) ProjectEnvironmentModel {
+func convertEnvironmentResponseToProjectEnvironmentModel(ctx context.Context, environment *models.Environment, prev *ProjectEnvironmentModel) (ProjectEnvironmentModel, error) {
 	model := ProjectEnvironmentModel{
 		ID:        types.Int64Value(environment.ID),
 		ProjectID: types.Int64Value(environment.ProjectID),
@@ -399,18 +400,14 @@ func convertEnvironmentResponseToProjectEnvironmentModel(ctx context.Context, en
 	model.SyncEnabled = types.BoolValue(environment.SyncEnabled)
 	model.SyncInterval = types.Int64Value(environment.SyncInterval)
 
-	if json.Unmarshal([]byte(environment.JSON), &model.Variables) != nil {
-		model.Variables = &map[string]string{}
+	var err error
+	model.Variables, model.VariablesJSON, err = environmentValuesFromAPI(environment.JSON, prev.Variables, prev.VariablesJSON, false)
+	if err != nil {
+		return model, fmt.Errorf("invalid extra variables response: %w", err)
 	}
-	if model.Variables != nil && len(*model.Variables) == 0 && prev.Variables == nil {
-		model.Variables = nil
-	}
-
-	if json.Unmarshal([]byte(environment.Env), &model.Environment) != nil {
-		model.Environment = &map[string]string{}
-	}
-	if model.Environment != nil && len(*model.Environment) == 0 && prev.Environment == nil {
-		model.Environment = nil
+	model.Environment, model.EnvironmentJSON, err = environmentValuesFromAPI(environment.Env, prev.Environment, prev.EnvironmentJSON, true)
+	if err != nil {
+		return model, fmt.Errorf("invalid environment variables response: %w", err)
 	}
 
 	sort.Sort(ByEnvironmentID(environment.Secrets))
@@ -476,7 +473,7 @@ func convertEnvironmentResponseToProjectEnvironmentModel(ctx context.Context, en
 		model.SyncPaths, _ = types.ListValueFrom(ctx, types.ObjectType{AttrTypes: projectEnvironmentSyncPathAttributeTypes()}, syncPaths)
 	}
 
-	return model
+	return model, nil
 }
 
 func projectEnvironmentSyncPathAttributeTypes() map[string]attr.Type {
@@ -503,10 +500,15 @@ func (r *projectEnvironmentResource) Create(ctx context.Context, req resource.Cr
 		return
 	}
 
+	request, err := convertProjectEnvironmentModelToEnvironmentRequest(ctx, plan, &ProjectEnvironmentModel{})
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Environment Input", err.Error())
+		return
+	}
 	//Create new projectEnvironment
 	response, err := r.client.VariableGroup.PostProjectProjectIDEnvironment(&variable_group.PostProjectProjectIDEnvironmentParams{
 		ProjectID:   plan.ProjectID.ValueInt64(),
-		Environment: convertProjectEnvironmentModelToEnvironmentRequest(ctx, plan, &ProjectEnvironmentModel{}),
+		Environment: request,
 	}, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -527,7 +529,11 @@ func (r *projectEnvironmentResource) Create(ctx context.Context, req resource.Cr
 		)
 		return
 	}
-	plan = convertEnvironmentResponseToProjectEnvironmentModel(ctx, payload.Payload, &plan)
+	plan, err = convertEnvironmentResponseToProjectEnvironmentModel(ctx, payload.Payload, &plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Environment Response", err.Error())
+		return
+	}
 
 	// Set state to fully populated data
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
@@ -560,7 +566,11 @@ func (r *projectEnvironmentResource) Read(ctx context.Context, req resource.Read
 		)
 		return
 	}
-	model := convertEnvironmentResponseToProjectEnvironmentModel(ctx, response.Payload, &state)
+	model, err := convertEnvironmentResponseToProjectEnvironmentModel(ctx, response.Payload, &state)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Environment Response", err.Error())
+		return
+	}
 
 	// Set refreshed state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
@@ -607,7 +617,11 @@ func (r *projectEnvironmentResource) Update(ctx context.Context, req resource.Up
 		)
 		return
 	}
-	model := convertEnvironmentResponseToProjectEnvironmentModel(ctx, response.Payload, &plan)
+	model, err := convertEnvironmentResponseToProjectEnvironmentModel(ctx, response.Payload, &plan)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Environment Response", err.Error())
+		return
+	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, model)...)
 	if resp.Diagnostics.HasError() {
@@ -658,7 +672,11 @@ func (r *projectEnvironmentResource) ImportState(ctx context.Context, req resour
 		)
 		return
 	}
-	model := convertEnvironmentResponseToProjectEnvironmentModel(ctx, response.Payload, &ProjectEnvironmentModel{})
+	model, err := convertEnvironmentResponseToProjectEnvironmentModel(ctx, response.Payload, &ProjectEnvironmentModel{})
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Environment Response", err.Error())
+		return
+	}
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 	if resp.Diagnostics.HasError() {

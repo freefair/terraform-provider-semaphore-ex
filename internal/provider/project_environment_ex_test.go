@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -62,7 +63,8 @@ func TestConvertProjectEnvironmentRemoteSecretReference(t *testing.T) {
 		}}),
 	}
 
-	request := convertProjectEnvironmentModelToEnvironmentRequest(ctx, plan, &ProjectEnvironmentModel{})
+	request, err := convertProjectEnvironmentModelToEnvironmentRequest(ctx, plan, &ProjectEnvironmentModel{})
+	require.NoError(t, err)
 	if request.SecretStorageID == nil || *request.SecretStorageID != 12 {
 		t.Fatalf("secret storage ID = %v, want 12", request.SecretStorageID)
 	}
@@ -81,7 +83,7 @@ func TestConvertProjectEnvironmentRemoteSecretReference(t *testing.T) {
 	}
 
 	storageID := int64(12)
-	state := convertEnvironmentResponseToProjectEnvironmentModel(ctx, &models.Environment{
+	state, err := convertEnvironmentResponseToProjectEnvironmentModel(ctx, &models.Environment{
 		ID:        3,
 		ProjectID: 10,
 		Name:      "runtime references",
@@ -93,6 +95,7 @@ func TestConvertProjectEnvironmentRemoteSecretReference(t *testing.T) {
 		}},
 		SyncPaths: []*models.SecretSyncPath{},
 	}, &plan)
+	require.NoError(t, err)
 	var stateSecrets []ProjectEnvironmentSecretModel
 	stateDiagnostics := state.Secrets.ElementsAs(ctx, &stateSecrets, false)
 	if stateDiagnostics.HasError() || len(stateSecrets) != 1 || !stateSecrets[0].Value.IsNull() {
@@ -127,7 +130,8 @@ func TestConvertProjectEnvironmentEmptySecretStorageClearsBinding(t *testing.T) 
 			KeyPrefix: types.StringNull(),
 		},
 	}
-	request := convertProjectEnvironmentModelToEnvironmentRequest(context.Background(), plan, &ProjectEnvironmentModel{})
+	request, err := convertProjectEnvironmentModelToEnvironmentRequest(context.Background(), plan, &ProjectEnvironmentModel{})
+	require.NoError(t, err)
 	if request.SecretStorageID != nil || request.SecretStorageKeyPrefix != nil {
 		t.Fatalf("empty secret_storage must encode null fields, got %#v", request)
 	}
@@ -142,7 +146,7 @@ func TestConvertProjectEnvironmentEmptySecretStorageClearsBinding(t *testing.T) 
 		t.Fatalf("secret_storage_key_prefix = %#v, exists = %t; want explicit null", prefix, exists)
 	}
 
-	model := convertEnvironmentResponseToProjectEnvironmentModel(context.Background(), &models.Environment{
+	model, err := convertEnvironmentResponseToProjectEnvironmentModel(context.Background(), &models.Environment{
 		ID:        3,
 		ProjectID: 10,
 		Name:      "clear storage",
@@ -151,6 +155,7 @@ func TestConvertProjectEnvironmentEmptySecretStorageClearsBinding(t *testing.T) 
 		Secrets:   []*models.EnvironmentSecret{},
 		SyncPaths: []*models.SecretSyncPath{},
 	}, &ProjectEnvironmentModel{})
+	require.NoError(t, err)
 	if model.SecretStorage != nil {
 		t.Fatalf("empty API response secret storage = %#v, want nil", model.SecretStorage)
 	}

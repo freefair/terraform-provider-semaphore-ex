@@ -58,3 +58,16 @@ resource "semaphore_ex_project_environment" "environment" {
     separator     = "_"
   }]
 }
+
+# Use JSON inputs for values that are not string maps.
+resource "semaphore_ex_project_environment" "typed" {
+  project_id = semaphore_ex_project.project.id
+  name       = "Typed variables"
+  variables_json = jsonencode({
+    retries = 3
+    enabled = true
+    targets = ["web", "worker"]
+    limits  = { memory_mb = 512 }
+  })
+  environment_json = jsonencode({ LOG_LEVEL = "info", RETRIES = 3 })
+}

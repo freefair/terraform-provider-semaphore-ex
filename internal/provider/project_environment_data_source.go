@@ -4,6 +4,7 @@ import (
 	"context"
 	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
 	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/variable_group"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 )
@@ -65,8 +66,30 @@ func (d *projectEnvironmentDataSource) Read(ctx context.Context, req datasource.
 		)
 		return
 	}
-	model := convertEnvironmentResponseToProjectEnvironmentModel(ctx, response.Payload, &config)
+	model, err := convertEnvironmentResponseToProjectEnvironmentModel(ctx, response.Payload, &config)
 
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Environment Response", err.Error())
+		return
+	}
+	variablesJSON, err := canonicalEnvironmentJSON(response.Payload.JSON, false)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Environment Response", err.Error())
+		return
+	}
+	environmentJSON, err := canonicalEnvironmentJSON(response.Payload.Env, true)
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Environment Response", err.Error())
+		return
+	}
+	model.VariablesJSON = types.StringValue(variablesJSON)
+	model.EnvironmentJSON = types.StringValue(environmentJSON)
+	if model.Variables.IsNull() && variablesJSON != "{}" {
+		resp.Diagnostics.AddWarning("Typed Extra Variables", "The extra variables contain non-string values. Use variables_json to retain their types and nested structure.")
+	}
+	if model.Environment.IsNull() && environmentJSON != "{}" {
+		resp.Diagnostics.AddWarning("Typed Environment Variables", "Use environment_json to retain the scalar value types returned by the API.")
+	}
 	resp.Diagnostics.Append(resp.State.Set(ctx, &model)...)
 	if resp.Diagnostics.HasError() {
 		return
