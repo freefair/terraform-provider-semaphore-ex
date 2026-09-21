@@ -97,15 +97,6 @@ func (p *SemaphoreUIProvider) Configure(ctx context.Context, req provider.Config
 		)
 	}
 
-	if config.ApiToken.IsUnknown() {
-		resp.Diagnostics.AddAttributeError(
-			path.Root("api_token"),
-			"Unknown SemaphoreUI API Token",
-			"The provider cannot create the SemaphoreUI API client as there is an unknown configuration value for the SemaphoreUI API token. "+
-				"Either target apply the source of the value first, set the value statically in the configuration, or use the SEMAPHOREUI_API_TOKEN environment variable.",
-		)
-	}
-
 	if config.TlsSkipVerify.IsUnknown() {
 		resp.Diagnostics.AddAttributeError(
 			path.Root("tls_skip_verify"),
