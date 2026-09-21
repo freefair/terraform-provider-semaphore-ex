@@ -10,7 +10,8 @@ resource and data-source counts alone do not establish coverage.
 
 Template settings and invocation parameters have separate models. Introduce explicit
 Ansible and Terraform template settings. Retain the old template `task_params`
-configuration as deprecated compatibility state without promoting its previously
+configuration and its recoverable invocation envelope as deprecated compatibility
+metadata without promoting its previously
 inert fields into effective settings. In particular, upgrading the provider must
 not enable automatic approval or change run limits without an explicit configuration
 change. Read current template settings before updates and preserve unmanaged keys.

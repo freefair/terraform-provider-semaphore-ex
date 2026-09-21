@@ -56,8 +56,10 @@ type (
 		Build  *ProjectTemplateTypeBuildModel  `tfsdk:"build"`
 		Deploy *ProjectTemplateTypeDeployModel `tfsdk:"deploy"`
 
-		TaskParams *TaskParamsModel `tfsdk:"task_params"`
-		SSHKeys    types.Object     `tfsdk:"ssh_keys"`
+		AnsibleSettings   types.Object     `tfsdk:"ansible_settings"`
+		TerraformSettings types.Object     `tfsdk:"terraform_settings"`
+		TaskParams        *TaskParamsModel `tfsdk:"task_params"`
+		SSHKeys           types.Object     `tfsdk:"ssh_keys"`
 	}
 
 	ProjectTemplateTypeBuildModel struct {
@@ -627,8 +629,10 @@ func ProjectTemplateSchema() superschema.Schema {
 					},
 				},
 			},
-			"task_params": TaskParamsAttribute(),
-			"ssh_keys":    templateSSHKeySelectionAttribute(),
+			"task_params":        legacyTemplateParamsAttribute(),
+			"ansible_settings":   templateSettingsAttribute("ansible"),
+			"terraform_settings": templateSettingsAttribute("terraform"),
+			"ssh_keys":           templateSSHKeySelectionAttribute(),
 		},
 	}
 }

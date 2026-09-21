@@ -145,6 +145,7 @@ resource "semaphore_ex_project_environment" "extra" {
 - `allow_override_args_in_task` (Boolean) Allow overriding arguments in the task. Value defaults to `false`.
 - `allow_override_branch_in_task` (Boolean) Allow a task to override the template Git branch. Omitted configuration preserves the server value.
 - `allow_parallel_tasks` (Boolean) Allow parallel executions of this template. Omitted configuration preserves the server value.
+- `ansible_settings` (Attributes) Effective ansible template settings. Omitted keys preserve existing server values. Configure false, an empty string or [] to clear a setting. These are distinct from per-run task parameters. Preserve omitted template settings, including null values. (see [below for nested schema](#nestedatt--ansible_settings))
 - `app` (String) The application name. Must be a valid SemaphoreUI application name. Default applications include: `ansible`, `terraform`, `tofu`, `bash`, `powershell` and `python`. Value defaults to `ansible`.
 - `arguments` (List of String) Commandline arguments passed to the application.
 - `build` (Attributes) Specifies a build type template used to create artifacts. SemaphoreUI doesn't support artifacts out-of-box, it only provides task versioning. You should implement the artifact creation yourself. Ensure that if an attribute is set, these are not set: "[deploy]". (see [below for nested schema](#nestedatt--build))
@@ -162,7 +163,8 @@ resource "semaphore_ex_project_environment" "extra" {
 - `suppress_error_alerts` (Boolean) Suppress error alerts.
 - `suppress_success_alerts` (Boolean) Suppress success alerts. Value defaults to `false`.
 - `survey_vars` (Attributes List) Survey variables. (see [below for nested schema](#nestedatt--survey_vars))
-- `task_params` (Attributes) Default task parameters applied when this template or integration runs a task. (see [below for nested schema](#nestedatt--task_params))
+- `task_params` (Attributes, Deprecated) Deprecated compatibility metadata for the former template task_params shape. It did not configure template execution. Use ansible_settings or terraform_settings explicitly; existing values are never activated automatically. (see [below for nested schema](#nestedatt--task_params))
+- `terraform_settings` (Attributes) Effective terraform template settings. Omitted keys preserve existing server values. Configure false, an empty string or [] to clear a setting. These are distinct from per-run task parameters. Preserve omitted template settings, including null values. (see [below for nested schema](#nestedatt--terraform_settings))
 - `vaults` (Attributes List) Ansible Vault Passwords. (see [below for nested schema](#nestedatt--vaults))
 - `view_id` (Number) The view ID that the templates belongs to.
 - `working_directory` (String) Repository-relative Ansible working directory. Empty uses the repository root.
@@ -170,6 +172,27 @@ resource "semaphore_ex_project_environment" "extra" {
 ### Read-Only
 
 - `id` (Number) The template ID.
+
+<a id="nestedatt--ansible_settings"></a>
+### Nested Schema for `ansible_settings`
+
+Optional:
+
+- `allow_debug` (Boolean) Allow verbosity selection when launching Ansible tasks.
+- `allow_override_inventory` (Boolean) Allow the task inventory to override the template inventory.
+- `allow_override_limit` (Boolean) Allow the task host limit to override the template limit.
+- `allow_override_skip_galaxy_install` (Boolean) Allow tasks to override Galaxy installation behavior.
+- `allow_override_skip_tags` (Boolean) Allow task skip-tags to override the template skip-tags.
+- `allow_override_tags` (Boolean) Allow task tags to override the template tags.
+- `galaxy_collection_args` (List of String) Arguments for ansible-galaxy collection install, validated by the server.
+- `galaxy_role_args` (List of String) Arguments for ansible-galaxy role install, validated by the server.
+- `hide_diff` (Boolean) Hide the Diff option; the server suppresses the corresponding task flag.
+- `hide_dry_run` (Boolean) Hide the Dry Run option; the server suppresses the corresponding task flag.
+- `limit` (List of String) Default Ansible host patterns.
+- `skip_galaxy_install` (Boolean) Skip Ansible Galaxy requirements installation by default.
+- `skip_tags` (List of String) Default Ansible tags to skip.
+- `tags` (List of String) Default Ansible tags.
+
 
 <a id="nestedatt--build"></a>
 ### Nested Schema for `build`
@@ -284,6 +307,18 @@ Optional:
 - `reconfigure` (Boolean) Reconfigure the backend during Terraform init. Value defaults to `false`.
 - `upgrade` (Boolean) Pass `-upgrade` to `terraform init` / `tofu init`. Value defaults to `false`.
 
+
+
+<a id="nestedatt--terraform_settings"></a>
+### Nested Schema for `terraform_settings`
+
+Optional:
+
+- `allow_auto_approve` (Boolean) Expose automatic approval as a selectable task option.
+- `allow_destroy` (Boolean) Expose the Destroy option in the task UI. This flag is not an independent server authorization boundary.
+- `auto_approve` (Boolean) Automatically approve template runs. Setting true explicitly changes execution behavior; legacy task_params values are never promoted here.
+- `backend_filename` (String) Backend override filename; an empty value uses the server default.
+- `override_backend` (Boolean) Generate the backend override when using the internal Terraform backend.
 
 
 <a id="nestedatt--vaults"></a>

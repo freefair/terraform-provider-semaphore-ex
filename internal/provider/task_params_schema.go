@@ -49,7 +49,7 @@ type TerraformTaskParamsModel struct {
 
 // TaskParamsAttribute returns the shared `task_params` attribute used by
 // project_template and project_integration resources / data sources.
-func TaskParamsAttribute() superschema.Attribute {
+func TaskParamsAttribute() superschema.SingleNestedAttribute {
 	return superschema.SingleNestedAttribute{
 		Common: &schemaR.SingleNestedAttribute{
 			MarkdownDescription: "Default task parameters applied when this template or integration runs a task.",

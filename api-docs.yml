@@ -1149,7 +1149,7 @@ definitions:
       autorun:
         type: boolean
       task_params:
-        $ref: '#/definitions/TaskPrams'
+        $ref: '#/definitions/TemplateTaskParams'
 
   Template:
     type: object
@@ -1236,7 +1236,75 @@ definitions:
         items:
           $ref: "#/definitions/TemplateVault"
       task_params:
-        $ref: '#/definitions/TaskPrams'
+        $ref: '#/definitions/TemplateTaskParams'
+
+  TemplateTaskParams:
+    type: object
+    description: Flat application-specific template settings, distinct from task invocation parameters.
+    additionalProperties: true
+    properties:
+      allow_debug:
+        type: boolean
+        x-nullable: true
+      allow_override_inventory:
+        type: boolean
+        x-nullable: true
+      allow_override_limit:
+        type: boolean
+        x-nullable: true
+      allow_override_tags:
+        type: boolean
+        x-nullable: true
+      allow_override_skip_tags:
+        type: boolean
+        x-nullable: true
+      skip_galaxy_install:
+        type: boolean
+        x-nullable: true
+      allow_override_skip_galaxy_install:
+        type: boolean
+        x-nullable: true
+      hide_dry_run:
+        type: boolean
+        x-nullable: true
+      hide_diff:
+        type: boolean
+        x-nullable: true
+      allow_destroy:
+        type: boolean
+        x-nullable: true
+      allow_auto_approve:
+        type: boolean
+        x-nullable: true
+      auto_approve:
+        type: boolean
+        x-nullable: true
+      override_backend:
+        type: boolean
+        x-nullable: true
+      limit:
+        type: array
+        items:
+          type: string
+      tags:
+        type: array
+        items:
+          type: string
+      skip_tags:
+        type: array
+        items:
+          type: string
+      galaxy_role_args:
+        type: array
+        items:
+          type: string
+      galaxy_collection_args:
+        type: array
+        items:
+          type: string
+      backend_filename:
+        type: string
+        x-nullable: true
 
   TemplateSurveyVar:
     type: object

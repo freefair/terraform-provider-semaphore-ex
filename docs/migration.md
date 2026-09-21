@@ -93,3 +93,31 @@ whose values happen to be strings does not require rewriting the remote object.
 Omitted variable collections retain the server values; explicitly configure an
 empty map or `jsonencode({})` to clear a collection. This also protects imported
 and externally authored typed variables from unrelated resource updates.
+
+## Effective template settings
+
+`semaphore_ex_project_template` exposes `ansible_settings` and `terraform_settings`
+for the flat settings the server actually consumes. For example:
+
+```hcl
+ansible_settings = {
+  allow_override_limit = true
+  limit                = ["web"]
+  hide_diff            = false
+}
+```
+
+The former template `task_params` used a task invocation envelope. Its defaults did
+not control template execution. It remains deprecated compatibility metadata so
+existing configurations and imports remain readable. Upgrading never promotes its
+values into effective settings: explicitly configure the new blocks to change
+execution, especially `terraform_settings.auto_approve`.
+
+Omitted settings preserve server values; use `false`, `""`, or `[]` to clear a key.
+Updates read the current settings and merge only configured keys, preserving unknown
+server fields. The server offers no revision check for templates, so concurrent
+updates from different clients cannot be made atomic by the provider.
+
+`allow_destroy` and `allow_auto_approve` expose server/UI options; they are not
+independent authorization boundaries. The server's actual task execution rules still
+apply. Integration `task_params` remains a task invocation contract.

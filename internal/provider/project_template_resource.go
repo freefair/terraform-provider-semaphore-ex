@@ -105,7 +105,7 @@ func (v playbookRequiredValidator) ValidateResource(ctx context.Context, req res
 }
 
 func (r *projectTemplateResource) ConfigValidators(_ context.Context) []resource.ConfigValidator {
-	return []resource.ConfigValidator{playbookRequiredValidator{}, templateSSHKeysValidator{}, resourcevalidator.ExactlyOneOf(path.MatchRoot("environment_id"), path.MatchRoot("environment_ids"))}
+	return []resource.ConfigValidator{playbookRequiredValidator{}, templateSSHKeysValidator{}, templateSettingsValidator{}, resourcevalidator.ExactlyOneOf(path.MatchRoot("environment_id"), path.MatchRoot("environment_ids"))}
 }
 
 type templateSSHKeysValidator struct{}
@@ -273,7 +273,7 @@ func convertProjectTemplateModelToTemplateRequest(ctx context.Context, template 
 		}
 	}
 
-	model.TaskParams = convertTaskParamsModelToTaskPrams(ctx, template.TaskParams)
+	// Legacy invocation-shaped parameters remain Terraform compatibility metadata.
 
 	return &model
 }
@@ -450,7 +450,17 @@ func convertTemplateResponseToProjectTemplateModel(ctx context.Context, request 
 	if prev != nil {
 		priorTaskParams = prev.TaskParams
 	}
-	model.TaskParams = convertTaskPramsToTaskParamsModel(ctx, request.TaskParams, priorTaskParams)
+	model.TaskParams = priorTaskParams
+	if prev != nil {
+		model.AnsibleSettings = prev.AnsibleSettings
+		model.TerraformSettings = prev.TerraformSettings
+	}
+	if len(model.AnsibleSettings.AttributeTypes(ctx)) == 0 {
+		model.AnsibleSettings = types.ObjectNull(templateSettingTypes("ansible"))
+	}
+	if len(model.TerraformSettings.AttributeTypes(ctx)) == 0 {
+		model.TerraformSettings = types.ObjectNull(templateSettingTypes("terraform"))
+	}
 
 	return model
 }
@@ -464,6 +474,14 @@ func templateRequestWithSSHKeys(ctx context.Context, plan ProjectTemplateModel) 
 	if err = json.Unmarshal(encoded, &body); err != nil {
 		return nil, err
 	}
+	settings, err := templateSettingsPayload(ctx, plan.AnsibleSettings, plan.TerraformSettings)
+	if err != nil {
+		return nil, err
+	}
+	if err := addLegacyTemplateMetadata(ctx, settings, plan.TaskParams); err != nil {
+		return nil, err
+	}
+	body["task_params"] = settings
 	if plan.SSHKeys.IsNull() || plan.SSHKeys.IsUnknown() {
 		return body, nil
 	}
@@ -478,6 +496,9 @@ func templateRequestWithSSHKeys(ctx context.Context, plan ProjectTemplateModel) 
 func readTemplateSSHKeys(ctx context.Context, client *apiclient.SemaphoreUI, model *ProjectTemplateModel) error {
 	var raw map[string]any
 	if err := exRequest(ctx, client, http.MethodGet, "/project/{project_id}/templates/{template_id}", map[string]string{"project_id": strconv.FormatInt(model.ProjectID.ValueInt64(), 10), "template_id": strconv.FormatInt(model.ID.ValueInt64(), 10)}, nil, &raw); err != nil {
+		return err
+	}
+	if err := readTemplateApplicationSettings(ctx, raw, model); err != nil {
 		return err
 	}
 	selection, err := sshKeyPolicySelectionFromAPI(raw["ssh_keys"])
@@ -498,7 +519,7 @@ func (r *projectTemplateResource) Create(ctx context.Context, req resource.Creat
 
 	body, err := templateRequestWithSSHKeys(ctx, plan)
 	if err != nil {
-		resp.Diagnostics.AddError("Invalid Template SSH Keys", err.Error())
+		resp.Diagnostics.AddError("Invalid Template Settings", err.Error())
 		return
 	}
 	var create struct {
@@ -602,7 +623,11 @@ func (r *projectTemplateResource) Update(ctx context.Context, req resource.Updat
 
 	body, err := templateRequestWithSSHKeys(ctx, plan)
 	if err != nil {
-		resp.Diagnostics.AddError("Invalid Template SSH Keys", err.Error())
+		resp.Diagnostics.AddError("Invalid Template Settings", err.Error())
+		return
+	}
+	if err = mergeTemplateUpdateSettings(ctx, r.client, plan, req.Config, body); err != nil {
+		resp.Diagnostics.AddError("Error Preserving Template Settings", err.Error())
 		return
 	}
 	err = exRequest(ctx, r.client, http.MethodPut, "/project/{project_id}/templates/{template_id}", map[string]string{"project_id": strconv.FormatInt(plan.ProjectID.ValueInt64(), 10), "template_id": strconv.FormatInt(plan.ID.ValueInt64(), 10)}, body, nil)
