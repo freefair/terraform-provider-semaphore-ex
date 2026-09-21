@@ -556,6 +556,10 @@ func (r *projectTemplateResource) Read(ctx context.Context, req resource.ReadReq
 		ProjectID:  state.ProjectID.ValueInt64(),
 		TemplateID: state.ID.ValueInt64(),
 	}, nil)
+	if resourceNotFound(err) {
+		resp.State.RemoveResource(ctx)
+		return
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading SemaphoreUI Project Template",
@@ -645,7 +649,7 @@ func (r *projectTemplateResource) Delete(ctx context.Context, req resource.Delet
 		ProjectID:  state.ProjectID.ValueInt64(),
 		TemplateID: state.ID.ValueInt64(),
 	}, nil)
-	if err != nil {
+	if err != nil && !resourceNotFound(err) {
 		resp.Diagnostics.AddError(
 			"Error Removing SemaphoreUI Project Template",
 			"Could not delete project template, unexpected error: "+err.Error(),

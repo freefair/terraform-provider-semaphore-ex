@@ -47,3 +47,15 @@ output "automation_api_credential" {
 - `expired` (Boolean) Whether Semaphore EX reports the token as expired.
 - `id` (String) Stable, non-secret API token identifier returned by Semaphore EX.
 - `user_id` (Number) Owner user ID reported by Semaphore EX.
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Replace illustrative identifiers with the existing object identity.
+# Use token_ref, never the API credential.
+terraform import semaphore_ex_user_api_token.automation token-reference
+```

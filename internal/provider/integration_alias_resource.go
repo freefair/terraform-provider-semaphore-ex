@@ -134,6 +134,10 @@ func (r *integrationAliasResource) Read(ctx context.Context, req resource.ReadRe
 	}
 
 	alias, err := r.findAlias(state.ProjectID.ValueInt64(), state.IntegrationID.ValueInt64(), state.ID.ValueInt64())
+	if resourceNotFound(err) {
+		resp.State.RemoveResource(ctx)
+		return
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading SemaphoreUI Integration Alias",
@@ -174,7 +178,7 @@ func (r *integrationAliasResource) Delete(ctx context.Context, req resource.Dele
 				IntegrationID: state.IntegrationID.ValueInt64(),
 				AliasID:       state.ID.ValueInt64(),
 			}, nil)
-		if err != nil {
+		if err != nil && !resourceNotFound(err) {
 			resp.Diagnostics.AddError(
 				"Error Removing SemaphoreUI Integration Alias",
 				"Could not remove integration-scoped alias, unexpected error: "+err.Error(),
@@ -188,7 +192,7 @@ func (r *integrationAliasResource) Delete(ctx context.Context, req resource.Dele
 			ProjectID: state.ProjectID.ValueInt64(),
 			AliasID:   state.ID.ValueInt64(),
 		}, nil)
-	if err != nil {
+	if err != nil && !resourceNotFound(err) {
 		resp.Diagnostics.AddError(
 			"Error Removing SemaphoreUI Integration Alias",
 			"Could not remove project-scoped alias, unexpected error: "+err.Error(),
@@ -201,7 +205,7 @@ func (r *integrationAliasResource) Delete(ctx context.Context, req resource.Dele
 //	project/{project_id}/alias/{alias_id}                                 -> project-scoped
 //	project/{project_id}/integration/{integration_id}/alias/{alias_id}    -> integration-scoped
 func (r *integrationAliasResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	fields, err := parseImportFields(req.ID, []string{"project", "alias"})
+	fields, err := parseImportFields(req.ID, []string{"project", "alias"}, []string{"project", "integration", "alias"})
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Invalid Integration Alias Import ID",

@@ -134,6 +134,10 @@ func (r *userResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 
 	// Get refreshed value from API
 	response, err := r.client.User.GetUsersUserID(&user.GetUsersUserIDParams{UserID: state.ID.ValueInt64()}, nil)
+	if resourceNotFound(err) {
+		resp.State.RemoveResource(ctx)
+		return
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Semaphore User",
@@ -220,7 +224,7 @@ func (r *userResource) Delete(ctx context.Context, req resource.DeleteRequest, r
 
 	// Delete existing resource
 	_, err := r.client.User.DeleteUsersUserID(&user.DeleteUsersUserIDParams{UserID: state.ID.ValueInt64()}, nil)
-	if err != nil {
+	if err != nil && !resourceNotFound(err) {
 		resp.Diagnostics.AddError(
 			"Error Deleting Semaphore User",
 			fmt.Sprintf("Could not delete user, unexpected error: %s", err.Error()),

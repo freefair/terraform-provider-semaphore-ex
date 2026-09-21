@@ -2,31 +2,44 @@ package provider
 
 import (
 	"fmt"
-	"regexp"
 	"strconv"
+	"strings"
 )
 
-func parseImportFields(input string, requiredFields []string) (map[string]int64, error) {
-	result := make(map[string]int64)
-	re := regexp.MustCompile(`(\w+)/(\d+)/?`)
-	matches := re.FindAllStringSubmatch(input, -1)
-
-	for _, match := range matches {
-		if len(match) != 3 {
+// parseImportFields validates the entire identity before it can select an API
+// object. Alternative shapes are explicit so extra scope labels cannot be ignored.
+func parseImportFields(input string, requiredFields []string, alternatives ...[]string) (map[string]int64, error) {
+	parts := strings.Split(input, "/")
+	if len(requiredFields) == 1 && len(parts) == 1 {
+		parts = []string{requiredFields[0], input}
+	}
+	shapes := append([][]string{requiredFields}, alternatives...)
+	for _, fields := range shapes {
+		if len(parts) != 2*len(fields) {
 			continue
 		}
-		value, err := strconv.ParseInt(match[2], 10, 64)
-		if err != nil {
-			return nil, err
+		result := make(map[string]int64, len(fields))
+		matches := true
+		for i, field := range fields {
+			if parts[2*i] != field {
+				matches = false
+				break
+			}
+			value := parts[2*i+1]
+			if value == "" || strings.IndexFunc(value, func(r rune) bool { return r < '0' || r > '9' }) >= 0 {
+				matches = false
+				break
+			}
+			id, err := strconv.ParseInt(value, 10, 64)
+			if err != nil || id <= 0 {
+				matches = false
+				break
+			}
+			result[field] = id
 		}
-		result[match[1]] = value
-	}
-
-	for _, field := range requiredFields {
-		if _, ok := result[field]; !ok {
-			return nil, fmt.Errorf("missing required import field %s", field)
+		if matches {
+			return result, nil
 		}
 	}
-
-	return result, nil
+	return nil, fmt.Errorf("expected positive numeric IDs with labels %s in the documented order", strings.Join(requiredFields, ", "))
 }

@@ -115,6 +115,10 @@ func (r *projectRepositoryResource) Read(ctx context.Context, req resource.ReadR
 		ProjectID:    state.ProjectID.ValueInt64(),
 		RepositoryID: state.ID.ValueInt64(),
 	}, nil)
+	if resourceNotFound(err) {
+		resp.State.RemoveResource(ctx)
+		return
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading SemaphoreUI Project Repository",
@@ -184,7 +188,7 @@ func (r *projectRepositoryResource) Delete(ctx context.Context, req resource.Del
 		ProjectID:    state.ProjectID.ValueInt64(),
 		RepositoryID: state.ID.ValueInt64(),
 	}, nil)
-	if err != nil {
+	if err != nil && !resourceNotFound(err) {
 		resp.Diagnostics.AddError(
 			"Error Removing SemaphoreUI Project Repository",
 			"Could not remove project repository, unexpected error: "+err.Error(),

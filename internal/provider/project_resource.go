@@ -117,6 +117,10 @@ func (r *projectResource) Read(ctx context.Context, req resource.ReadRequest, re
 	}
 
 	response, err := r.client.Project.GetProjectProjectID(&project.GetProjectProjectIDParams{ProjectID: state.ID.ValueInt64()}, nil)
+	if resourceNotFound(err) {
+		resp.State.RemoveResource(ctx)
+		return
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Semaphore Project",
@@ -195,7 +199,7 @@ func (r *projectResource) Delete(ctx context.Context, req resource.DeleteRequest
 
 	// Delete existing order
 	_, err := r.client.Project.DeleteProjectProjectID(&project.DeleteProjectProjectIDParams{ProjectID: state.ID.ValueInt64()}, nil)
-	if err != nil {
+	if err != nil && !resourceNotFound(err) {
 		resp.Diagnostics.AddError(
 			"Error Deleting Semaphore Project",
 			fmt.Sprintf("Could not delete project, unexpected error: %s", err.Error()),

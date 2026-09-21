@@ -35,6 +35,12 @@ Run `terraform init`, inspect `terraform plan`, then run `terraform apply`.
 Verify with `terraform plan -detailed-exitcode`: an unchanged configuration returns 0.
 For local provider development, see [Using a local build](#using-a-local-build).
 
+## Resource lifecycle
+
+See the [lifecycle matrix](docs/lifecycle.md) for all managed resources, import IDs,
+update/replacement behavior, data-source coverage and state operations.
+The [migration guide](docs/migration.md) covers direct moves from `semaphoreui/semaphore`.
+
 ## Multiple variable groups
 
 ```hcl

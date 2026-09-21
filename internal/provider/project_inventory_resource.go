@@ -213,6 +213,10 @@ func (r *projectInventoryResource) Read(ctx context.Context, req resource.ReadRe
 		ProjectID:   state.ProjectID.ValueInt64(),
 		InventoryID: state.ID.ValueInt64(),
 	}, nil)
+	if resourceNotFound(err) {
+		resp.State.RemoveResource(ctx)
+		return
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading SemaphoreUI Project Inventory",
@@ -290,7 +294,7 @@ func (r *projectInventoryResource) Delete(ctx context.Context, req resource.Dele
 		ProjectID:   state.ProjectID.ValueInt64(),
 		InventoryID: state.ID.ValueInt64(),
 	}, nil)
-	if err != nil {
+	if err != nil && !resourceNotFound(err) {
 		resp.Diagnostics.AddError(
 			"Error Deleting SemaphoreUI Project Inventory",
 			"Could not delete project inventory, unexpected error: "+err.Error(),

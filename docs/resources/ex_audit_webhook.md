@@ -56,3 +56,14 @@ output "current_audit_webhook_signing_secret" {
 - `next_key_id` (String)
 - `next_signing_secret` (String, Sensitive)
 - `signing_revision` (Number)
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Replace illustrative identifiers with the existing object identity.
+terraform import semaphore_ex_audit_webhook.audit audit_webhook
+```

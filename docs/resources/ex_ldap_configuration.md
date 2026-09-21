@@ -69,3 +69,14 @@ resource "semaphore_ex_ldap_configuration" "corporate" {
 
 - `bind_password_configured` (Boolean)
 - `id` (String) The ID of this resource.
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Replace illustrative identifiers with the existing object identity.
+terraform import semaphore_ex_ldap_configuration.corporate provider-id
+```

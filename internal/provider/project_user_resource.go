@@ -52,7 +52,7 @@ func (r *projectUserResource) Schema(ctx context.Context, _ resource.SchemaReque
 func (r *projectUserResource) getProjectUserModelFromAPI(projectId types.Int64, userId types.Int64) (*ProjectUserModel, error) {
 	payload, err := r.client.Project.GetProjectProjectIDUsers(&project.GetProjectProjectIDUsersParams{ProjectID: projectId.ValueInt64()}, nil)
 	if err != nil {
-		return nil, fmt.Errorf("could not read Users for project ID %d: %s", projectId.ValueInt64(), err.Error())
+		return nil, fmt.Errorf("could not read Users for project ID %d: %w", projectId.ValueInt64(), err)
 	}
 
 	for _, projectUser := range payload.Payload {
@@ -72,7 +72,7 @@ func (r *projectUserResource) getProjectUserModelFromAPI(projectId types.Int64, 
 			}, nil
 		}
 	}
-	return nil, fmt.Errorf("user with ID %d not found in project with ID %d", userId.ValueInt64(), projectId.ValueInt64())
+	return nil, &exAPIError{StatusCode: 404}
 }
 
 func (r *projectUserResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -128,6 +128,10 @@ func (r *projectUserResource) Read(ctx context.Context, req resource.ReadRequest
 
 	// Get refreshed value from API
 	user, err := r.getProjectUserModelFromAPI(state.ProjectID, state.UserID)
+	if resourceNotFound(err) {
+		resp.State.RemoveResource(ctx)
+		return
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Semaphore Project Users",
@@ -205,7 +209,7 @@ func (r *projectUserResource) Delete(ctx context.Context, req resource.DeleteReq
 		ProjectID: state.ProjectID.ValueInt64(),
 		UserID:    state.UserID.ValueInt64(),
 	}, nil)
-	if err != nil {
+	if err != nil && !resourceNotFound(err) {
 		resp.Diagnostics.AddError(
 			"Error Removing Semaphore Project User",
 			"Could not remove project user, unexpected error: "+err.Error(),

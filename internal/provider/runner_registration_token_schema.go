@@ -32,6 +32,8 @@ func RunnerRegistrationTokenSchema() superschema.Schema {
 				"Regenerating invalidates the previous token. The token is returned only once, at creation, and stored " +
 				"(sensitive) in Terraform state. The resource is immutable: changing `runner_id`, `project_id` or `keepers` " +
 				"forces a new token to be generated. Use `keepers` to rotate the token on demand (e.g. bump a value to issue a new one). " +
+				"Import uses `runner/<id>` or `project/<id>/runner/<id>` and adopts only the runner association: " +
+				"`registration_token` is null because the API never returns the original token again. Import does not rotate it. " +
 				"The runner must not already be registered, otherwise the API returns an error. " +
 				"Note: generating a token leaves the runner inactive until it registers, so a runner managed alongside this " +
 				"resource should set `active = false` to avoid a permanent diff.",

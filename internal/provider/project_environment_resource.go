@@ -549,6 +549,10 @@ func (r *projectEnvironmentResource) Read(ctx context.Context, req resource.Read
 		ProjectID:     state.ProjectID.ValueInt64(),
 		EnvironmentID: state.ID.ValueInt64(),
 	}, nil)
+	if resourceNotFound(err) {
+		resp.State.RemoveResource(ctx)
+		return
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading SemaphoreUI Project Environment",
@@ -624,7 +628,7 @@ func (r *projectEnvironmentResource) Delete(ctx context.Context, req resource.De
 		ProjectID:     state.ProjectID.ValueInt64(),
 		EnvironmentID: state.ID.ValueInt64(),
 	}, nil)
-	if err != nil {
+	if err != nil && !resourceNotFound(err) {
 		resp.Diagnostics.AddError(
 			"Error Deleting Semaphore Project Environment",
 			fmt.Sprintf("Could not delete project environment, unexpected error: %s", err.Error()),

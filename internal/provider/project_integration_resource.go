@@ -114,6 +114,10 @@ func (r *projectIntegrationResource) Read(ctx context.Context, req resource.Read
 		ProjectID:     state.ProjectID.ValueInt64(),
 		IntegrationID: state.ID.ValueInt64(),
 	}, nil)
+	if resourceNotFound(err) {
+		resp.State.RemoveResource(ctx)
+		return
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading SemaphoreUI Project Integration",
@@ -171,7 +175,7 @@ func (r *projectIntegrationResource) Delete(ctx context.Context, req resource.De
 		ProjectID:     state.ProjectID.ValueInt64(),
 		IntegrationID: state.ID.ValueInt64(),
 	}, nil)
-	if err != nil {
+	if err != nil && !resourceNotFound(err) {
 		resp.Diagnostics.AddError(
 			"Error Removing SemaphoreUI Project Integration",
 			"Could not remove project integration, unexpected error: "+err.Error(),

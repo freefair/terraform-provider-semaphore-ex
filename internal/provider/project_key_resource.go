@@ -261,7 +261,7 @@ func (r *projectKeyResource) getProjectKeyModelFromClient(projectId types.Int64,
 		ProjectID: projectId.ValueInt64(),
 	}, nil)
 	if err != nil {
-		return nil, fmt.Errorf("could not read Keys for project ID %d: %s", projectId.ValueInt64(), err.Error())
+		return nil, fmt.Errorf("could not read Keys for project ID %d: %w", projectId.ValueInt64(), err)
 	}
 
 	for _, key := range payload.Payload {
@@ -287,7 +287,7 @@ func (r *projectKeyResource) getProjectKeyModelFromClient(projectId types.Int64,
 			return &model, nil
 		}
 	}
-	return nil, fmt.Errorf("key with ID %d not found in project with ID %d", keyId.ValueInt64(), projectId.ValueInt64())
+	return nil, &exAPIError{StatusCode: 404}
 }
 
 func (r *projectKeyResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
@@ -329,6 +329,10 @@ func (r *projectKeyResource) Read(ctx context.Context, req resource.ReadRequest,
 	}
 
 	model, err := r.getProjectKeyModelFromClient(state.ProjectID, state.ID, &state)
+	if resourceNotFound(err) {
+		resp.State.RemoveResource(ctx)
+		return
+	}
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Reading Semaphore Project Keys",
@@ -493,7 +497,7 @@ func (r *projectKeyResource) Delete(ctx context.Context, req resource.DeleteRequ
 		ProjectID: state.ProjectID.ValueInt64(),
 		KeyID:     state.ID.ValueInt64(),
 	}, nil)
-	if err != nil {
+	if err != nil && !resourceNotFound(err) {
 		resp.Diagnostics.AddError(
 			"Error Deleting Semaphore Project Key",
 			fmt.Sprintf("Could not delete project key, unexpected error: %s", err.Error()),

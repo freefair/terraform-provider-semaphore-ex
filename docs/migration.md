@@ -7,7 +7,33 @@ Existing `SEMAPHOREUI_*` environment names remain supported.
 ## Existing state
 
 A provider-source replacement alone does not rename resource types.
-Changing resource types directly can plan replacement, so back up state through the backend's normal mechanism and record the current import IDs first.
+The development build supports direct `moved` migration from `semaphoreui/semaphore` v0.3.9, schema version 0, for all 15 resource types published by that provider.
+Use the EX build containing this feature; published versions through 1.0.3 do not contain these state movers.
+Keep the same API server and existing resource settings, replace the type prefix in resource blocks and references, and add one move per managed resource:
+
+```hcl
+moved {
+  from = semaphoreui_project.example
+  to   = semaphore_ex_project.example
+}
+
+resource "semaphore_ex_project" "example" {
+  name = "Existing project"
+}
+```
+
+Terraform 1.8 introduced cross-type moves; this provider's overall minimum remains Terraform 1.15.2.
+Keep the old provider configuration available through the handover and select `freefair/semaphore-ex` for the destination resources.
+Back up state through the backend's normal mechanism, inspect the plan for moves without create, update or destroy, then apply that plan.
+IDs, scope and retained secret inputs are transferred without API writes.
+Refresh fills in EX-only settings from the existing object.
+The old runner `token` and `private_key` outputs have no EX equivalents and are omitted with a warning; update dependent output references first.
+This does not revoke or re-register the runner.
+A missing, incompatible or unknown source identity is rejected without changing the original state.
+See the [lifecycle matrix](lifecycle.md) for import forms and per-resource behavior.
+
+### Handover using remove and import
+
 For Terraform 1.7 or newer, use a non-destructive handover with `removed` blocks and imports, keeping the old provider configuration available until the handover completes:
 
 ```hcl

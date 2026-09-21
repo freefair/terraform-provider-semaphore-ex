@@ -4,11 +4,11 @@
 # Import ID is specified by the string "project/{project_id}/environment/{environment_id}".
 # - {project_id} is the ID of the project in SemaphoreUI.
 # - {environment_id} is the ID of the environment in SemaphoreUI.
-terraform import semaphore_ex_project_environment.example project/1/environment/2
+terraform import semaphore_ex_project_environment.environment project/1/environment/2
 ```
 Or using `import {}` block in the configuration file:
 ```hcl
 import {
-  to = semaphore_ex_project_environment.example
+  to = semaphore_ex_project_environment.environment
   id = "project/1/environment/2"
 }

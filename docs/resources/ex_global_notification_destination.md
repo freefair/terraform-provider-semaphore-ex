@@ -96,3 +96,14 @@ Required:
 
 - `incident_field` (String)
 - `source_field` (String)
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Replace illustrative identifiers with the existing object identity.
+terraform import semaphore_ex_global_notification_destination.operations destination/1
+```

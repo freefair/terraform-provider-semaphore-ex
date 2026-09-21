@@ -58,12 +58,12 @@ The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/c
 # Import ID is specified by the string "project/{project_id}/runner/{runner_id}".
 # - {project_id} is the ID of the project in SemaphoreUI.
 # - {runner_id} is the ID of the runner in SemaphoreUI.
-terraform import semaphore_ex_project_runner.example project/1/runner/2
+terraform import semaphore_ex_project_runner.runner project/1/runner/2
 ```
 Or using `import {}` block in the configuration file:
 ```hcl
 import {
-  to = semaphore_ex_project_runner.example
+  to = semaphore_ex_project_runner.runner
   id = "project/1/runner/2"
 }
 ```

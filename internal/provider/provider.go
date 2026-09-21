@@ -274,6 +274,7 @@ func (p *SemaphoreUIProvider) Resources(ctx context.Context) []func() resource.R
 
 func (p *SemaphoreUIProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewIntegrationAliasDataSource,
 		NewExternalUserDataSource,
 		NewAppDataSource,
 		NewUserAPITokenDataSource,

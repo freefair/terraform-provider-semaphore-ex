@@ -3,12 +3,12 @@
 page_title: "semaphore_ex_runner_registration_token Resource - Semaphore EX"
 subcategory: ""
 description: |-
-  A one-time, short-lived registration token for an unregistered runner. Deprecated: this resource is deprecated and will be removed in a future release. resource generates a fresh one-time registration token for an existing, unregistered runner. Regenerating invalidates the previous token. The token is returned only once, at creation, and stored (sensitive) in Terraform state. The resource is immutable: changing runner_id, project_id or keepers forces a new token to be generated. Use keepers to rotate the token on demand (e.g. bump a value to issue a new one). The runner must not already be registered, otherwise the API returns an error. Note: generating a token leaves the runner inactive until it registers, so a runner managed alongside this resource should set active = false to avoid a permanent diff.
+  A one-time, short-lived registration token for an unregistered runner. Deprecated: this resource is deprecated and will be removed in a future release. resource generates a fresh one-time registration token for an existing, unregistered runner. Regenerating invalidates the previous token. The token is returned only once, at creation, and stored (sensitive) in Terraform state. The resource is immutable: changing runner_id, project_id or keepers forces a new token to be generated. Use keepers to rotate the token on demand (e.g. bump a value to issue a new one). Import uses runner/<id> or project/<id>/runner/<id> and adopts only the runner association: registration_token is null because the API never returns the original token again. Import does not rotate it. The runner must not already be registered, otherwise the API returns an error. Note: generating a token leaves the runner inactive until it registers, so a runner managed alongside this resource should set active = false to avoid a permanent diff.
 ---
 
 # semaphore_ex_runner_registration_token (Resource)
 
-A one-time, short-lived registration token for an unregistered runner. **Deprecated:** this resource is deprecated and will be removed in a future release. resource generates a fresh one-time registration token for an existing, unregistered runner. Regenerating invalidates the previous token. The token is returned only once, at creation, and stored (sensitive) in Terraform state. The resource is immutable: changing `runner_id`, `project_id` or `keepers` forces a new token to be generated. Use `keepers` to rotate the token on demand (e.g. bump a value to issue a new one). The runner must not already be registered, otherwise the API returns an error. Note: generating a token leaves the runner inactive until it registers, so a runner managed alongside this resource should set `active = false` to avoid a permanent diff.
+A one-time, short-lived registration token for an unregistered runner. **Deprecated:** this resource is deprecated and will be removed in a future release. resource generates a fresh one-time registration token for an existing, unregistered runner. Regenerating invalidates the previous token. The token is returned only once, at creation, and stored (sensitive) in Terraform state. The resource is immutable: changing `runner_id`, `project_id` or `keepers` forces a new token to be generated. Use `keepers` to rotate the token on demand (e.g. bump a value to issue a new one). Import uses `runner/<id>` or `project/<id>/runner/<id>` and adopts only the runner association: `registration_token` is null because the API never returns the original token again. Import does not rotate it. The runner must not already be registered, otherwise the API returns an error. Note: generating a token leaves the runner inactive until it registers, so a runner managed alongside this resource should set `active = false` to avoid a permanent diff.
 
 ## Example Usage
 
@@ -58,3 +58,16 @@ resource "semaphore_ex_runner_registration_token" "token" {
 
 - `id` (String) Synthetic identifier of the form `runner/{runner_id}` (or `project/{project_id}/runner/{runner_id}` for project runners).
 - `registration_token` (String, Sensitive) The generated one-time registration token. Returned only at creation and persisted (sensitive) to Terraform state.
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Replace illustrative identifiers with the existing object identity.
+# Imports the association without recovering or rotating the one-time token.
+# For a project runner use project/1/runner/2.
+terraform import semaphore_ex_runner_registration_token.token runner/1
+```

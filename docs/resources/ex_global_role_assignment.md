@@ -31,3 +31,14 @@ resource "semaphore_ex_global_role_assignment" "auditor" {
 
 - `id` (Number) Server-generated assignment ID.
 - `revision` (Number) Server revision required for deletion.
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Replace illustrative identifiers with the existing object identity.
+terraform import semaphore_ex_global_role_assignment.auditor user/1/assignment/2
+```

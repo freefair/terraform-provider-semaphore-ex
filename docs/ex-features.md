@@ -28,7 +28,7 @@ All type names below have the `semaphore_ex_` prefix.
 | Governance | `project_deployment_window`; guardrail and artifact-retention policy data sources with separate mutation Actions |
 | Identity | `ldap_configuration`, `ldap_group_mapping`, `oidc_group_mapping`, `totp_policy`, read-only `external_user` |
 | Executors | `docker_execution_policy`, `kubernetes_execution_policy` |
-| Integration | `project_integration_matcher`, `project_integration_extract_value` |
+| Integration | `integration_alias`, `project_integration_matcher`, `project_integration_extract_value` |
 | Template attachments | `project_template_inventory` |
 | Terraform state | `project_terraform_backend_alias` |
 | Administration | `app`, `user_api_token`, read-only `option` with separate set Action |

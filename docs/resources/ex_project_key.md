@@ -175,12 +175,12 @@ The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/c
 # Import ID is specified by the string "project/{project_id}/key/{key_id}".
 # - {project_id} is the ID of the project in SemaphoreUI.
 # - {key_id} is the ID of the key in SemaphoreUI.
-terraform import semaphore_ex_project_key.example project/1/key/2
+terraform import semaphore_ex_project_key.login_password project/1/key/2
 ```
 Or using `import {}` block in the configuration file:
 ```hcl
 import {
-  to = semaphore_ex_project_key.example
+  to = semaphore_ex_project_key.login_password
   id = "project/1/key/2"
 }
 ```

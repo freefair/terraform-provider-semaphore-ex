@@ -56,3 +56,14 @@ Read-Only:
 
 - `id` (Number) .
 - `remote_version` (Number) .
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Replace illustrative identifiers with the existing object identity.
+terraform import semaphore_ex_project_secret_storage.example project/1/secret_storage/2
+```

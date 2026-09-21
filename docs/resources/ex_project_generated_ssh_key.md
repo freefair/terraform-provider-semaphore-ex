@@ -47,3 +47,14 @@ resource "semaphore_ex_project_generated_ssh_key" "deploy" {
 - `fingerprint` (String)
 - `id` (Number) The ID of this resource.
 - `public_key` (String)
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Replace illustrative identifiers with the existing object identity.
+terraform import semaphore_ex_project_generated_ssh_key.deploy project/1/generated-ssh-key/2
+```

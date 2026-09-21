@@ -38,3 +38,14 @@ resource "semaphore_ex_project_role" "viewer" {
 - `id` (String) Server-generated opaque role ID.
 - `revision` (Number) Server revision for optimistic concurrency control.
 - `slug` (String) Server-generated role slug.
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Replace illustrative identifiers with the existing object identity.
+terraform import semaphore_ex_project_role.viewer project/1/role/role-id
+```

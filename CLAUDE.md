@@ -76,7 +76,18 @@ The provider supports `tls_skip_verify` for self-signed TLS; if set, `Configure`
 
 ### Import IDs
 
-Nested resources use slash-delimited compound IDs like `project/1/template/2`. `internal/provider/import.go` `parseImportFields` parses these via a `(\w+)/(\d+)` regex into a `map[string]int64`, and legacy resources call it from `ImportState`. Native EX records use their explicit import labels and declared attribute types, including opaque string identifiers such as role and backend-alias IDs. Each `examples/resources/<name>/import.sh` documents the format.
+Nested resources use slash-delimited compound IDs like `project/1/template/2`. `internal/provider/import.go` `parseImportFields` validates complete ordered label/positive-ID pairs into a `map[string]int64`; single-ID resources also accept the numeric shorthand. Alternative scopes are declared explicitly. Native EX records use their explicit import labels and declared attribute types, including opaque string identifiers such as role and backend-alias IDs. Each `examples/resources/<name>/import.sh` documents the format.
+
+### Resource lifecycle
+
+All managed resources implement import. `state_move.go` supports the 15 published
+legacy resource types from `semaphoreui/semaphore` v0.3.9 schema version 0 using the
+bundled protocol type definitions. Moves perform no API writes; refresh hydrates
+EX-only fields. See `docs/lifecycle.md` and ADR 0007.
+`resourceNotFound` handles native EX, generated typed and generic runtime 404s.
+Only confirmed absence permits Read to remove state or Delete to succeed idempotently.
+Every readable resource has a data source. Registration-token imports preserve only
+the association, with a null one-time credential; a data source must never issue tokens.
 
 ### Nil-handling pattern
 

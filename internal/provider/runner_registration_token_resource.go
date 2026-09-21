@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
@@ -125,8 +124,7 @@ func (r *runnerRegistrationTokenResource) Read(ctx context.Context, req resource
 			RunnerID:  state.RunnerID.ValueInt64(),
 		}, nil)
 		if err != nil {
-			var notFound *runner.GetProjectProjectIDRunnersRunnerIDNotFound
-			if errors.As(err, &notFound) {
+			if resourceNotFound(err) {
 				resp.State.RemoveResource(ctx)
 				return
 			}
@@ -141,8 +139,7 @@ func (r *runnerRegistrationTokenResource) Read(ctx context.Context, req resource
 			RunnerID: state.RunnerID.ValueInt64(),
 		}, nil)
 		if err != nil {
-			var notFound *runner.GetRunnersRunnerIDNotFound
-			if errors.As(err, &notFound) {
+			if resourceNotFound(err) {
 				resp.State.RemoveResource(ctx)
 				return
 			}
@@ -176,4 +173,23 @@ func (r *runnerRegistrationTokenResource) Update(ctx context.Context, req resour
 // the API has no endpoint to revoke it. Removing the resource simply drops the
 // token from Terraform state.
 func (r *runnerRegistrationTokenResource) Delete(_ context.Context, _ resource.DeleteRequest, _ *resource.DeleteResponse) {
+}
+
+// ImportState adopts the runner association without issuing or rotating a token.
+// The one-time secret is unavailable after creation and remains null on import.
+func (r *runnerRegistrationTokenResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	fields, err := parseImportFields(req.ID, []string{"runner"}, []string{"project", "runner"})
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid Runner Registration Token Import ID", err.Error())
+		return
+	}
+	state := RunnerRegistrationTokenModel{RunnerID: types.Int64Value(fields["runner"]), ProjectID: types.Int64Null(), Keepers: types.MapNull(types.StringType), RegistrationToken: types.StringNull()}
+	var projectID *int64
+	if id, ok := fields["project"]; ok {
+		projectID = &id
+		state.ProjectID = types.Int64Value(id)
+	}
+	state.ID = types.StringValue(runnerRegistrationTokenID(projectID, fields["runner"]))
+	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
+	resp.Diagnostics.AddWarning("One-Time Registration Token Unavailable", "Import adopts the runner association only. The API cannot return the original registration token; registration_token remains null. Import does not generate or invalidate a token. Use an explicit replacement to request a new token for an unregistered runner.")
 }
