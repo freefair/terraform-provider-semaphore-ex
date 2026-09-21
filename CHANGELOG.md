@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/freefair/terraform-provider-semaphore-ex/compare/v1.0.3...v1.1.0) (2026-09-21)
+
+
+### Features
+
+* **provider:** complete lifecycle and migration support ([b51398e](https://github.com/freefair/terraform-provider-semaphore-ex/commit/b51398e81ab8db69972ff74e2c5ab06dd2ef1ebc))
+
+
+### Bug Fixes
+
+* **provider:** preserve state and imported token credentials ([761d787](https://github.com/freefair/terraform-provider-semaphore-ex/commit/761d7871271ba9beff078d8f3b5c891cf4bc6313))
+* **provider:** remove duplicate unknown token validation ([ee5a1f3](https://github.com/freefair/terraform-provider-semaphore-ex/commit/ee5a1f38791c293bf2fe90e5a1a6b9c2cfbf98d5))
+
 ## [1.0.3](https://github.com/freefair/terraform-provider-semaphore-ex/compare/v1.0.2...v1.0.3) (2026-09-21)
 
 
