@@ -7,7 +7,8 @@ This fork derives from the Semaphore UI provider and targets the EX API contract
 ## Quick Start
 
 Prerequisites: Semaphore EX `v2.20.0-ex.2` or a compatible newer server, its API token, and Terraform `1.15.2` or newer.
-Provider `v1.0.4` includes resource lifecycle coverage, legacy-provider migration, integration-alias lookup, guarded project-absence handling and safe keeper adoption after token import.
+Provider `v1.0.5` adds complete template settings, exact name lookups and collections, lossless environment JSON, managed governance configuration and operational previews.
+See the [coverage matrix](docs/provider-coverage.md) and the [known WriteOnly Action limitation](docs/known-limitations.md#write-only-action-inputs).
 
 Create `main.tf`:
 
@@ -17,7 +18,7 @@ terraform {
   required_providers {
     semaphore = {
       source  = "freefair/semaphore-ex"
-      version = "= 1.0.4"
+      version = "= 1.0.5"
     }
   }
 }
