@@ -11,6 +11,7 @@ Dennis supplies or explicitly approves the exact version; a generic release requ
 Update version references on main, then publish the approved tag through the signed artifact workflow.
 Keep release notes and version history in GitHub Releases.
 Claude CLI consultations and reviews are preauthorized by Dennis, including relevant project source and context; proceed without renewed approval for each call.
+Use official HashiCorp Terraform Plugin Framework releases. An independently built, forked or locally patched framework is excluded; resolve compatibility through supported upstream releases or an explicitly agreed provider solution.
 
 ## Common commands
 
