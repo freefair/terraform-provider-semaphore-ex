@@ -15,6 +15,7 @@ import (
 )
 
 const exMaximumResponseSize = 16 << 20
+const exMaximumErrorResponseSize = 4 << 10
 
 type exRequestOptions struct {
 	PathParams map[string]string
@@ -22,12 +23,13 @@ type exRequestOptions struct {
 	Headers    map[string]string
 }
 
-// exAPIError is a sanitized non-success response from the Semaphore EX API.
-// It deliberately retains no response body, resolved path parameters, or URL.
+// exAPIError retains the API's user-facing error field, but not raw response
+// bodies, resolved path parameters, or URLs.
 type exAPIError struct {
 	StatusCode int
 	method     string
 	route      string
+	message    string
 }
 
 // exTransportError is a safe error produced by this helper's response reader.
@@ -42,7 +44,26 @@ func (e *exTransportError) Error() string {
 }
 
 func (e *exAPIError) Error() string {
-	return fmt.Sprintf("Semaphore EX API request %s %s returned status %d", e.method, e.route, e.StatusCode)
+	detail := fmt.Sprintf("Semaphore EX API request %s %s returned status %d", e.method, e.route, e.StatusCode)
+	if e.message != "" {
+		// Quote server text so control characters cannot alter terminal output.
+		detail += fmt.Sprintf(": %q", e.message)
+	}
+	return detail
+}
+
+func exResponseErrorMessage(body io.Reader) string {
+	payload, err := io.ReadAll(io.LimitReader(body, exMaximumErrorResponseSize+1))
+	if err != nil || len(payload) > exMaximumErrorResponseSize {
+		return ""
+	}
+	var envelope struct {
+		Error string `json:"error"`
+	}
+	if err := json.Unmarshal(payload, &envelope); err != nil {
+		return ""
+	}
+	return strings.TrimSpace(envelope.Error)
 }
 
 func exNotFound(err error) bool {
@@ -109,7 +130,7 @@ func exRequestWithOptions(
 		}),
 		Reader: runtime.ClientResponseReaderFunc(func(response runtime.ClientResponse, _ runtime.Consumer) (any, error) {
 			if response.Code()/100 != 2 {
-				return nil, &exAPIError{StatusCode: response.Code(), method: method, route: route}
+				return nil, &exAPIError{StatusCode: response.Code(), method: method, route: route, message: exResponseErrorMessage(response.Body())}
 			}
 
 			if result == nil || response.Code() == 204 {

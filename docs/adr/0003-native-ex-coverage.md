@@ -17,8 +17,17 @@ the generated client for existing contracts and use the same configured
 transport for EX routes without generated operations. Each handwritten route
 is fixed in code; users cannot supply arbitrary HTTP methods, URLs, or headers.
 The transport retains bearer authentication, TLS settings and cancellation,
-escapes path/query parameters, and reports errors without response bodies or
-credential-bearing resolved URLs.
+escapes path/query parameters, and reports errors without raw response bodies or
+credential-bearing resolved URLs. Non-success JSON responses up to 4 KiB expose
+only the top-level string `error` field alongside the HTTP status. This preserves
+server validation explanations such as missing workflow approval role policies;
+status-only diagnostics made those failures impossible to diagnose from Terraform.
+The API owns the contents of this user-facing field. Other fields are discarded,
+and control characters in the message are escaped for terminal output. Empty,
+malformed, unreadable, or oversized responses retain the status-only diagnostic.
+This replaces the original blanket omission of response content. Dumping complete
+response bodies would risk exposing unrelated data; duplicating every server
+validation in the provider would drift from the API contract.
 
 Share mechanical CRUD handling only for ordinary records with compatible
 lifecycle contracts. Revisioned policies, redacted material, associations and
