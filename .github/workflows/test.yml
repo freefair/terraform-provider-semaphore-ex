@@ -76,7 +76,7 @@ jobs:
         with:
           repository: freefair/semaphore-ex
           # Semaphore EX v2.20.0-ex.2.1.1 contract: managed task groups and graceful stop.
-          ref: 85f170ed94559f78d9e1e2e3ea3524ab39cc825a
+          ref: 7f8eee9b174df4bfc7e1ecc9008002766e515d3e
           path: .test-semaphore-ex
       - uses: actions/setup-go@v6
         with:
