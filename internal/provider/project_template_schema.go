@@ -30,6 +30,7 @@ type (
 		ID                  types.Int64  `tfsdk:"id"`
 		ProjectID           types.Int64  `tfsdk:"project_id"`
 		EnvironmentID       types.Int64  `tfsdk:"environment_id"`
+		TaskGroups          types.Set    `tfsdk:"task_groups"`
 		EnvironmentIDs      types.Set    `tfsdk:"environment_ids"`
 		WorkingDirectory    types.String `tfsdk:"working_directory"`
 		ExecutorImage       types.String `tfsdk:"executor_image"`
@@ -638,6 +639,11 @@ func ProjectTemplateSchema() superschema.Schema {
 			"ansible_settings":   templateSettingsAttribute("ansible"),
 			"terraform_settings": templateSettingsAttribute("terraform"),
 			"ssh_keys":           templateSSHKeySelectionAttribute(),
+			"task_groups": superschema.SetAttribute{
+				Common:     &schemaR.SetAttribute{MarkdownDescription: "Managed task group IDs. All selected group restrictions apply. Omission preserves existing bindings; an empty set removes them. Requires Semaphore EX v2.20.0-ex.2.1.1 or later.", ElementType: types.Int64Type},
+				Resource:   &schemaR.SetAttribute{Optional: true, Computed: true, PlanModifiers: []planmodifier.Set{setplanmodifier.UseStateForUnknown()}, Validators: []validator.Set{setvalidator.SizeAtMost(16), setvalidator.ValueInt64sAre(int64validator.AtLeast(1))}},
+				DataSource: &schemaD.SetAttribute{Computed: true},
+			},
 		},
 	}
 }

@@ -307,3 +307,23 @@ no delete/reset operation; the provider does not invent one. External draft or
 policy edits are read as drift. General server options remain explicit `option_set`
 Actions with a corresponding data source because option keys do not have a uniform
 reset or ownership contract.
+
+## Managed task groups
+
+With Semaphore EX v2.20.0-ex.2.1.1 or later, `semaphore_ex_project_task_group`
+manages a group's execution limit, allowed runners and explicit project grants.
+The corresponding data source can read through a grant and reports the owner in
+`owner_project_id`. Group mutations require the corresponding owner-project
+permission. A revision conflict is returned as an error without an automatic retry.
+
+Select groups with `task_groups = [semaphore_ex_project_task_group.state.id]` on a
+project template. Every selected restriction applies. Omission preserves existing
+or imported memberships; `task_groups = []` removes all memberships. Tasks acquire
+capacity in all groups atomically and retain it while stopping until execution ends.
+Import a group using `project/<owner-project-id>/task_group/<group-id>`.
+
+Optional group settings preserve imported values when omitted. Use an explicit
+empty set to clear runner restrictions or project grants. The full grant list is
+visible only through the owner project; a receiving-project data source reports
+`shared_project_ids` as null. Remove template bindings before deleting a group;
+the server rejects deletion while a template or active execution still references it.

@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	apiclient "github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client"
 	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/client/template"
 	"github.com/freefair/terraform-provider-semaphore-ex/semaphoreui/models"
@@ -476,6 +477,13 @@ func templateRequestWithSSHKeys(ctx context.Context, plan ProjectTemplateModel) 
 		return nil, err
 	}
 	body["task_params"] = settings
+	if !plan.TaskGroups.IsNull() && !plan.TaskGroups.IsUnknown() {
+		ids := []int64{}
+		if d := plan.TaskGroups.ElementsAs(ctx, &ids, false); d.HasError() {
+			return nil, fmt.Errorf("invalid task groups: %s", d)
+		}
+		body["task_groups"] = ids
+	}
 	if plan.SSHKeys.IsNull() || plan.SSHKeys.IsUnknown() {
 		return body, nil
 	}
@@ -500,6 +508,24 @@ func readTemplateSSHKeys(ctx context.Context, client *apiclient.SemaphoreUI, mod
 		return err
 	}
 	model.SSHKeys = selection
+	var ids []int64
+	if value := raw["task_groups"]; value != nil {
+		encoded, err := json.Marshal(value)
+		if err != nil {
+			return err
+		}
+		if err = json.Unmarshal(encoded, &ids); err != nil {
+			return fmt.Errorf("invalid task group response: %w", err)
+		}
+	}
+	if ids == nil {
+		ids = []int64{}
+	}
+	groups, d := types.SetValueFrom(ctx, types.Int64Type, ids)
+	if d.HasError() {
+		return fmt.Errorf("invalid task group response: %s", d)
+	}
+	model.TaskGroups = groups
 	return nil
 }
 

@@ -37,7 +37,7 @@ For acceptance tests, `TF_ACC=1` plus the `SEMAPHOREUI_*` env vars must be set â
 
 `SEMAPHORE_EX_TEST_BINARY=/absolute/path/to/semaphore task testacc` starts a temporary loopback-only EX server with its own SQLite database and generated credentials.
 The test fixture owns and cleans up that process and database; failure logs are retained.
-CI builds Semaphore EX `v2.20.0-ex.2` at the exact revision pinned in `.github/workflows/test.yml`.
+CI builds the Semaphore EX `v2.20.0-ex.2.1.1` contract at the exact revision pinned in `.github/workflows/test.yml`.
 For an existing explicitly authorized test instance, set `TF_ACC=1`, `SEMAPHOREUI_API_BASE_URL`, and `SEMAPHOREUI_API_TOKEN` and run `go test` directly.
 Do not infer API compatibility from `task test`: acceptance tests are skipped without `TF_ACC`.
 
@@ -173,3 +173,11 @@ GoReleaser is pinned to the version in `.tool-versions` and the workflow; keep t
 Verify ZIP names, checksum coverage, manifest protocol, signature and packaged Terraform startup before uploading assets.
 Existing release assets must match on rerun; never overwrite a published version.
 See `docs/releases.md` and `docs/adr/0002-signed-registry-artifacts.md`.
+
+### Managed task groups
+
+`semaphore_ex_project_task_group` uses native EX CRUD with compare-and-swap revisions.
+Manage resources through their owner project; data sources can read explicit grants
+and expose `owner_project_id`, leaving the hidden full grant list null for consumers.
+Optional group settings and template `task_groups` preserve omission and import;
+explicit empty sets clear selections. Send template bindings in the same mutation.

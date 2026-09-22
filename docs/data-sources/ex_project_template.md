@@ -63,6 +63,7 @@ data "semaphore_ex_project_template" "build" {
 - `suppress_error_alerts` (Boolean) Suppress error alerts.
 - `suppress_success_alerts` (Boolean) Suppress success alerts.
 - `survey_vars` (Attributes List) Survey variables. (see [below for nested schema](#nestedatt--survey_vars))
+- `task_groups` (Set of Number) Managed task group IDs. All selected group restrictions apply. Omission preserves existing bindings; an empty set removes them. Requires Semaphore EX v2.20.0-ex.2.1.1 or later.
 - `task_params` (Attributes) Deprecated compatibility metadata for the former template task_params shape. It did not configure template execution. Use ansible_settings or terraform_settings explicitly; existing values are never activated automatically. (see [below for nested schema](#nestedatt--task_params))
 - `terraform_settings` (Attributes) Effective terraform template settings. Omitted keys preserve existing server values. Configure false, an empty string or [] to clear a setting. These are distinct from per-run task parameters. (see [below for nested schema](#nestedatt--terraform_settings))
 - `vaults` (Attributes List) Ansible Vault Passwords. (see [below for nested schema](#nestedatt--vaults))
