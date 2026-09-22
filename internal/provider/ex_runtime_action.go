@@ -75,7 +75,11 @@ func (a *exRuntimeAction) Configure(_ context.Context, req action.ConfigureReque
 }
 
 func (a *exRuntimeAction) Schema(_ context.Context, _ action.SchemaRequest, resp *action.SchemaResponse) {
-	resp.Schema = schema.Schema{MarkdownDescription: a.description(), Attributes: a.attributes()}
+	description := a.description()
+	if a.kind == exRuntimeTaskStart || a.kind == exRuntimeWorkflowStart {
+		description += actionWriteOnlyLimitation
+	}
+	resp.Schema = schema.Schema{MarkdownDescription: description, Attributes: a.attributes()}
 }
 
 func (a *exRuntimeAction) description() string {

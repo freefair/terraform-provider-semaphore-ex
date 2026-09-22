@@ -30,7 +30,7 @@ func (a *optionSetAction) Configure(_ context.Context, req action.ConfigureReque
 	a.client = client
 }
 func (a *optionSetAction) Schema(_ context.Context, _ action.SchemaRequest, resp *action.SchemaResponse) {
-	resp.Schema = schema.Schema{MarkdownDescription: "Explicitly writes a persisted global system option. This is an action because the API has no option-delete contract; there is no implied destroy or reset. Changes may require a server restart. Prefer a dedicated resource when one models the same setting.", Attributes: map[string]schema.Attribute{
+	resp.Schema = schema.Schema{MarkdownDescription: "Explicitly writes a persisted global system option. This is an action because the API has no option-delete contract; there is no implied destroy or reset. Changes may require a server restart. Prefer a dedicated resource when one models the same setting." + actionWriteOnlyLimitation, Attributes: map[string]schema.Attribute{
 		"key":   schema.StringAttribute{Required: true, MarkdownDescription: "Exact option key.", Validators: []validator.String{stringvalidator.RegexMatches(regexp.MustCompile(`^[\w.]+$`), "Use letters, digits, underscores and dots.")}},
 		"value": schema.StringAttribute{Required: true, WriteOnly: true, MarkdownDescription: "Persisted option value. Pass a sensitive, ephemeral input variable for confidential values; the provider does not emit the value in progress."},
 	}}

@@ -37,7 +37,7 @@ func (a *ldapTestAction) Schema(_ context.Context, _ action.SchemaRequest, p *ac
 	requiredSecret := func(description string) schema.StringAttribute {
 		return schema.StringAttribute{Required: true, WriteOnly: true, MarkdownDescription: description, Validators: []validator.String{stringvalidator.LengthAtLeast(1)}}
 	}
-	p.Schema = schema.Schema{MarkdownDescription: "Explicitly tests an LDAP provider and records readiness. Supply short-lived test and local-recovery credentials; this action never exposes or retains them. Invoke it after configuration and before explicitly setting active or selected_users state.", Attributes: map[string]schema.Attribute{
+	p.Schema = schema.Schema{MarkdownDescription: "Explicitly tests an LDAP provider and records readiness. Supply short-lived test and local-recovery credentials; this action never exposes or retains them. Invoke it after configuration and before explicitly setting active or selected_users state." + actionWriteOnlyLimitation, Attributes: map[string]schema.Attribute{
 		"provider_id": requiredSecret("Configured LDAP provider identifier."),
 		"username":    requiredSecret("Directory test username."), "password": requiredSecret("Directory test password."),
 		"recovery_admin_user_id": schema.Int64Attribute{Required: true}, "recovery_admin_password": requiredSecret("Local recovery-administrator password."),

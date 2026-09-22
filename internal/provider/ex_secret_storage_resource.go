@@ -145,7 +145,7 @@ func storageModel(c context.Context, in map[string]any, prev ProjectSecretStorag
 		if len(raw) == 0 && (m.Params.IsNull() || m.Params.IsUnknown()) {
 			m.Params = types.DynamicNull()
 		} else {
-			m.Params = secretStorageDynamicFromAPI(raw)
+			m.Params = dynamicValueFromAPI(raw)
 		}
 	}
 	if v, ok := in["source_storage_type"].(string); ok {

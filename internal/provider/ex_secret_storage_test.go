@@ -32,7 +32,7 @@ func TestSecretStorageParamsPreserveBooleanAndNumber(t *testing.T) {
 }
 
 func TestSecretStorageImportedParamsInferNestedNativeValues(t *testing.T) {
-	value := secretStorageDynamicFromAPI(map[string]any{"enabled": true, "timeout": json.Number("5"), "nested": map[string]any{"name": "vault", "empty": nil}, "ports": []any{json.Number("8200"), json.Number("8201")}})
+	value := dynamicValueFromAPI(map[string]any{"enabled": true, "timeout": json.Number("5"), "nested": map[string]any{"name": "vault", "empty": nil}, "ports": []any{json.Number("8200"), json.Number("8201")}})
 	object, ok := value.UnderlyingValue().(types.Object)
 	if !ok {
 		t.Fatal("imported params are not an object")
@@ -59,7 +59,7 @@ func TestSecretStorageEmptyParamsRemainNullWhenUnconfigured(t *testing.T) {
 }
 
 func TestSecretStorageResponseReflectsChangedKnownParams(t *testing.T) {
-	previous := ProjectSecretStorageModel{Params: secretStorageDynamicFromAPI(map[string]any{"url": "https://old.example", "retries": json.Number("1")})}
+	previous := ProjectSecretStorageModel{Params: dynamicValueFromAPI(map[string]any{"url": "https://old.example", "retries": json.Number("1")})}
 	model := storageModel(context.Background(), map[string]any{"params": map[string]any{"url": "https://new.example", "retries": json.Number("2")}}, previous)
 	object, ok := model.Params.UnderlyingValue().(types.Object)
 	if !ok {
@@ -80,7 +80,7 @@ func TestSecretStorageResponseReflectsChangedKnownParams(t *testing.T) {
 }
 
 func TestSecretStoragePreservesImplicitTokenAuthMethodShape(t *testing.T) {
-	previous := ProjectSecretStorageModel{Params: secretStorageDynamicFromAPI(map[string]any{"url": "http://127.0.0.1:8200"})}
+	previous := ProjectSecretStorageModel{Params: dynamicValueFromAPI(map[string]any{"url": "http://127.0.0.1:8200"})}
 	model := storageModel(context.Background(), map[string]any{"params": map[string]any{"url": "http://127.0.0.1:8200", "auth_method": "token"}}, previous)
 	object, ok := model.Params.UnderlyingValue().(types.Object)
 	if !ok {

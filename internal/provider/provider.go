@@ -13,6 +13,7 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/hashicorp/terraform-plugin-framework/action"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
 	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -24,6 +25,7 @@ import (
 var _ provider.Provider = &SemaphoreUIProvider{}
 var _ provider.ProviderWithFunctions = &SemaphoreUIProvider{}
 var _ provider.ProviderWithActions = &SemaphoreUIProvider{}
+var _ provider.ProviderWithEphemeralResources = &SemaphoreUIProvider{}
 
 // SemaphoreUIProvider defines the provider implementation.
 type SemaphoreUIProvider struct {
@@ -180,10 +182,11 @@ func (p *SemaphoreUIProvider) Configure(ctx context.Context, req provider.Config
 	resp.DataSourceData = client
 	resp.ResourceData = client
 	resp.ActionData = client
+	resp.EphemeralResourceData = client
 }
 
 func (p *SemaphoreUIProvider) Actions(context.Context) []func() action.Action {
-	return []func() action.Action{
+	actions := []func() action.Action{
 		NewLDAPTestAction,
 		NewProjectTemplatePublishAction,
 		NewProjectWorkflowRestoreAction,
@@ -208,6 +211,12 @@ func (p *SemaphoreUIProvider) Actions(context.Context) []func() action.Action {
 		NewGlobalWorkflowArtifactRetentionPublishAction,
 		NewProjectWorkflowArtifactRetentionPublishAction,
 	}
+
+	return append(actions, operationalActions()...)
+}
+
+func (p *SemaphoreUIProvider) EphemeralResources(context.Context) []func() ephemeral.EphemeralResource {
+	return operationalEphemeralResources()
 }
 
 func (p *SemaphoreUIProvider) Resources(ctx context.Context) []func() resource.Resource {

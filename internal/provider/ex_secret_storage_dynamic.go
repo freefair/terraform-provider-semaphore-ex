@@ -14,17 +14,17 @@ func secretStorageParams(value types.Dynamic) map[string]any {
 	return result
 }
 
-// secretStorageDynamicFromAPI infers Terraform-native dynamic values for import
+// dynamicValueFromAPI infers Terraform-native dynamic values for import
 // and data-source reads. Configured state is retained elsewhere to preserve an
 // author-supplied list-versus-tuple shape during normal refreshes.
-func secretStorageDynamicFromAPI(value any) types.Dynamic {
+func dynamicValueFromAPI(value any) types.Dynamic {
 	if value == nil {
 		return types.DynamicNull()
 	}
-	return types.DynamicValue(secretStorageAPIAttribute(value))
+	return types.DynamicValue(apiAttributeValue(value))
 }
 
-func secretStorageAPIAttribute(value any) attr.Value {
+func apiAttributeValue(value any) attr.Value {
 	switch value := value.(type) {
 	case string:
 		return types.StringValue(value)
@@ -46,7 +46,7 @@ func secretStorageAPIAttribute(value any) attr.Value {
 		typesByName := map[string]attr.Type{}
 		values := map[string]attr.Value{}
 		for key, item := range value {
-			child := secretStorageAPIAttribute(item)
+			child := apiAttributeValue(item)
 			typesByName[key] = child.Type(context.Background())
 			values[key] = child
 		}
@@ -57,13 +57,13 @@ func secretStorageAPIAttribute(value any) attr.Value {
 		same := true
 		var first attr.Type
 		for _, item := range value {
-			child := secretStorageAPIAttribute(item)
+			child := apiAttributeValue(item)
 			values = append(values, child)
 			childType := child.Type(context.Background())
 			typesByIndex = append(typesByIndex, childType)
 			if first == nil {
 				first = childType
-			} else if fmt.Sprintf("%T", first) != fmt.Sprintf("%T", childType) {
+			} else if !first.Equal(childType) {
 				same = false
 			}
 		}

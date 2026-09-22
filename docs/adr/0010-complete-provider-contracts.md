@@ -83,3 +83,22 @@ unique. Repeated labels yield a null map rather than silently dropping an option
 Import hydrates both representations. An unchanged legacy map preserves the server's
 current order; changed maps use deterministic lexical label order. Explicit lists
 preserve their authored order. Omission retains options; an explicit empty list clears.
+
+## Operational results
+
+Fixed-route Actions cover explicit backend operations. Synchronous previews also
+provide ephemeral resources so callers can inspect complete results and pass a
+preview token to a write-only Action input without persistent Terraform state.
+LDAP/OIDC previews still create backend history and are documented accordingly.
+Mutating delivery tests, workflow starts, retries and rollback remain Actions only.
+No automatic review, retry, renewal or audit-history cleanup is implied.
+
+## Official framework and accepted release defect
+
+Use the unmodified official HashiCorp framework. Provider v1.0.5 explicitly retains
+the reproduced framework v1.19.0 WriteOnly Action validation defect. Publish its
+affected operations in the release notes and generated references. Preserve
+write-only inputs; resource ignore_changes is not an Action validation workaround.
+The acceptance test records the exact known rejection and ensures no apply API call
+occurs. Ordinary resource and ephemeral functionality keeps its positive tests.
+A framework fork or local patch is excluded by the owner.

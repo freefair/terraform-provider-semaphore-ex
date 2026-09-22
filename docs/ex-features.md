@@ -1,8 +1,15 @@
 # Semaphore EX feature usage
 
+> **Known Action limitation:** WriteOnly Action inputs are currently rejected by
+> the official framework, including LDAP apply tokens and execution preflight
+> tokens. See [affected Actions and behavior](known-limitations.md#write-only-action-inputs).
+
+
 The provider uses the `freefair/semaphore-ex` source address and the `semaphore_ex_` type prefix.
 Resources manage persistent configuration; data sources read existing objects; Actions perform explicitly requested operations.
-Use the generated reference pages in `resources/`, `data-sources/` and `actions/` for exact attributes.
+Use the generated reference pages in `resources/`, `data-sources/` and `actions/` and `ephemeral-resources/` for exact attributes.
+See the [field and operation coverage matrix](provider-coverage.md) and
+[operational preview guide](operational-previews.md).
 
 ## Contents
 
